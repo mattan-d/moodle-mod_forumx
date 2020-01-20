@@ -17,7 +17,7 @@
 /**
  * A type of forum.
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @copyright  2014 Andrew Robert Nicols <andrew@nicols.co.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,11 +28,11 @@ require_once($CFG->dirroot.'/user/selector/lib.php');
 
 /**
  * Abstract class used by forum subscriber selection controls
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2009 Sam Hemelryk
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class mod_ouilforum_subscriber_selector_base extends user_selector_base {
+abstract class mod_forumx_subscriber_selector_base extends user_selector_base {
 
     /**
      * The id of the forum this selector is being used for

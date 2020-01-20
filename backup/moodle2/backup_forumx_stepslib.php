@@ -16,21 +16,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @subpackage backup-moodle2
  * @copyright  2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
- * @copyright  2018 onwards The Open University of Israel
+ * @copyright  2020 onwards MOFET
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
- * Define all the backup steps that will be used by the backup_ouilforum_activity_task
+ * Define all the backup steps that will be used by the backup_forumx_activity_task
  */
 
 /**
  * Define the complete forum structure for backup, with file and id annotations
  */
-class backup_ouilforum_activity_structure_step extends backup_activity_structure_step {
+class backup_forumx_activity_structure_step extends backup_activity_structure_step {
 
     protected function define_structure() {
 
@@ -39,7 +39,7 @@ class backup_ouilforum_activity_structure_step extends backup_activity_structure
 
         // Define each element separated.
 
-        $ouilforum = new backup_nested_element('ouilforum', array('id'), array(
+        $forumx = new backup_nested_element('forumx', array('id'), array(
             'type', 'name', 'intro', 'introformat',
             'assessed', 'assesstimestart', 'assesstimefinish', 'scale',
             'maxbytes', 'maxattachments', 'forcesubscribe', 'trackingtype',
@@ -100,19 +100,19 @@ class backup_ouilforum_activity_structure_step extends backup_activity_structure
 
         // Build the tree.
 
-        $ouilforum->add_child($discussions);
+        $forumx->add_child($discussions);
         $discussions->add_child($discussion);
 
-        $ouilforum->add_child($subscriptions);
+        $forumx->add_child($subscriptions);
         $subscriptions->add_child($subscription);
 
-        $ouilforum->add_child($digests);
+        $forumx->add_child($digests);
         $digests->add_child($digest);
 
-        $ouilforum->add_child($readposts);
+        $forumx->add_child($readposts);
         $readposts->add_child($read);
 
-        $ouilforum->add_child($trackedprefs);
+        $forumx->add_child($trackedprefs);
         $trackedprefs->add_child($track);
 
         $discussion->add_child($posts);
@@ -129,30 +129,30 @@ class backup_ouilforum_activity_structure_step extends backup_activity_structure
 
         // Define sources.
 
-        $ouilforum->set_source_table('ouilforum', array('id' => backup::VAR_ACTIVITYID));
+        $forumx->set_source_table('forumx', array('id' => backup::VAR_ACTIVITYID));
 
         // All these source definitions only happen if we are including user info.
         if ($userinfo) {
             $discussion->set_source_sql('
                 SELECT *
-                  FROM {ouilforum_discussions}
-                 WHERE ouilforum = ?',
+                  FROM {forumx_discussions}
+                 WHERE forumx = ?',
                 array(backup::VAR_PARENTID));
 
             // Need posts ordered by id so parents are always before childs on restore.
-            $post->set_source_table('ouilforum_posts', array('discussion' => backup::VAR_PARENTID), 'id ASC');
-            $discussionsub->set_source_table('ouilforum_discussion_sub', array('discussionid' => backup::VAR_PARENTID));
+            $post->set_source_table('forumx_posts', array('discussion' => backup::VAR_PARENTID), 'id ASC');
+            $discussionsub->set_source_table('forumx_discussion_sub', array('discussionid' => backup::VAR_PARENTID));
 
-            $subscription->set_source_table('ouilforum_subscriptions', array('ouilforum' => backup::VAR_PARENTID));
-            $digest->set_source_table('ouilforum_digests', array('ouilforum' => backup::VAR_PARENTID));
+            $subscription->set_source_table('forumx_subscriptions', array('forumx' => backup::VAR_PARENTID));
+            $digest->set_source_table('forumx_digests', array('forumx' => backup::VAR_PARENTID));
 
-            $flag->set_source_table('ouilforum_flags', array('postid' => backup::VAR_PARENTID));
-            $read->set_source_table('ouilforum_read', array('ouilforumid' => backup::VAR_PARENTID));
+            $flag->set_source_table('forumx_flags', array('postid' => backup::VAR_PARENTID));
+            $read->set_source_table('forumx_read', array('forumxid' => backup::VAR_PARENTID));
 
-            $track->set_source_table('ouilforum_track_prefs', array('ouilforumid' => backup::VAR_PARENTID));
+            $track->set_source_table('forumx_track_prefs', array('forumxid' => backup::VAR_PARENTID));
 
             $rating->set_source_table('rating', array('contextid'  => backup::VAR_CONTEXTID,
-                                                      'component'  => backup_helper::is_sqlparam('mod_ouilforum'),
+                                                      'component'  => backup_helper::is_sqlparam('mod_forumx'),
                                                       'ratingarea' => backup_helper::is_sqlparam('post'),
                                                       'itemid'     => backup::VAR_PARENTID));
             $rating->set_source_alias('rating', 'value');
@@ -160,7 +160,7 @@ class backup_ouilforum_activity_structure_step extends backup_activity_structure
 
         // Define id annotations.
 
-        $ouilforum->annotate_ids('scale', 'scale');
+        $forumx->annotate_ids('scale', 'scale');
 
         $discussion->annotate_ids('group', 'groupid');
 
@@ -184,13 +184,13 @@ class backup_ouilforum_activity_structure_step extends backup_activity_structure
 
         // Define file annotations
 
-        $ouilforum->annotate_files('mod_ouilforum', 'intro', null); // This file area hasn't itemid.
+        $forumx->annotate_files('mod_forumx', 'intro', null); // This file area hasn't itemid.
 
-        $post->annotate_files('mod_ouilforum', 'post', 'id');
-        $post->annotate_files('mod_ouilforum', 'attachment', 'id');
+        $post->annotate_files('mod_forumx', 'post', 'id');
+        $post->annotate_files('mod_forumx', 'attachment', 'id');
 
-        // Return the root element (ouilforum), wrapped into standard activity structure.
-        return $this->prepare_activity_structure($ouilforum);
+        // Return the root element (forumx), wrapped into standard activity structure.
+        return $this->prepare_activity_structure($forumx);
     }
 
 }

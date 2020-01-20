@@ -18,9 +18,9 @@
 /**
  * This file is used to display and organise forum subscribers
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,7 +31,7 @@ $id    = required_param('id', PARAM_INT);        // Forum id
 $group = optional_param('group', 0, PARAM_INT);  // Change of group.
 $edit  = optional_param('edit', -1, PARAM_BOOL); // Turn editing on and off.
 
-$url = new moodle_url('/mod/ouilforum/subscribers.php', array('id'=>$id));
+$url = new moodle_url('/mod/forumx/subscribers.php', array('id'=>$id));
 if ($group !== 0) {
     $url->param('group', $group);
 }
@@ -40,31 +40,31 @@ if ($edit !== 0) {
 }
 $PAGE->set_url($url);
 
-$forum = $DB->get_record('ouilforum', array('id'=>$id), '*', MUST_EXIST);
+$forum = $DB->get_record('forumx', array('id'=>$id), '*', MUST_EXIST);
 $course = $DB->get_record('course', array('id'=>$forum->course), '*', MUST_EXIST);
-if (! $cm = get_coursemodule_from_instance('ouilforum', $forum->id, $course->id)) {
+if (! $cm = get_coursemodule_from_instance('forumx', $forum->id, $course->id)) {
     $cm->id = 0;
 }
 
 require_login($course, false, $cm);
 
 $context = context_module::instance($cm->id);
-if (!has_capability('mod/ouilforum:viewsubscribers', $context)) {
-    print_error('nopermissiontosubscribe', 'ouilforum');
+if (!has_capability('mod/forumx:viewsubscribers', $context)) {
+    print_error('nopermissiontosubscribe', 'forumx');
 }
 
 $params = array(
     'context' => $context,
     'other' => array('forumid' => $forum->id),
 );
-$event = \mod_ouilforum\event\subscribers_viewed::create($params);
+$event = \mod_forumx\event\subscribers_viewed::create($params);
 $event->trigger();
 
-$forumoutput = $PAGE->get_renderer('mod_ouilforum');
+$forumoutput = $PAGE->get_renderer('mod_forumx');
 $currentgroup = groups_get_activity_group($cm);
 $options = array('forumid'=>$forum->id, 'currentgroup'=>$currentgroup, 'context'=>$context);
-$existingselector = new mod_ouilforum_existing_subscriber_selector('existingsubscribers', $options);
-$subscriberselector = new mod_ouilforum_potential_subscriber_selector('potentialsubscribers', $options);
+$existingselector = new mod_forumx_existing_subscriber_selector('existingsubscribers', $options);
+$subscriberselector = new mod_forumx_potential_subscriber_selector('potentialsubscribers', $options);
 $subscriberselector->set_existing_subscribers($existingselector->find_users(''));
 
 if (data_submitted()) {
@@ -78,15 +78,15 @@ if (data_submitted()) {
     if ($subscribe) {
         $users = $subscriberselector->get_selected_users();
         foreach ($users as $user) {
-            if (!\mod_ouilforum\subscriptions::subscribe_user($user->id, $forum)) {
-                print_error('cannotaddsubscriber', 'ouilforum', '', $user->id);
+            if (!\mod_forumx\subscriptions::subscribe_user($user->id, $forum)) {
+                print_error('cannotaddsubscriber', 'forumx', '', $user->id);
             }
         }
     } else if ($unsubscribe) {
         $users = $existingselector->get_selected_users();
         foreach ($users as $user) {
-            if (!\mod_ouilforum\subscriptions::unsubscribe_user($user->id, $forum)) {
-                print_error('cannotremovesubscriber', 'ouilforum', '', $user->id);
+            if (!\mod_forumx\subscriptions::unsubscribe_user($user->id, $forum)) {
+                print_error('cannotremovesubscriber', 'forumx', '', $user->id);
             }
         }
     }
@@ -95,24 +95,24 @@ if (data_submitted()) {
     $subscriberselector->set_existing_subscribers($existingselector->find_users(''));
 }
 
-$strsubscribers = get_string("subscribers", "ouilforum");
+$strsubscribers = get_string("subscribers", "forumx");
 $PAGE->navbar->add($strsubscribers);
 $PAGE->set_title($strsubscribers);
 $PAGE->set_heading($COURSE->fullname);
-if (has_capability('mod/ouilforum:managesubscriptions', $context) && \mod_ouilforum\subscriptions::is_forcesubscribed($forum) === false) {
+if (has_capability('mod/forumx:managesubscriptions', $context) && \mod_forumx\subscriptions::is_forcesubscribed($forum) === false) {
     if ($edit != -1) {
         $USER->subscriptionsediting = $edit;
     }
-    $PAGE->set_button(ouilforum_update_subscriptions_button($course->id, $id));
+    $PAGE->set_button(forumx_update_subscriptions_button($course->id, $id));
 } else {
     unset($USER->subscriptionsediting);
 }
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('forum', 'ouilforum').' '.$strsubscribers);
+echo $OUTPUT->heading(get_string('forum', 'forumx').' '.$strsubscribers);
 if (empty($USER->subscriptionsediting)) {
-    $subscribers = \mod_ouilforum\subscriptions::fetch_subscribed_users($forum, $currentgroup, $context);
-    if (\mod_ouilforum\subscriptions::is_forcesubscribed($forum)) {
-        $subscribers = mod_ouilforum_filter_hidden_users($cm, $context, $subscribers);
+    $subscribers = \mod_forumx\subscriptions::fetch_subscribed_users($forum, $currentgroup, $context);
+    if (\mod_forumx\subscriptions::is_forcesubscribed($forum)) {
+        $subscribers = mod_forumx_filter_hidden_users($cm, $context, $subscribers);
     }
     echo $forumoutput->subscriber_overview($subscribers, $forum, $course);
 } else {
@@ -132,7 +132,7 @@ echo $OUTPUT->footer();
  * @param array $users the list of users to filter.
  * @return array the filtered list of users.
  */
-function mod_ouilforum_filter_hidden_users(stdClass $cm, context_module $context, array $users) {
+function mod_forumx_filter_hidden_users(stdClass $cm, context_module $context, array $users) {
     if ($cm->visible) {
         return $users;
     } else {

@@ -17,10 +17,10 @@
 /**
  * Forum event handler definition.
  *
- * @package mod_ouilforum
+ * @package mod_forumx
  * @category event
  * @copyright 2010 Petr Skoda  {@link http://skodak.org}
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,42 +29,42 @@ $observers = array(
 
     array(
         'eventname'   => '\core\event\user_enrolment_deleted',
-        'callback'    => 'mod_ouilforum_observer::user_enrolment_deleted',
+        'callback'    => 'mod_forumx_observer::user_enrolment_deleted',
     ),
 
     array(
         'eventname' => '\core\event\role_assigned',
-        'callback' => 'mod_ouilforum_observer::role_assigned'
+        'callback' => 'mod_forumx_observer::role_assigned'
     ),
 	array(
 			'eventname' => 'core\event\role_unassigned',
-			'callback' => 'mod_ouilforum_observer::role_unassigned'
+			'callback' => 'mod_forumx_observer::role_unassigned'
 	),
 
     array(
         'eventname' => '\core\event\course_module_created',
-        'callback'  => 'mod_ouilforum_observer::course_module_created',
+        'callback'  => 'mod_forumx_observer::course_module_created',
     ),
 		
 	array(
 		'eventname' => '\core\event\group_member_added',
-		'callback'  => 'mod_ouilforum_observer::group_member_added',
+		'callback'  => 'mod_forumx_observer::group_member_added',
 	),
 		
 	array(
 				'eventname' => '\core\event\group_member_removed',
-				'callback'  => 'mod_ouilforum_observer::group_member_removed',
+				'callback'  => 'mod_forumx_observer::group_member_removed',
 		),	
 	array(
 				'eventname' => '\core\event\grouping_updated',
-				'callback' => 'mod_ouilforum_observer::grouping_updated',
+				'callback' => 'mod_forumx_observer::grouping_updated',
 		),
 	array(
 				'eventname' => '\core\event\grouping_group_assigned',
-				'callback' => 'mod_ouilforum_observer::grouping_group_assigned',
+				'callback' => 'mod_forumx_observer::grouping_group_assigned',
 		),
 	array(
 				'eventname' => '\core\event\grouping_group_unassigned',
-				'callback' => 'mod_ouilforum_observer::grouping_group_unassigned',
+				'callback' => 'mod_forumx_observer::grouping_group_unassigned',
 		),		
 );

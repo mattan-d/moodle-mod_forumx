@@ -17,12 +17,12 @@
 /**
  * Forum paging bar.
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @copyright  2016 The Open University of Israel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_ouilforum;
+namespace mod_forumx;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -111,10 +111,10 @@ class paging_bar {
 	 */
 	public function prepare() {
 		$str = array(
-				'first' => get_string('pagingbar:first', 'ouilforum'),
-				'last'  => get_string('pagingbar:last', 'ouilforum'),
-				'next'  => get_string('pagingbar:next', 'ouilforum'),
-				'prev'  => get_string('pagingbar:previous', 'ouilforum')
+				'first' => get_string('pagingbar:first', 'forumx'),
+				'last'  => get_string('pagingbar:last', 'forumx'),
+				'next'  => get_string('pagingbar:next', 'forumx'),
+				'prev'  => get_string('pagingbar:previous', 'forumx')
 		);
 		if (!$this->totalamount)
 			return;
@@ -172,7 +172,7 @@ class paging_bar {
 			if ($lastpage > $page_group+$this->maxpaging) {
 				$this->pagelinks[] = \html_writer::link(new \moodle_url($this->base_url, array($this->pagevar=>($lastpage-1))), '&gt;&gt;', 
 														array('aria-label'=>$str['last'], 'rel'=>'last', 
-															'title'=>get_string('page', 'ouilforum').' '.$lastpage));
+															'title'=>get_string('page', 'forumx').' '.$lastpage));
 			}
 		}
 	}
@@ -189,8 +189,8 @@ class paging_bar {
 			foreach ($this->pagelinks as $link) {
 				$output.= '<li>'.$link.'</li>';
 			}
-			$output = '<span id="paginglabel'.self::$unique_id.'" class="for-sr">'.get_string('pagingbar', 'ouilforum').'</span>'.$output;
-			return \html_writer::tag('div', $output, array('class' => 'ouilforum_paging align_end'));
+			$output = '<span id="paginglabel'.self::$unique_id.'" class="for-sr">'.get_string('pagingbar', 'forumx').'</span>'.$output;
+			return \html_writer::tag('div', $output, array('class' => 'forumx_paging align_end'));
 		}
 	}
 }

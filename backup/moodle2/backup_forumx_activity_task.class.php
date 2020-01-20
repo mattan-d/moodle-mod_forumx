@@ -16,24 +16,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines backup_ouilforum_activity_task class
+ * Defines backup_forumx_activity_task class
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @category  backup
  * @copyright 2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/mod/ouilforum/backup/moodle2/backup_ouilforum_stepslib.php');
-require_once($CFG->dirroot.'/mod/ouilforum/backup/moodle2/backup_ouilforum_settingslib.php');
+require_once($CFG->dirroot.'/mod/forumx/backup/moodle2/backup_forumx_stepslib.php');
+require_once($CFG->dirroot.'/mod/forumx/backup/moodle2/backup_forumx_settingslib.php');
 
 /**
  * Provides the steps to perform one complete backup of the Forum instance
  */
-class backup_ouilforum_activity_task extends backup_activity_task {
+class backup_forumx_activity_task extends backup_activity_task {
 
     /**
      * No specific settings for this activity
@@ -42,10 +42,10 @@ class backup_ouilforum_activity_task extends backup_activity_task {
     }
 
     /**
-     * Defines a backup step to store the instance data in the ouilforum.xml file
+     * Defines a backup step to store the instance data in the forumx.xml file
      */
     protected function define_my_steps() {
-        $this->add_step(new backup_ouilforum_activity_structure_step('ouilforum structure', 'ouilforum.xml'));
+        $this->add_step(new backup_forumx_activity_structure_step('forumx structure', 'forumx.xml'));
     }
 
     /**
@@ -60,36 +60,36 @@ class backup_ouilforum_activity_task extends backup_activity_task {
         $base = preg_quote($CFG->wwwroot,"/");
 
         // Link to the list of forums.
-        $search="/(".$base."\/mod\/ouilforum\/index.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@OUILFORUMINDEX*$2@$', $content);
+        $search="/(".$base."\/mod\/forumx\/index.php\?id\=)([0-9]+)/";
+        $content= preg_replace($search, '$@forumxINDEX*$2@$', $content);
 
         // Link to forum view by moduleid.
-        $search="/(".$base."\/mod\/ouilforum\/view.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@OUILFORUMVIEWBYID*$2@$', $content);
+        $search="/(".$base."\/mod\/forumx\/view.php\?id\=)([0-9]+)/";
+        $content= preg_replace($search, '$@forumxVIEWBYID*$2@$', $content);
 
         // Link to forum view by forumid.
-        $search="/(".$base."\/mod\/ouilforum\/view.php\?f\=)([0-9]+)/";
-        $content= preg_replace($search, '$@OUILFORUMVIEWBYF*$2@$', $content);
+        $search="/(".$base."\/mod\/forumx\/view.php\?f\=)([0-9]+)/";
+        $content= preg_replace($search, '$@forumxVIEWBYF*$2@$', $content);
 
         // Link to forum discussion with parent syntax.
-        $search = "/(".$base."\/mod\/ouilforum\/discuss.php\?d\=)([0-9]+)(?:\&amp;|\&)parent\=([0-9]+)/";
-        $content= preg_replace($search, '$@OUILFORUMDISCUSSIONVIEWPARENT*$2*$3@$', $content);
+        $search = "/(".$base."\/mod\/forumx\/discuss.php\?d\=)([0-9]+)(?:\&amp;|\&)parent\=([0-9]+)/";
+        $content= preg_replace($search, '$@forumxDISCUSSIONVIEWPARENT*$2*$3@$', $content);
 
         // Link to forum discussion with post highlight and hash.
-        $search = "/(".$base."\/mod\/ouilforum\/discuss.php\?d\=)([0-9]+)(?:\&amp;|\&)p\=([0-9]+)\#p([0-9]+)/";
-        $content= preg_replace($search, '$@OUILFORUMDISCUSSIONVIEWPOSTHASH*$2*$3*$3@$', $content);
+        $search = "/(".$base."\/mod\/forumx\/discuss.php\?d\=)([0-9]+)(?:\&amp;|\&)p\=([0-9]+)\#p([0-9]+)/";
+        $content= preg_replace($search, '$@forumxDISCUSSIONVIEWPOSTHASH*$2*$3*$3@$', $content);
         
         // Link to forum discussion with post highlight.
-        $search = "/(".$base."\/mod\/ouilforum\/discuss.php\?d\=)([0-9]+)(?:\&amp;|\&)p\=([0-9]+)/";
-        $content= preg_replace($search, '$@OUILFORUMDISCUSSIONVIEWPOST*$2*$3@$', $content);
+        $search = "/(".$base."\/mod\/forumx\/discuss.php\?d\=)([0-9]+)(?:\&amp;|\&)p\=([0-9]+)/";
+        $content= preg_replace($search, '$@forumxDISCUSSIONVIEWPOST*$2*$3@$', $content);
         
         // Link to forum discussion with relative syntax.
-        $search="/(".$base."\/mod\/ouilforum\/discuss.php\?d\=)([0-9]+)\#([0-9]+)/";
-        $content= preg_replace($search, '$@OUILFORUMDISCUSSIONVIEWINSIDE*$2*$3@$', $content);
+        $search="/(".$base."\/mod\/forumx\/discuss.php\?d\=)([0-9]+)\#([0-9]+)/";
+        $content= preg_replace($search, '$@forumxDISCUSSIONVIEWINSIDE*$2*$3@$', $content);
 
         // Link to forum discussion by discussionid.
-        $search="/(".$base."\/mod\/ouilforum\/discuss.php\?d\=)([0-9]+)/";
-        $content= preg_replace($search, '$@OUILFORUMDISCUSSIONVIEW*$2@$', $content);
+        $search="/(".$base."\/mod\/forumx\/discuss.php\?d\=)([0-9]+)/";
+        $content= preg_replace($search, '$@forumxDISCUSSIONVIEW*$2@$', $content);
 
         return $content;
     }

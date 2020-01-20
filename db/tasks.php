@@ -17,10 +17,10 @@
 /**
  * Definition of Forum scheduled tasks.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @category  task
  * @copyright 2014 Dan Poltawski <dan@moodle.com>
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $tasks = array(
     array(
-        'classname' => 'mod_ouilforum\task\cron_task',
+        'classname' => 'mod_forumx\task\cron_task',
         'blocking' => 0,
         'minute' => '*',
         'hour' => '*',

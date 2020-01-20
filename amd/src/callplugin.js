@@ -16,13 +16,13 @@
 /**
  * This class calls the ouilsimplemenu class in a page.
  *
- * @module    mod_ouilforum/callplugin
- * @package   mod_ouilforum
- * @copyright 2018 onwards The Open University of Israel
+ * @module    mod_forumx/callplugin
+ * @package   mod_forumx
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since     3.1
  */
-define(['jquery', 'mod_ouilforum/ouilsimplemenu'], function($) {
+define(['jquery', 'mod_forumx/ouilsimplemenu'], function($) {
 
 	return {
 		init: function(params) {

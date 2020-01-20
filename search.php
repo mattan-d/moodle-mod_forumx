@@ -16,9 +16,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -82,16 +82,16 @@ if (empty($search)) { // Check the other parameters instead.
         $search.= ' forumid:'.$forumid;
     }
     if (!empty($user)) {
-        $search.= ' '.ouilforum_clean_search_terms($user, 'user:');
+        $search.= ' '.forumx_clean_search_terms($user, 'user:');
     }
     if (!empty($subject)) {
-        $search.= ' '.ouilforum_clean_search_terms($subject, 'subject:');
+        $search.= ' '.forumx_clean_search_terms($subject, 'subject:');
     }
     if (!empty($fullwords)) {
-        $search.= ' '.ouilforum_clean_search_terms($fullwords, '+');
+        $search.= ' '.forumx_clean_search_terms($fullwords, '+');
     }
     if (!empty($notwords)) {
-        $search .= ' '.ouilforum_clean_search_terms($notwords, '-');
+        $search .= ' '.forumx_clean_search_terms($notwords, '-');
     }
     if (!empty($phrase)) {
         $search.= ' "'.$phrase.'"';
@@ -108,7 +108,7 @@ if (empty($search)) { // Check the other parameters instead.
 }
 
 if ($search) {
-    $search = ouilforum_clean_search_terms($search);
+    $search = forumx_clean_search_terms($search);
 }
 
 if (!$course = $DB->get_record('course', array('id'=>$id))) {
@@ -122,24 +122,24 @@ $params = array(
     'other' => array('searchterm' => $search)
 );
 
-$event = \mod_ouilforum\event\course_searched::create($params);
+$event = \mod_forumx\event\course_searched::create($params);
 $event->trigger();
 
-$strforums = get_string("modulenameplural", "ouilforum");
-$strsearch = get_string("search", "ouilforum");
-$strsearchresults = get_string("searchresults", "ouilforum");
+$strforums = get_string("modulenameplural", "forumx");
+$strsearch = get_string("search", "forumx");
+$strsearchresults = get_string("searchresults", "forumx");
 $strpage = get_string("page");
 
 if (!$search || $showform) {
 
-    $PAGE->navbar->add($strforums, new moodle_url('/mod/ouilforum/index.php', array('id'=>$course->id)));
-    $PAGE->navbar->add(get_string('advancedsearch', 'ouilforum'));
+    $PAGE->navbar->add($strforums, new moodle_url('/mod/forumx/index.php', array('id'=>$course->id)));
+    $PAGE->navbar->add(get_string('advancedsearch', 'forumx'));
 
     $PAGE->set_title($strsearch);
     $PAGE->set_heading($course->fullname);
     echo $OUTPUT->header();
 
-    ouilforum_print_big_search_form($course);
+    forumx_print_big_search_form($course);
     echo $OUTPUT->footer();
     exit;
 }
@@ -149,23 +149,23 @@ if (!$search || $showform) {
 $searchterms = str_replace('forumid:', 'instance:', $search);
 $searchterms = explode(' ', $searchterms);
 
-$searchform = ouilforum_search_form($course, $search);
+$searchform = forumx_search_form($course, $search);
 
-$PAGE->navbar->add($strsearch, new moodle_url('/mod/ouilforum/search.php', array('id'=>$course->id)));
+$PAGE->navbar->add($strsearch, new moodle_url('/mod/forumx/search.php', array('id'=>$course->id)));
 $PAGE->navbar->add($strsearchresults);
-if (!$posts = ouilforum_search_posts($searchterms, $course->id, $page*$perpage, $perpage, $totalcount)) {
+if (!$posts = forumx_search_posts($searchterms, $course->id, $page*$perpage, $perpage, $totalcount)) {
     $PAGE->set_title($strsearchresults);
     $PAGE->set_heading($course->fullname);
     echo $OUTPUT->header();
     echo $OUTPUT->heading($strforums, 2);
     echo $OUTPUT->heading($strsearchresults, 3);
-    echo $OUTPUT->heading(get_string("noposts", "ouilforum"), 4);
+    echo $OUTPUT->heading(get_string("noposts", "forumx"), 4);
 
     if (!$individualparams) {
         $words = $search;
     }
 
-    ouilforum_print_big_search_form($course);
+    forumx_print_big_search_form($course);
 
     echo $OUTPUT->footer();
     exit;
@@ -176,7 +176,7 @@ require_once($CFG->dirroot.'/rating/lib.php');
 
 // Set up the ratings information that will be the same for all posts.
 $ratingoptions = new stdClass();
-$ratingoptions->component = 'mod_ouilforum';
+$ratingoptions->component = 'mod_forumx';
 $ratingoptions->ratingarea = 'post';
 $ratingoptions->userid = $USER->id;
 $ratingoptions->returnurl = $PAGE->url->out(false);
@@ -199,7 +199,7 @@ echo '<a href="search.php?id='.$course->id.
         '&amp;dateto='.$dateto.
         '&amp;datefrom='.$datefrom.
         '&amp;showform=1'.
-        '">'.get_string('advancedsearch','ouilforum').'...</a>';
+        '">'.get_string('advancedsearch','forumx').'...</a>';
 echo '</div>';
 
 echo $OUTPUT->heading($strforums, 2);
@@ -227,14 +227,14 @@ foreach ($posts as $post) {
 
     // Replace the simple subject with the three items forum name -> thread name -> subject
     // (if all three are appropriate) each as a link.
-    if (! $discussion = $DB->get_record('ouilforum_discussions', array('id' => $post->discussion))) {
-        print_error('invaliddiscussionid', 'ouilforum');
+    if (! $discussion = $DB->get_record('forumx_discussions', array('id' => $post->discussion))) {
+        print_error('invaliddiscussionid', 'forumx');
     }
-    if (! $forum = $DB->get_record('ouilforum', array('id' => "$discussion->ouilforum"))) {
-        print_error('invalidforumid', 'ouilforum');
+    if (! $forum = $DB->get_record('forumx', array('id' => "$discussion->forumx"))) {
+        print_error('invalidforumid', 'forumx');
     }
 
-    if (!$cm = get_coursemodule_from_instance('ouilforum', $forum->id)) {
+    if (!$cm = get_coursemodule_from_instance('forumx', $forum->id)) {
         print_error('invalidcoursemodule');
     }
 
@@ -270,7 +270,7 @@ foreach ($posts as $post) {
     }
 
     // Identify search terms only found in HTML markup, and add a warning about them to
-    // the start of the message text. However, do not do the highlighting here. ouilforum_print_post
+    // the start of the message text. However, do not do the highlighting here. forumx_print_post
     // will do it for us later.
     $missing_terms = "";
 
@@ -290,12 +290,12 @@ foreach ($posts as $post) {
     $post->message = str_replace('</fgw9sdpq4>', '</span>', $post->message);
 
     if ($missing_terms) {
-        $strmissingsearchterms = get_string('missingsearchterms','ouilforum');
+        $strmissingsearchterms = get_string('missingsearchterms','forumx');
         $post->message = '<p class="highlight2">'.$strmissingsearchterms.' '.$missing_terms.'</p>'.$post->message;
     }
 
     // Prepare a link to the post in context, to be displayed after the forum post.
-    $fulllink = "<a href=\"discuss.php?d=$post->discussion#p$post->id\">".get_string("postincontext", "ouilforum")."</a>";
+    $fulllink = "<a href=\"discuss.php?d=$post->discussion#p$post->id\">".get_string("postincontext", "forumx")."</a>";
 
     // Message is now html format.
     if ($post->messageformat != FORMAT_HTML) {
@@ -303,8 +303,8 @@ foreach ($posts as $post) {
     }
 
     // Now pring the post.
-    ouilforum_print_post($post, $discussion, $forum, $cm, $course, false, false, false, 
-    		$fulllink, '', -99, false, null, false, OUILFORUM_DISPLAY_OPEN_CLEAN, true);
+    forumx_print_post($post, $discussion, $forum, $cm, $course, false, false, false, 
+    		$fulllink, '', -99, false, null, false, forumx_DISPLAY_OPEN_CLEAN, true);
     
 }
 
@@ -319,43 +319,43 @@ echo $OUTPUT->footer();
   * @param stdClass $course The Course that will be searched.
   * @return void The function prints the form.
   */
-function ouilforum_print_big_search_form($course) {
+function forumx_print_big_search_form($course) {
     global $CFG, $DB, $words, $subject, $phrase, $user, $userid, $fullwords, $notwords, $datefrom, $dateto, $PAGE, $OUTPUT;
 
-    echo $OUTPUT->box(get_string('searchforumintro', 'ouilforum'), 'searchbox boxaligncenter', 'intro');
+    echo $OUTPUT->box(get_string('searchforumintro', 'forumx'), 'searchbox boxaligncenter', 'intro');
 
     echo $OUTPUT->box_start('generalbox boxaligncenter');
 
-    echo html_writer::script('', $CFG->wwwroot.'/mod/ouilforum/ouilforum.js');
+    echo html_writer::script('', $CFG->wwwroot.'/mod/forumx/forumx.js');
 
     echo '<form id="searchform" action="search.php" method="get">';
     echo '<table cellpadding="10" class="searchbox" id="form">';
 
     echo '<tr>';
-    echo '<td class="c0"><label for="words">'.get_string('searchwords', 'ouilforum').'</label>';
+    echo '<td class="c0"><label for="words">'.get_string('searchwords', 'forumx').'</label>';
     echo '<input type="hidden" value="'.$course->id.'" name="id" alt=""></td>';
     echo '<td class="c1"><input type="text" size="35" name="words" id="words" value="'.s($words, true).'" alt=""></td>';
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td class="c0"><label for="phrase">'.get_string('searchphrase', 'ouilforum').'</label></td>';
+    echo '<td class="c0"><label for="phrase">'.get_string('searchphrase', 'forumx').'</label></td>';
     echo '<td class="c1"><input type="text" size="35" name="phrase" id="phrase" value="'.s($phrase, true).'" alt=""></td>';
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td class="c0"><label for="notwords">'.get_string('searchnotwords', 'ouilforum').'</label></td>';
+    echo '<td class="c0"><label for="notwords">'.get_string('searchnotwords', 'forumx').'</label></td>';
     echo '<td class="c1"><input type="text" size="35" name="notwords" id="notwords" value="'.s($notwords, true).'" alt=""></td>';
     echo '</tr>';
 
     if ($DB->get_dbfamily() == 'mysql' || $DB->get_dbfamily() == 'postgres') {
         echo '<tr>';
-        echo '<td class="c0"><label for="fullwords">'.get_string('searchfullwords', 'ouilforum').'</label></td>';
+        echo '<td class="c0"><label for="fullwords">'.get_string('searchfullwords', 'forumx').'</label></td>';
         echo '<td class="c1"><input type="text" size="35" name="fullwords" id="fullwords" value="'.s($fullwords, true).'" alt=""></td>';
         echo '</tr>';
     }
 
     echo '<tr>';
-    echo '<td class="c0">'.get_string('searchdatefrom', 'ouilforum').'</td>';
+    echo '<td class="c0">'.get_string('searchdatefrom', 'forumx').'</td>';
     echo '<td class="c1">';
     if (empty($datefrom)) {
         $datefromchecked = '';
@@ -364,7 +364,7 @@ function ouilforum_print_big_search_form($course) {
         $datefromchecked = 'checked="checked"';
     }
 
-    echo '<input name="timefromrestrict" type="checkbox" value="1" alt="'.get_string('searchdatefrom', 'ouilforum').
+    echo '<input name="timefromrestrict" type="checkbox" value="1" alt="'.get_string('searchdatefrom', 'forumx').
     	'" onclick="return lockoptions(\'searchform\', \'timefromrestrict\', timefromitems)" '.$datefromchecked.'> ';
     $selectors = html_writer::select_time('days', 'fromday', $datefrom).
     			html_writer::select_time('months', 'frommonth', $datefrom).
@@ -382,7 +382,7 @@ function ouilforum_print_big_search_form($course) {
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td class="c0">'.get_string('searchdateto', 'ouilforum').'</td>';
+    echo '<td class="c0">'.get_string('searchdateto', 'forumx').'</td>';
     echo '<td class="c1">';
     if (empty($dateto)) {
         $datetochecked = '';
@@ -391,7 +391,7 @@ function ouilforum_print_big_search_form($course) {
         $datetochecked = 'checked="checked"';
     }
 
-    echo '<input name="timetorestrict" type="checkbox" value="1" alt="'.get_string('searchdateto', 'ouilforum').
+    echo '<input name="timetorestrict" type="checkbox" value="1" alt="'.get_string('searchdateto', 'forumx').
     	'" onclick="return lockoptions(\'searchform\', \'timetorestrict\', timetoitems)" '.$datetochecked.'> ';
     $selectors = html_writer::select_time('days', 'today', $dateto).
     			html_writer::select_time('months', 'tomonth', $dateto).
@@ -410,25 +410,25 @@ function ouilforum_print_big_search_form($course) {
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td class="c0"><label for="menuforumid">'.get_string('searchwhichforums', 'ouilforum').'</label></td>';
+    echo '<td class="c0"><label for="menuforumid">'.get_string('searchwhichforums', 'forumx').'</label></td>';
     echo '<td class="c1">';
-    echo html_writer::select(ouilforum_menu_list($course), 'forumid', '', array(''=>get_string('allforums', 'ouilforum')));
+    echo html_writer::select(forumx_menu_list($course), 'forumid', '', array(''=>get_string('allforums', 'forumx')));
     echo '</td>';
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td class="c0"><label for="subject">'.get_string('searchsubject', 'ouilforum').'</label></td>';
+    echo '<td class="c0"><label for="subject">'.get_string('searchsubject', 'forumx').'</label></td>';
     echo '<td class="c1"><input type="text" size="35" name="subject" id="subject" value="'.s($subject, true).'" alt=""></td>';
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td class="c0"><label for="user">'.get_string('searchuser', 'ouilforum').'</label></td>';
+    echo '<td class="c0"><label for="user">'.get_string('searchuser', 'forumx').'</label></td>';
     echo '<td class="c1"><input type="text" size="35" name="user" id="user" value="'.s($user, true).'" alt=""></td>';
     echo '</tr>';
 
     echo '<tr>';
     echo '<td class="submit" colspan="2" align="center">';
-    echo '<input type="submit" value="'.get_string('searchforums', 'ouilforum').'" alt=""></td>';
+    echo '<input type="submit" value="'.get_string('searchforums', 'forumx').'" alt=""></td>';
     echo '</tr>';
 
     echo '</table>';
@@ -450,7 +450,7 @@ function ouilforum_print_big_search_form($course) {
  * @return string The filtered search terms, separated by spaces.
  * @todo Take the hardcoded limit out of this function and put it into a user-specified parameter.
  */
-function ouilforum_clean_search_terms($words, $prefix='') {
+function forumx_clean_search_terms($words, $prefix='') {
     $searchterms = explode(' ', $words);
     foreach ($searchterms as $key => $searchterm) {
         if (strlen($searchterm) < 2) {
@@ -468,20 +468,20 @@ function ouilforum_clean_search_terms($words, $prefix='') {
   * @param stdClass $course The Course to use.
   * @return array A set of formatted forum names stored against the forum id.
   */
-function ouilforum_menu_list($course)  {
+function forumx_menu_list($course)  {
     $menu = array();
 
     $modinfo = get_fast_modinfo($course);
-    if (empty($modinfo->instances['ouilforum'])) {
+    if (empty($modinfo->instances['forumx'])) {
         return $menu;
     }
 
-    foreach ($modinfo->instances['ouilforum'] as $cm) {
+    foreach ($modinfo->instances['forumx'] as $cm) {
         if (!$cm->uservisible) {
             continue;
         }
         $context = context_module::instance($cm->id);
-        if (!has_capability('mod/ouilforum:viewdiscussion', $context)) {
+        if (!has_capability('mod/forumx:viewdiscussion', $context)) {
             continue;
         }
         $menu[$cm->instance] = format_string($cm->name);

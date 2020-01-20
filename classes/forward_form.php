@@ -18,7 +18,7 @@
 /**
  * File containing the form definition to forward a post in the forum.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2015 onwards The Open University of Israel
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -30,7 +30,7 @@ if (!defined('MOODLE_INTERNAL')) {
 
 require_once($CFG->libdir.'/formslib.php');
 
-class mod_ouilforum_forward_form extends moodleform {
+class mod_forumx_forward_form extends moodleform {
 
 	function definition() {
 		global $CFG, $OUTPUT, $DB;
@@ -39,40 +39,40 @@ class mod_ouilforum_forward_form extends moodleform {
 
         $course = $this->_customdata['course'];
         $cm = $this->_customdata['cm'];
-        $ouilforum = $this->_customdata['ouilforum'];
+        $forumx = $this->_customdata['forumx'];
         $post = $this->_customdata['post'];
         
         $modcontext = context_module::instance($cm->id);
         $mform->addElement('header', 'forward_data', "123");
-        $mform->addElement('text', 'email', get_string('forwardemailaddress', 'ouilforum'), array('size'=>48));
+        $mform->addElement('text', 'email', get_string('forwardemailaddress', 'forumx'), array('size'=>48));
         $mform->setType('email', PARAM_EMAIL);
         $mform->addRule('email', get_string('required'), 'required', null, 'client');
         $mform->addRule('email', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addRule('email', get_string('invalidemail'), 'email', null, 'client');
-        $mform->addRule('email', get_string('useremaildontexist', 'ouilforum'), 'required', null, 'server');
-        $mform->addHelpButton('email', 'forwardemailaddress', 'ouilforum');
+        $mform->addRule('email', get_string('useremaildontexist', 'forumx'), 'required', null, 'server');
+        $mform->addHelpButton('email', 'forwardemailaddress', 'forumx');
         
-        $mform->addElement('checkbox', 'ccme', get_string('forwardccme', 'ouilforum'));
+        $mform->addElement('checkbox', 'ccme', get_string('forwardccme', 'forumx'));
         
-        $mform->addElement('text', 'subject', get_string('subject', 'ouilforum'), array('size'=>48));
+        $mform->addElement('text', 'subject', get_string('subject', 'forumx'), array('size'=>48));
         $mform->setType('subject', PARAM_TEXT);
         $mform->addRule('subject', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addRule('subject', get_string('required'), 'required', null, 'client');
         $mform->setDefault('subject', $this->_customdata['subject']);
         
-        $mform->addElement('editor', 'message', get_string('forwardintro', 'ouilforum'), null);
+        $mform->addElement('editor', 'message', get_string('forwardintro', 'forumx'), null);
         $mform->setType('message', PARAM_RAW);
         $mform->addRule('message', get_string('required'), 'required', null, 'client');
-        $mform->addHelpButton('message', 'forwardintro', 'ouilforum');
+        $mform->addHelpButton('message', 'forwardintro', 'forumx');
         
-    	$mform->addElement('hidden', 'f', $ouilforum->id);
+    	$mform->addElement('hidden', 'f', $forumx->id);
     	$mform->setType('f', PARAM_INT);
     	$mform->addElement('hidden', 'postid', $post->id);
     	$mform->setType('postid', PARAM_INT);
     	$mform->addElement('hidden', 'format', FORMAT_HTML);
     	$mform->setType('format', PARAM_INT);
 
-    	$this->add_action_buttons(true, get_string('forwardbymail', 'ouilforum'));
+    	$this->add_action_buttons(true, get_string('forwardbymail', 'forumx'));
 		
 	}
 	
@@ -81,7 +81,7 @@ class mod_ouilforum_forward_form extends moodleform {
 		$errors = parent::validation($data, $files);
 		
 		if (!$DB->record_exists('user', array('email'=>$data['email']))) {
-			$errors['email'] = get_string('useremaildontexist', 'ouilforum');
+			$errors['email'] = get_string('useremaildontexist', 'forumx');
 		}
 		return $errors;
 	}

@@ -17,12 +17,12 @@
 /**
  * Forum post renderable.
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @copyright  2015 Andrew Nicols <andrew@nicols.co.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_ouilforum\output;
+namespace mod_forumx\output;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @property boolean $viewfullnames Whether to override fullname()
  */
-class ouilforum_post implements \renderable, \templatable {
+class forumx_post implements \renderable, \templatable {
 
     /**
      * The course that the forum post is in.
@@ -148,10 +148,10 @@ class ouilforum_post implements \renderable, \templatable {
     /**
      * Export this data so it can be used as the context for a mustache template.
      *
-     * @param \mod_ouilforum_renderer $renderer The render to be used for formatting the message and attachments
+     * @param \mod_forumx_renderer $renderer The render to be used for formatting the message and attachments
      * @return stdClass Data ready for use in a mustache template
      */
-    protected function export_for_template_text(\mod_ouilforum_renderer $renderer) {
+    protected function export_for_template_text(\mod_forumx_renderer $renderer) {
         return array(
             'id'                            => html_entity_decode($this->post->id),
             'coursename'                    => html_entity_decode($this->get_coursename()),
@@ -190,10 +190,10 @@ class ouilforum_post implements \renderable, \templatable {
     /**
      * Export this data so it can be used as the context for a mustache template.
      *
-     * @param \mod_ouilforum_renderer $renderer The render to be used for formatting the message and attachments
+     * @param \mod_forumx_renderer $renderer The render to be used for formatting the message and attachments
      * @return stdClass Data ready for use in a mustache template
      */
-    protected function export_for_template_html(\mod_ouilforum_renderer $renderer) {
+    protected function export_for_template_html(\mod_forumx_renderer $renderer) {
         return array(
             'id'                            => $this->post->id,
             'coursename'                    => $this->get_coursename(),
@@ -284,7 +284,7 @@ class ouilforum_post implements \renderable, \templatable {
     public function get_forumindexlink() {
         $link = new \moodle_url(
             // Posts are viewed on the topic.
-            '/mod/ouilforum/index.php', array(
+            '/mod/forumx/index.php', array(
                 'id'    => $this->course->id,
             )
         );
@@ -300,7 +300,7 @@ class ouilforum_post implements \renderable, \templatable {
     public function get_forumviewlink() {
         $link = new \moodle_url(
             // Posts are viewed on the topic.
-            '/mod/ouilforum/view.php', array(
+            '/mod/forumx/view.php', array(
                 'f' => $this->forum->id,
             )
         );
@@ -316,7 +316,7 @@ class ouilforum_post implements \renderable, \templatable {
     protected function _get_discussionlink() {
         return new \moodle_url(
             // Posts are viewed on the topic.
-            '/mod/ouilforum/discuss.php', array(
+            '/mod/forumx/discuss.php', array(
                 // Within a discussion.
                 'd' => $this->discussion->id,
             )
@@ -381,7 +381,7 @@ class ouilforum_post implements \renderable, \templatable {
      */
     public function get_unsubscribeforumlink() {
         $link = new \moodle_url(
-            '/mod/ouilforum/subscribe.php', array(
+            '/mod/forumx/subscribe.php', array(
                 'id' => $this->forum->id,
             )
         );
@@ -396,7 +396,7 @@ class ouilforum_post implements \renderable, \templatable {
      */
     public function get_unsubscribediscussionlink() {
         $link = new \moodle_url(
-            '/mod/ouilforum/subscribe.php', array(
+            '/mod/forumx/subscribe.php', array(
                 'id'  => $this->forum->id,
                 'd'   => $this->discussion->id,
             )
@@ -412,7 +412,7 @@ class ouilforum_post implements \renderable, \templatable {
      */
     public function get_replylink() {
         return new \moodle_url(
-            '/mod/ouilforum/post.php', array(
+            '/mod/forumx/post.php', array(
                 'reply' => $this->post->id,
             )
         );
@@ -425,7 +425,7 @@ class ouilforum_post implements \renderable, \templatable {
      */
     public function get_quickreplylink() {
         return new \moodle_url(
-            '/mod/ouilforum/discuss.php', array(
+            '/mod/forumx/discuss.php', array(
                 // Within a discussion.
                 'd' => $this->discussion->id,
             	'r' => $this->post->id
@@ -535,7 +535,7 @@ class ouilforum_post implements \renderable, \templatable {
         global $CFG;
 
         $postmodified = $this->post->modified;
-        if (!empty($CFG->ouilforum_enabletimedposts) && ($this->discussion->timestart > $postmodified)) {
+        if (!empty($CFG->forumx_enabletimedposts) && ($this->discussion->timestart > $postmodified)) {
             $postmodified = $this->discussion->timestart;
         }
 

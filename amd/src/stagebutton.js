@@ -17,9 +17,9 @@
  * This class manages stagebutton component.
  * This component can change its behavior from a standard button to a menu button. 
  *
- * @module    mod_ouilforum/stagebutton
- * @package   mod_ouilforum
- * @copyright 2018 onwards The Open University of Israel
+ * @module    mod_forumx/stagebutton
+ * @package   mod_forumx
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since     3.1
  */
@@ -136,11 +136,11 @@ define(['jquery', 'core/str'], function($, s) {
 		s.get_strings([
             {
             	key:        'button:activate',
-            	component:  'ouilforum'
+            	component:  'forumx'
             },
             {
             	key:        'button:deactivate',
-            	component:  'ouilforum'
+            	component:  'forumx'
             }
 		]).done(function(s) {
 			PARAMS.str.activate = s[0];

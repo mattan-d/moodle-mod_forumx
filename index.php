@@ -16,20 +16,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(__FILE__).'/../../config.php');
 require_once($CFG->dirroot.'/course/lib.php');
-require_once($CFG->dirroot.'/mod/ouilforum/lib.php');
+require_once($CFG->dirroot.'/mod/forumx/lib.php');
 require_once($CFG->libdir.'/rsslib.php');
 
 $id = optional_param('id', 0, PARAM_INT); // Course id.
 
-$url = new moodle_url('/mod/ouilforum/index.php', array('id'=>$id));
+$url = new moodle_url('/mod/forumx/index.php', array('id'=>$id));
 $PAGE->set_url($url);
 
 if ($id) {
@@ -47,35 +47,35 @@ $coursecontext = context_course::instance($course->id);
 $params = array(
     'context' => context_course::instance($course->id)
 );
-$event = \mod_ouilforum\event\course_module_instance_list_viewed::create($params);
+$event = \mod_forumx\event\course_module_instance_list_viewed::create($params);
 $event->add_record_snapshot('course', $course);
 $event->trigger();
 
-$strforums       = get_string('forums', 'ouilforum');
-$strforum        = get_string('forum', 'ouilforum');
+$strforums       = get_string('forums', 'forumx');
+$strforum        = get_string('forum', 'forumx');
 $strdescription  = get_string('description');
-$strdiscussions  = get_string('discussions', 'ouilforum');
-$strsubscribed   = get_string('subscribed', 'ouilforum');
-$strunreadposts  = get_string('unreadposts', 'ouilforum');
-$strtracking     = get_string('tracking', 'ouilforum');
-$strmarkallread  = get_string('markallread', 'ouilforum');
-$strtrackforum   = get_string('trackforum', 'ouilforum');
-$strnotrackforum = get_string('notrackforum', 'ouilforum');
-$strsubscribe    = get_string('subscribe', 'ouilforum');
-$strunsubscribe  = get_string('unsubscribe', 'ouilforum');
+$strdiscussions  = get_string('discussions', 'forumx');
+$strsubscribed   = get_string('subscribed', 'forumx');
+$strunreadposts  = get_string('unreadposts', 'forumx');
+$strtracking     = get_string('tracking', 'forumx');
+$strmarkallread  = get_string('markallread', 'forumx');
+$strtrackforum   = get_string('trackforum', 'forumx');
+$strnotrackforum = get_string('notrackforum', 'forumx');
+$strsubscribe    = get_string('subscribe', 'forumx');
+$strunsubscribe  = get_string('unsubscribe', 'forumx');
 $stryes          = get_string('yes');
 $strno           = get_string('no');
 $strrss          = get_string('rss');
 $stremaildigest  = get_string('emaildigest');
-$strsubscribeyes = get_string('subscribeyes', 'ouilforum');
-$strsubscribeno  = get_string('subscribeno', 'ouilforum');
-$strtrackyes     = get_string('trackyes', 'ouilforum');
-$strtrackno      = get_string('trackno', 'ouilforum');
+$strsubscribeyes = get_string('subscribeyes', 'forumx');
+$strsubscribeno  = get_string('subscribeno', 'forumx');
+$strtrackyes     = get_string('trackyes', 'forumx');
+$strtrackno      = get_string('trackno', 'forumx');
 
 
 // Retrieve the list of forum digest options for later.
-$digestoptions = ouilforum_get_user_digest_options();
-$digestoptions_selector = new single_select(new moodle_url('/mod/ouilforum/maildigest.php',
+$digestoptions = forumx_get_user_digest_options();
+$digestoptions_selector = new single_select(new moodle_url('/mod/forumx/maildigest.php',
     array(
         'backtoindex' => 1,
     )),
@@ -91,18 +91,18 @@ $generaltable = new html_table();
 $generaltable->head  = array($strforum, $strdescription, $strdiscussions);
 $generaltable->align = array('left', 'left', 'center');
 
-if ($usetracking = ouilforum_tp_can_track_forums()) {
-    $untracked = ouilforum_tp_get_untracked_forums($USER->id, $course->id);
+if ($usetracking = forumx_tp_can_track_forums()) {
+    $untracked = forumx_tp_get_untracked_forums($USER->id, $course->id);
 }
 
 // Fill the subscription cache for this course and user combination.
-\mod_ouilforum\subscriptions::fill_subscription_cache_for_course($course->id, $USER->id);
+\mod_forumx\subscriptions::fill_subscription_cache_for_course($course->id, $USER->id);
 
-$can_subscribe = !isguestuser() && isloggedin() && has_capability('mod/ouilforum:viewdiscussion', $coursecontext);
+$can_subscribe = !isguestuser() && isloggedin() && has_capability('mod/forumx:viewdiscussion', $coursecontext);
 
 $show_rss = (($can_subscribe || $course->id == SITEID) &&
-                 isset($CFG->enablerssfeeds) && isset($CFG->ouilforum_enablerssfeeds) &&
-                 $CFG->enablerssfeeds && $CFG->ouilforum_enablerssfeeds);
+                 isset($CFG->enablerssfeeds) && isset($CFG->forumx_enablerssfeeds) &&
+                 $CFG->enablerssfeeds && $CFG->forumx_enablerssfeeds);
 
 $usesections = course_format_uses_sections($course->format);
 
@@ -112,8 +112,8 @@ $usesections = course_format_uses_sections($course->format);
 
 $forums = $DB->get_records_sql('SELECT f.*,
            d.maildigest
-      FROM {ouilforum} f
- LEFT JOIN {ouilforum_digests} d ON d.ouilforum = f.id AND d.userid = ?
+      FROM {forumx} f
+ LEFT JOIN {forumx_digests} d ON d.forumx = f.id AND d.userid = ?
      WHERE f.course = ?', 
 		array($USER->id, $course->id));
 
@@ -121,7 +121,7 @@ $forumslist = array('generalforums' => array(), 'learningforums' => array());
 $forumsoutput = array('generalforums' => array(), 'learningforums' => array());
 $modinfo = get_fast_modinfo($course);
 
-foreach ($modinfo->get_instances_of('ouilforum') as $forumid=>$cm) {
+foreach ($modinfo->get_instances_of('forumx') as $forumid=>$cm) {
     if (!$cm->uservisible or !isset($forums[$forumid])) {
         continue;
     }
@@ -132,7 +132,7 @@ foreach ($modinfo->get_instances_of('ouilforum') as $forumid=>$cm) {
         continue; // Shouldn't happen.
     }
 
-    if (!has_capability('mod/ouilforum:viewdiscussion', $context)) {
+    if (!has_capability('mod/forumx:viewdiscussion', $context)) {
         continue;
     }
 
@@ -157,28 +157,28 @@ $track_count = 0;
 foreach ($forumslist as $forumtype=>$typelist) {
 	foreach ($typelist as $forum) {
 		$trackunread = 0;
-		$cm      = $modinfo->instances['ouilforum'][$forum->id];
+		$cm      = $modinfo->instances['forumx'][$forum->id];
 		$context = context_module::instance($cm->id);
 
-		$count = ouilforum_count_discussions($forum, $cm, $course);
+		$count = forumx_count_discussions($forum, $cm, $course);
 		
 		if ($usetracking) {
-			if ($forum->trackingtype == OUILFORUM_TRACKING_OFF) {
+			if ($forum->trackingtype == forumx_TRACKING_OFF) {
 			} else {
 				if (isset($untracked[$forum->id])) {
-				} else if ($unread = ouilforum_tp_count_forum_unread_posts($cm, $course)) {
+				} else if ($unread = forumx_tp_count_forum_unread_posts($cm, $course)) {
 					$track_count++;
 					$trackunread = $unread;
 				} else {
 					$track_count++;
 				}
 		
-				if (($forum->trackingtype == OUILFORUM_TRACKING_FORCED) && ($CFG->ouilforum_allowforcedreadtracking)) {
-				} else if ($forum->trackingtype === OUILFORUM_TRACKING_OFF || ($USER->trackforums == 0)) {
+				if (($forum->trackingtype == forumx_TRACKING_FORCED) && ($CFG->forumx_allowforcedreadtracking)) {
+				} else if ($forum->trackingtype === forumx_TRACKING_OFF || ($USER->trackforums == 0)) {
 				}
 			}
 		}
-		$forum->intro = format_module_intro('ouilforum', $forum, $cm->id);
+		$forum->intro = format_module_intro('forumx', $forum, $cm->id);
 		$forumname = format_string($forum->name, true);
 		
 		if ($cm->visible) {
@@ -189,7 +189,7 @@ foreach ($forumslist as $forumtype=>$typelist) {
 		$forumlink = "<a href=\"view.php?f=$forum->id\" $style>".format_string($forum->name,true)."</a>";
 		$discussionlink = "<a href=\"view.php?f=$forum->id\" $style>".$count."</a>";
 		
-	    $lastupdate = ouilforum_get_last_forum_update($cm, $course);
+	    $lastupdate = forumx_get_last_forum_update($cm, $course);
 	    // If forum has no discussion, set the forum's updata date.
 	    if ($lastupdate == 0) {
 	    	$lastupdate = $forum->timemodified;
@@ -205,7 +205,7 @@ foreach ($forumslist as $forumtype=>$typelist) {
 	    		'unread'=>$trackunread,
 	    		'lastupdate'=>$lastupdate,
 	    		'cansubscribe'=>$can_subscribe,
-	    		'locked'=>ouilforum_is_forum_locked($forum)
+	    		'locked'=>forumx_is_forum_locked($forum)
 	    );
 	    // TODO: Set digest option in the interface.
         // If this forum has RSS activated, calculate it.
@@ -213,9 +213,9 @@ foreach ($forumslist as $forumtype=>$typelist) {
         	if ($forum->rsstype and $forum->rssarticles) {
         		//Calculate the tooltip text
         		if ($forum->rsstype == 1) {
-        			$tooltiptext = get_string('rsssubscriberssdiscussions', 'ouilforum');
+        			$tooltiptext = get_string('rsssubscriberssdiscussions', 'forumx');
         		} else {
-        			$tooltiptext = get_string('rsssubscriberssposts', 'ouilforum');
+        			$tooltiptext = get_string('rsssubscriberssposts', 'forumx');
         		}
         
         		if (!isloggedin() && $course->id == SITEID) {
@@ -224,7 +224,7 @@ foreach ($forumslist as $forumtype=>$typelist) {
         			$userid = $USER->id;
         		}
         		// Get html code for RSS link.
-        		$roww['rss'] = rss_get_link($context->id, $userid, 'mod_ouilforum', $forum->id, $tooltiptext);
+        		$roww['rss'] = rss_get_link($context->id, $userid, 'mod_forumx', $forum->id, $tooltiptext);
         	} else {
         	}
         }
@@ -232,8 +232,8 @@ foreach ($forumslist as $forumtype=>$typelist) {
         
 	}
 }
-ouilforum_add_desktop_styles();
-$PAGE->requires->js_call_amd('mod_ouilforum/forumindex', 'init', array(array(
+forumx_add_desktop_styles();
+$PAGE->requires->js_call_amd('mod_forumx/forumindex', 'init', array(array(
 		'course'=>$course->id
 )));
 $PAGE->requires->strings_for_js(array(
@@ -242,24 +242,24 @@ $PAGE->requires->strings_for_js(array(
 		'tracking:yes', 'tracking:yeslabel', 'confirm', 'unreadposts', 'markallread',
 		'subscribeforumindex:no', 'subscribeforumindex:nolabel', 'subscribeforumindex:yes', 'subscribeforumindex:yeslabel',
 		'trackingindex:no', 'trackingindex:nolabel', 'trackingindex:yes', 'trackingindex:yeslabel')
-		, 'ouilforum');
+		, 'forumx');
 
 // Output the page.
 $PAGE->navbar->add($strforums);
 $PAGE->set_title("$course->shortname: $strforums");
-$PAGE->add_body_class('path-mod-ouilforum2');
+$PAGE->add_body_class('path-mod-forumx2');
 $PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
-echo ouilforum_print_top_panel($course, '', false);
+echo forumx_print_top_panel($course, '', false);
 
-echo $OUTPUT->heading(get_string('forumslist', 'ouilforum'), 2, 'forum_index_title');
-echo ouilforum_print_top_buttons_index_menu($can_subscribe, $usetracking);
+echo $OUTPUT->heading(get_string('forumslist', 'forumx'), 2, 'forum_index_title');
+echo forumx_print_top_buttons_index_menu($can_subscribe, $usetracking);
 if (!empty($forumsoutput['generalforums'])) {
-	echo ouilforum_print_forums_list($forumsoutput['generalforums'], get_string('generalforums', 'ouilforum'));
+	echo forumx_print_forums_list($forumsoutput['generalforums'], get_string('generalforums', 'forumx'));
 }
 
 if (!empty($forumsoutput['learningforums'])) {
-	echo ouilforum_print_forums_list($forumsoutput['learningforums'], get_string('learningforums', 'ouilforum'));
+	echo forumx_print_forums_list($forumsoutput['learningforums'], get_string('learningforums', 'forumx'));
 }
 
 echo $OUTPUT->footer();

@@ -17,12 +17,12 @@
 /**
  * Forum subscription manager.
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @copyright  2014 Andrew Nicols <andrew@nicols.co.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_ouilforum;
+namespace mod_forumx;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -39,7 +39,7 @@ class subscriptions {
      *
      * @var int
      */
-    const OUILFORUM_DISCUSSION_UNSUBSCRIBED = -1;
+    const forumx_DISCUSSION_UNSUBSCRIBED = -1;
 
     /**
      * The subscription cache for forums.
@@ -156,7 +156,7 @@ class subscriptions {
     	// A single forum.
     	if (isset($forumid)) {
     		if (!isset(self::$digestcache[$userid][$forumid])) {
-    			if (!$digest = $DB->get_record('ouilforum_digests', array('userid'=>$userid, 'ouilforum'=>$forumid))) {
+    			if (!$digest = $DB->get_record('forumx_digests', array('userid'=>$userid, 'forumx'=>$forumid))) {
     				self::$digestcache[$userid][$forumid] = 0;
     			} else {
     				self::$digestcache[$userid][$forumid] = $digest->maildigest;
@@ -166,13 +166,13 @@ class subscriptions {
     	}
     	// All forums in course.
     	else if (isset($courseid)) {
-    		$sql = 'SELECT f.id, d.ouilforum, d.userid, d.maildigest  
-	FROM {ouilforum} f
+    		$sql = 'SELECT f.id, d.forumx, d.userid, d.maildigest  
+	FROM {forumx} f
 	LEFT JOIN (
-		SELECT userid, ouilforum, maildigest
-			FROM {ouilforum_digests}
+		SELECT userid, forumx, maildigest
+			FROM {forumx_digests}
 			WHERE userid=?
-	) d ON (f.id = d.ouilforum)
+	) d ON (f.id = d.forumx)
 	WHERE f.course=?';
 
     		if ($forums = $DB->get_records_sql($sql, array($userid, $courseid))) {
@@ -205,9 +205,9 @@ class subscriptions {
         // If forum is force subscribed and has allowforcesubscribe, then user is subscribed.
         if (self::is_forcesubscribed($forum)) {
             if (!$cm) {
-                $cm = get_fast_modinfo($forum->course)->instances['ouilforum'][$forum->id];
+                $cm = get_fast_modinfo($forum->course)->instances['forumx'][$forum->id];
             }
-            if (has_capability('mod/ouilforum:allowforcesubscribe', \context_module::instance($cm->id), $userid)) {
+            if (has_capability('mod/forumx:allowforcesubscribe', \context_module::instance($cm->id), $userid)) {
                 return true;
             }
         }
@@ -220,7 +220,7 @@ class subscriptions {
 
         // Check whether there is a record for this discussion subscription.
         if (isset($subscriptions[$discussionid])) {
-            return ($subscriptions[$discussionid] != self::OUILFORUM_DISCUSSION_UNSUBSCRIBED);
+            return ($subscriptions[$discussionid] != self::forumx_DISCUSSION_UNSUBSCRIBED);
         }
 
         return self::is_subscribed_to_forum($userid, $forum);
@@ -245,7 +245,7 @@ class subscriptions {
      * @return bool
      */
     public static function is_forcesubscribed($forum) {
-        return ($forum->forcesubscribe == OUILFORUM_FORCESUBSCRIBE);
+        return ($forum->forcesubscribe == forumx_FORCESUBSCRIBE);
     }
 
     /**
@@ -255,7 +255,7 @@ class subscriptions {
      * @return bool
      */
     public static function subscription_disabled($forum) {
-        return ($forum->forcesubscribe == OUILFORUM_DISALLOWSUBSCRIBE);
+        return ($forum->forcesubscribe == forumx_DISALLOWSUBSCRIBE);
     }
 
     /**
@@ -265,14 +265,14 @@ class subscriptions {
      * @return bool
      */
     public static function is_subscribable($forum) {
-        return (!\mod_ouilforum\subscriptions::is_forcesubscribed($forum) &&
-                !\mod_ouilforum\subscriptions::subscription_disabled($forum));
+        return (!\mod_forumx\subscriptions::is_forcesubscribed($forum) &&
+                !\mod_forumx\subscriptions::subscription_disabled($forum));
     }
 
     /**
      * Set the forum subscription mode.
      *
-     * By default when called without options, this is set to OUILFORUM_FORCESUBSCRIBE.
+     * By default when called without options, this is set to forumx_FORCESUBSCRIBE.
      *
      * @param \stdClass $forum The record of the forum to set
      * @param int $status The new subscription state
@@ -280,7 +280,7 @@ class subscriptions {
      */
     public static function set_subscription_mode($forumid, $status = 1) {
         global $DB;
-        return $DB->set_field("ouilforum", "forcesubscribe", $status, array("id" => $forumid));
+        return $DB->set_field("forumx", "forcesubscribe", $status, array("id" => $forumid));
     }
 
     /**
@@ -317,18 +317,18 @@ class subscriptions {
         // It is possible for users to be subscribed to a forum in subscription disallowed mode so they must be listed
         // here so that that can be unsubscribed from.
         $sql = "SELECT f.id, cm.id as cm, cm.visible, f.course
-                FROM {ouilforum} f
+                FROM {forumx} f
                 JOIN {course_modules} cm ON cm.instance = f.id
                 JOIN {modules} m ON m.name = :modulename AND m.id = cm.module
-                LEFT JOIN {ouilforum_subscriptions} fs ON (fs.ouilforum = f.id AND fs.userid = :userid)
+                LEFT JOIN {forumx_subscriptions} fs ON (fs.forumx = f.id AND fs.userid = :userid)
                 WHERE f.forcesubscribe <> :forcesubscribe
                 AND fs.id IS NOT NULL
                 AND cm.course
                 $coursesql";
         $params = array_merge($courseparams, array(
-            'modulename'=>'ouilforum',
+            'modulename'=>'forumx',
             'userid' => $USER->id,
-            'forcesubscribe' => OUILFORUM_FORCESUBSCRIBE,
+            'forcesubscribe' => forumx_FORCESUBSCRIBE,
         ));
         $forums = $DB->get_recordset_sql($sql, $params);
 
@@ -363,7 +363,7 @@ class subscriptions {
         global $DB;
 
         // Only active enrolled users or everybody on the frontpage.
-        list($esql, $params) = get_enrolled_sql($context, 'mod/ouilforum:allowforcesubscribe', $groupid, true);
+        list($esql, $params) = get_enrolled_sql($context, 'mod/forumx:allowforcesubscribe', $groupid, true);
         if (!$sort) {
             list($sort, $sortparams) = users_order_by_sql('u');
             $params = array_merge($params, $sortparams);
@@ -418,9 +418,9 @@ class subscriptions {
                 }
 
                 if (!isset(self::$forumcache[$userid][$forumid])) {
-                    if ($DB->record_exists('ouilforum_subscriptions', array(
+                    if ($DB->record_exists('forumx_subscriptions', array(
                         'userid' => $userid,
-                        'ouilforum' => $forumid,
+                        'forumx' => $forumid,
                     ))) {
                         self::$forumcache[$userid][$forumid] = true;
                     } else {
@@ -428,8 +428,8 @@ class subscriptions {
                     }
                 }
             } else {
-                $subscriptions = $DB->get_recordset('ouilforum_subscriptions', array(
-                    'ouilforum' => $forumid,
+                $subscriptions = $DB->get_recordset('forumx_subscriptions', array(
+                    'forumx' => $forumid,
                 ), '', 'id, userid');
                 foreach ($subscriptions as $id => $data) {
                     if (!isset(self::$forumcache[$data->userid])) {
@@ -460,15 +460,15 @@ class subscriptions {
         $sql = "SELECT
                     f.id AS forumid,
                     s.id AS subscriptionid
-                FROM {ouilforum} f
-                LEFT JOIN {ouilforum_subscriptions} s ON (s.ouilforum = f.id AND s.userid = :userid)
+                FROM {forumx} f
+                LEFT JOIN {forumx_subscriptions} s ON (s.forumx = f.id AND s.userid = :userid)
                 WHERE f.course = :course
                 AND f.forcesubscribe <> :subscriptionforced";
 
         $subscriptions = $DB->get_recordset_sql($sql, array(
             'course' => $courseid,
             'userid' => $userid,
-            'subscriptionforced' => OUILFORUM_FORCESUBSCRIBE,
+            'subscriptionforced' => forumx_FORCESUBSCRIBE,
         ));
 
         foreach ($subscriptions as $id => $data) {
@@ -515,10 +515,10 @@ class subscriptions {
         }
 
         // Retrieve the forum context if it wasn't specified.
-        $context = ouilforum_get_context($forum->id, $context);
+        $context = forumx_get_context($forum->id, $context);
 
         if (self::is_forcesubscribed($forum)) {
-            $results = \mod_ouilforum\subscriptions::get_potential_subscribers($context, $groupid, $fields, "u.email ASC");
+            $results = \mod_forumx\subscriptions::get_potential_subscribers($context, $groupid, $fields, "u.email ASC");
 
         } else {
             // Only active enrolled users or everybody on the frontpage.
@@ -528,15 +528,15 @@ class subscriptions {
             if ($includediscussionsubscriptions) {
                 $params['sforumid'] = $forum->id;
                 $params['dsforumid'] = $forum->id;
-                $params['unsubscribed'] = self::OUILFORUM_DISCUSSION_UNSUBSCRIBED;
+                $params['unsubscribed'] = self::forumx_DISCUSSION_UNSUBSCRIBED;
 
                 $sql = "SELECT $fields
                         FROM (
-                            SELECT userid FROM {ouilforum_subscriptions} s
+                            SELECT userid FROM {forumx_subscriptions} s
                             WHERE
-                                s.ouilforum = :sforumid
+                                s.forumx = :sforumid
                                 UNION
-                            SELECT userid FROM {ouilforum_discussion_sub} ds
+                            SELECT userid FROM {forumx_discussion_sub} ds
                             WHERE
                                 ds.forumid = :dsforumid
                         ) subscriptions
@@ -548,9 +548,9 @@ class subscriptions {
                 $sql = "SELECT $fields
                         FROM {user} u
                         JOIN ($esql) je ON je.id = u.id
-                        JOIN {ouilforum_subscriptions} s ON s.userid = u.id
+                        JOIN {forumx_subscriptions} s ON s.userid = u.id
                         WHERE
-                          s.ouilforum = :forumid
+                          s.forumx = :forumid
                         ORDER BY u.email ASC";
             }
             $results = $DB->get_records_sql($sql, $params);
@@ -560,7 +560,7 @@ class subscriptions {
         unset($results[$CFG->siteguest]);
 
         // Apply the activity module availability resetrictions.
-        $cm = get_coursemodule_from_instance('ouilforum', $forum->id, $forum->course);
+        $cm = get_coursemodule_from_instance('forumx', $forum->id, $forum->course);
         $modinfo = get_fast_modinfo($forum->course);
         $info = new \core_availability\info_module($modinfo->get_cm($cm->id));
         $results = $info->filter_user_list($results);
@@ -608,7 +608,7 @@ class subscriptions {
                 }
 
                 if (!isset(self::$forumdiscussioncache[$userid][$forumid])) {
-                    $subscriptions = $DB->get_recordset('ouilforum_discussion_sub', array(
+                    $subscriptions = $DB->get_recordset('forumx_discussion_sub', array(
                         'userid' => $userid,
                         'forumid' => $forumid,
                     ), null, 'id, discussionid');
@@ -618,7 +618,7 @@ class subscriptions {
                     $subscriptions->close();
                 }
             } else {
-                $subscriptions = $DB->get_recordset('ouilforum_discussion_sub', array(
+                $subscriptions = $DB->get_recordset('forumx_discussion_sub', array(
                     'forumid' => $forumid,
                 ), null, 'id, userid, discussionid');
                 foreach ($subscriptions as $id => $data) {
@@ -681,7 +681,7 @@ class subscriptions {
      *      module set in page.
      * @param boolean $userrequest Whether the user requested this change themselves. This has an effect on whether
      *     discussion subscriptions are removed too.
-     * @return bool|int Returns true if the user is already subscribed, or the ouilforum_subscriptions ID if the user was
+     * @return bool|int Returns true if the user is already subscribed, or the forumx_subscriptions ID if the user was
      *     successfully subscribed.
      */
     public static function subscribe_user($userid, $forum, $context = null, $userrequest = false) {
@@ -693,21 +693,21 @@ class subscriptions {
 
         $sub = new \stdClass();
         $sub->userid  = $userid;
-        $sub->ouilforum = $forum->id;
+        $sub->forumx = $forum->id;
 
-        $result = $DB->insert_record("ouilforum_subscriptions", $sub);
+        $result = $DB->insert_record("forumx_subscriptions", $sub);
 
         if ($userrequest) {
         	$sub_params = array('userid' => $userid, 'forumid' => $forum->id);
-            $discussionsubscriptions = $DB->get_recordset('ouilforum_discussion_sub', $sub_params);
-            $DB->delete_records_select('ouilforum_discussion_sub',
+            $discussionsubscriptions = $DB->get_recordset('forumx_discussion_sub', $sub_params);
+            $DB->delete_records_select('forumx_discussion_sub',
                     'userid = :userid AND forumid = :forumid', $sub_params);
 
             // Reset the subscription caches for this forum.
             // We know that the there were previously entries and there aren't any more.
             if (isset(self::$forumdiscussioncache[$userid]) && isset(self::$forumdiscussioncache[$userid][$forum->id])) {
                 foreach (self::$forumdiscussioncache[$userid][$forum->id] as $discussionid => $preference) {
-                    if ($preference != self::OUILFORUM_DISCUSSION_UNSUBSCRIBED) {
+                    if ($preference != self::forumx_DISCUSSION_UNSUBSCRIBED) {
                         unset(self::$forumdiscussioncache[$userid][$forum->id][$discussionid]);
                     }
                 }
@@ -717,7 +717,7 @@ class subscriptions {
         // Reset the cache for this forum.
         self::$forumcache[$userid][$forum->id] = true;
 
-        $context = ouilforum_get_context($forum->id, $context);
+        $context = forumx_get_context($forum->id, $context);
         $params = array(
             'context' => $context,
             'objectid' => $result,
@@ -728,7 +728,7 @@ class subscriptions {
         $event  = event\subscription_created::create($params);
         if ($userrequest && $discussionsubscriptions) {
             foreach ($discussionsubscriptions as $subscription) {
-                $event->add_record_snapshot('ouilforum_discussion_sub', $subscription);
+                $event->add_record_snapshot('forumx_discussion_sub', $subscription);
             }
             $discussionsubscriptions->close();
         }
@@ -753,17 +753,17 @@ class subscriptions {
 
         $sqlparams = array(
             'userid' => $userid,
-            'ouilforum' => $forum->id,
+            'forumx' => $forum->id,
         );
-        $DB->delete_records('ouilforum_digests', $sqlparams);
+        $DB->delete_records('forumx_digests', $sqlparams);
 
-        if ($forumsubscription = $DB->get_record('ouilforum_subscriptions', $sqlparams)) {
-            $DB->delete_records('ouilforum_subscriptions', array('id' => $forumsubscription->id));
+        if ($forumsubscription = $DB->get_record('forumx_subscriptions', $sqlparams)) {
+            $DB->delete_records('forumx_subscriptions', array('id' => $forumsubscription->id));
 
             if ($userrequest) {
             	$sub_params = array('userid' => $userid, 'forumid' => $forum->id);
-                $discussionsubscriptions = $DB->get_recordset('ouilforum_discussion_sub', $sub_params);
-                $DB->delete_records('ouilforum_discussion_sub', $sub_params);
+                $discussionsubscriptions = $DB->get_recordset('forumx_discussion_sub', $sub_params);
+                $DB->delete_records('forumx_discussion_sub', $sub_params);
 
                 // We know that the there were previously entries and there aren't any more.
                 if (isset(self::$forumdiscussioncache[$userid]) && isset(self::$forumdiscussioncache[$userid][$forum->id])) {
@@ -774,7 +774,7 @@ class subscriptions {
             // Reset the cache for this forum.
             self::$forumcache[$userid][$forum->id] = false;
 
-            $context = ouilforum_get_context($forum->id, $context);
+            $context = forumx_get_context($forum->id, $context);
             $params = array(
                 'context' => $context,
                 'objectid' => $forumsubscription->id,
@@ -783,10 +783,10 @@ class subscriptions {
 
             );
             $event = event\subscription_deleted::create($params);
-            $event->add_record_snapshot('ouilforum_subscriptions', $forumsubscription);
+            $event->add_record_snapshot('forumx_subscriptions', $forumsubscription);
             if ($userrequest && $discussionsubscriptions) {
                 foreach ($discussionsubscriptions as $subscription) {
-                    $event->add_record_snapshot('ouilforum_discussion_sub', $subscription);
+                    $event->add_record_snapshot('forumx_discussion_sub', $subscription);
                 }
                 $discussionsubscriptions->close();
             }
@@ -809,41 +809,41 @@ class subscriptions {
         global $DB;
 
         // First check whether the user is subscribed to the discussion already.
-        $subscription = $DB->get_record('ouilforum_discussion_sub', array('userid' => $userid, 'discussionid' => $discussion->id));
+        $subscription = $DB->get_record('forumx_discussion_sub', array('userid' => $userid, 'discussionid' => $discussion->id));
         if ($subscription) {
         	return true;
         }
         // No discussion-level subscription. Check for a forum level subscription.
-        if ($DB->record_exists('ouilforum_subscriptions', array('userid' => $userid, 'ouilforum' => $discussion->ouilforum))) {
+        if ($DB->record_exists('forumx_subscriptions', array('userid' => $userid, 'forumx' => $discussion->forumx))) {
             if ($subscription) {
                 // The user is subscribed to the forum, but unsubscribed from the discussion, delete the discussion preference.
-                $DB->delete_records('ouilforum_discussion_sub', array('id' => $subscription->id));
-                unset(self::$forumdiscussioncache[$userid][$discussion->ouilforum][$discussion->id]);
+                $DB->delete_records('forumx_discussion_sub', array('id' => $subscription->id));
+                unset(self::$forumdiscussioncache[$userid][$discussion->forumx][$discussion->id]);
             } else {
                 // The user is already subscribed to the forum. Ignore.
                 return false;
             }
         } else {
             if ($subscription) {
-                $DB->update_record('ouilforum_discussion_sub', $subscription);
+                $DB->update_record('forumx_discussion_sub', $subscription);
             } else {
                 $subscription = new \stdClass();
                 $subscription->userid  = $userid;
-                $subscription->forumid = $discussion->ouilforum;
+                $subscription->forumid = $discussion->forumx;
                 $subscription->discussionid = $discussion->id;
 
-                $subscription->id = $DB->insert_record('ouilforum_discussion_sub', $subscription);
-                self::$forumdiscussioncache[$userid][$discussion->ouilforum][$discussion->id] = 1;
+                $subscription->id = $DB->insert_record('forumx_discussion_sub', $subscription);
+                self::$forumdiscussioncache[$userid][$discussion->forumx][$discussion->id] = 1;
             }
         }
 
-        $context = ouilforum_get_context($discussion->ouilforum, $context);
+        $context = forumx_get_context($discussion->forumx, $context);
         $params = array(
             'context' => $context,
             'objectid' => $subscription->id,
             'relateduserid' => $userid,
             'other' => array(
-                'forumid' => $discussion->ouilforum,
+                'forumid' => $discussion->forumx,
                 'discussion' => $discussion->id,
             ),
 
@@ -866,19 +866,19 @@ class subscriptions {
         global $DB;
 
         // First check whether the user's subscription preference for this discussion.
-        if (!$subscription = $DB->get_record('ouilforum_discussion_sub', array('userid' => $userid, 'discussionid' => $discussion->id))) {
+        if (!$subscription = $DB->get_record('forumx_discussion_sub', array('userid' => $userid, 'discussionid' => $discussion->id))) {
         	return false;
         }
-        $DB->delete_records('ouilforum_discussion_sub', array('id' => $subscription->id));
-                unset(self::$forumdiscussioncache[$userid][$discussion->ouilforum][$discussion->id]);
+        $DB->delete_records('forumx_discussion_sub', array('id' => $subscription->id));
+                unset(self::$forumdiscussioncache[$userid][$discussion->forumx][$discussion->id]);
 
-        $context = ouilforum_get_context($discussion->ouilforum, $context);
+        $context = forumx_get_context($discussion->forumx, $context);
         $params = array(
             'context' => $context,
             'objectid' => $subscription->id,
             'relateduserid' => $userid,
             'other' => array(
-                'forumid' => $discussion->ouilforum,
+                'forumid' => $discussion->forumx,
                 'discussion' => $discussion->id,
             ),
 
@@ -899,13 +899,13 @@ class subscriptions {
         global $DB;
 
         // First check whether the user's subscription preference for this discussion.
-        if (!$users = $DB->get_record('ouilforum_discussion_sub', array('discussionid' => $discussion->id))) {
+        if (!$users = $DB->get_record('forumx_discussion_sub', array('discussionid' => $discussion->id))) {
         	return false;
         }
-        $context = ouilforum_get_context($discussion->ouilforum, $context);
+        $context = forumx_get_context($discussion->forumx, $context);
         $status = true;
         foreach ($users as $user) {
-        	$status = $status && \mod_ouilforum\subscriptions::unsubscribe_user_from_discussion($user->userid, $discussion, $context);
+        	$status = $status && \mod_forumx\subscriptions::unsubscribe_user_from_discussion($user->userid, $discussion, $context);
         }
         return $status;
     }

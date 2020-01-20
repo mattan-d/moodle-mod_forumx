@@ -15,22 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_ouilforum instance list viewed event.
+ * The mod_forumx instance list viewed event.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2014 Dan Poltawski <dan@moodle.com>
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_ouilforum\event;
+namespace mod_forumx\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_ouilforum instance list viewed event class.
+ * The mod_forumx instance list viewed event class.
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @since      Moodle 2.7
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

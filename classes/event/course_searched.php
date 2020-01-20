@@ -15,20 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_ouilforum course searched event.
+ * The mod_forumx course searched event.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2014 Dan Poltawski <dan@moodle.com>
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_ouilforum\event;
+namespace mod_forumx\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_ouilforum course searched event class.
+ * The mod_forumx course searched event class.
  *
  * @property-read array $other {
  *      Extra information about the event.
@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
  *      - string searchterm: The searchterm used on forum search.
  * }
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @since      Moodle 2.7
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -70,7 +70,7 @@ class course_searched extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventcoursesearched', 'mod_ouilforum');
+        return get_string('eventcoursesearched', 'mod_forumx');
     }
 
     /**
@@ -79,7 +79,7 @@ class course_searched extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/ouilforum/search.php',
+        return new \moodle_url('/mod/forumx/search.php',
             array('id' => $this->courseid, 'search' => $this->other['searchterm']));
     }
 
@@ -89,10 +89,10 @@ class course_searched extends \core\event\base {
      * @return array|null
      */
     protected function get_legacy_logdata() {
-        // The legacy log table expects a relative path to /mod/ouilforum/.
-        $logurl = substr($this->get_url()->out_as_local_url(), strlen('/mod/ouilforum/'));
+        // The legacy log table expects a relative path to /mod/forumx/.
+        $logurl = substr($this->get_url()->out_as_local_url(), strlen('/mod/forumx/'));
 
-        return array($this->courseid, 'ouilforum', 'search', $logurl, $this->other['searchterm']);
+        return array($this->courseid, 'forumx', 'search', $logurl, $this->other['searchterm']);
     }
 
     /**

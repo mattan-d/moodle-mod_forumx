@@ -17,9 +17,9 @@
  * This class manages the calls for google analytics.
  * Working through this class will assure there will be no errors if GA isn't initialized for thie site.
  *
- * @module    mod_ouilforum/ga
- * @package   mod_ouilforum
- * @copyright 2018 onwards The Open University of Israel
+ * @module    mod_forumx/ga
+ * @package   mod_forumx
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since     3.1
  */
@@ -30,8 +30,8 @@ define(['jquery'], function($) {
 		pageParams: '',
 		pageParamsArray: {},
 		path: {
-			addpost: '/vp/ouilforum/addpost/postid=',
-			adddiscussion: '/vp/ouilforum/adddiscussion/discussionid='
+			addpost: '/vp/forumx/addpost/postid=',
+			adddiscussion: '/vp/forumx/adddiscussion/discussionid='
 		}
 	}
 

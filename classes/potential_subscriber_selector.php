@@ -17,7 +17,7 @@
 /**
  * A type of forum.
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @copyright  2014 Andrew Robert Nicols <andrew@nicols.co.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,11 +28,11 @@ require_once($CFG->dirroot.'/user/selector/lib.php');
 
 /**
  * A user selector control for potential subscribers to the selected forum
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2009 Sam Hemelryk
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_ouilforum_potential_subscriber_selector extends mod_ouilforum_subscriber_selector_base {
+class mod_forumx_potential_subscriber_selector extends mod_forumx_subscriber_selector_base {
     /**
      * If set to true EVERYONE in this course is force subscribed to this forum
      * @var bool
@@ -118,7 +118,7 @@ class mod_ouilforum_potential_subscriber_selector extends mod_ouilforum_subscrib
 
         $availableusers = $DB->get_records_sql($fields.$sql.$order, array_merge($params, $sortparams));
 
-        $cm = get_coursemodule_from_instance('ouilforum', $this->forumid);
+        $cm = get_coursemodule_from_instance('forumx', $this->forumid);
         $modinfo = get_fast_modinfo($cm->course);
         $info = new \core_availability\info_module($modinfo->get_cm($cm->id));
         $availableusers = $info->filter_user_list($availableusers);
@@ -136,9 +136,9 @@ class mod_ouilforum_potential_subscriber_selector extends mod_ouilforum_subscrib
         }
 
         if ($this->forcesubscribed) {
-            return array(get_string("existingsubscribers", 'ouilforum') => $availableusers);
+            return array(get_string("existingsubscribers", 'forumx') => $availableusers);
         } else {
-            return array(get_string("potentialsubscribers", 'ouilforum') => $availableusers);
+            return array(get_string("potentialsubscribers", 'forumx') => $availableusers);
         }
     }
 

@@ -16,8 +16,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   mod_ouilforum
- * @copyright 2018 onwards The Open University of Israel
+ * @package   mod_forumx
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,18 +28,18 @@ $forumid = required_param('f', PARAM_INT);       // Forum ID
 $postid  = required_param('postid', PARAM_INT);  // POST  ID
 $page    = optional_param('page', 0, PARAM_INT); // page number
 
-$PAGE->set_url('/mod/ouilforum/forward.php', array('f' => $forumid, 'postid' => $postid));
+$PAGE->set_url('/mod/forumx/forward.php', array('f' => $forumid, 'postid' => $postid));
 $page_params = array('f' => $forumid, 'postid' => $postid);
 
 if ($forumid) {
-	if (!$ouilforum = $DB->get_record('ouilforum', array('id' => $forumid))) {
-		print_error('invalidforumid', 'ouilforum');
+	if (!$forumx = $DB->get_record('forumx', array('id' => $forumid))) {
+		print_error('invalidforumid', 'forumx');
 	}
-	if (!$course = $DB->get_record('course', array('id' => $ouilforum->course))) {
+	if (!$course = $DB->get_record('course', array('id' => $forumx->course))) {
 		print_error('invalidcourseid');
 	}
 
-	if (!$cm = get_coursemodule_from_instance('ouilforum', $ouilforum->id, $course->id)) {
+	if (!$cm = get_coursemodule_from_instance('forumx', $forumx->id, $course->id)) {
 		print_error('invalidcoursemodule');
 	} else {
 		$modcontext = context_module::instance($cm->id);
@@ -47,20 +47,20 @@ if ($forumid) {
 
 	if (!empty($postid)) {
 		// User post.
-		if (!$post = ouilforum_get_post_full($postid, 0 , $ouilforum->hideauthor)) {
-			print_error('Post ID was incorrect', 'ouilforum');
+		if (!$post = forumx_get_post_full($postid, 0 , $forumx->hideauthor)) {
+			print_error('Post ID was incorrect', 'forumx');
 		}
 		else {
-			if (!$discussion = $DB->get_record('ouilforum_discussions', array('id' => $post->discussion)))
-				print_error('notpartofdiscussion', 'ouilforum');
+			if (!$discussion = $DB->get_record('forumx_discussions', array('id' => $post->discussion)))
+				print_error('notpartofdiscussion', 'forumx');
 		}
 	} else {
-		print_error('missingpostid', 'ouilforum');
+		print_error('missingpostid', 'forumx');
 	}
 	require_course_login($course, true, $cm);
 
 } else {
-	print_error('missingforumid', 'ouilforum');
+	print_error('missingforumid', 'forumx');
 }
 
 if (isguestuser()) {
@@ -70,8 +70,8 @@ if (isguestuser()) {
 
 $PAGE->set_cm($cm);
 $PAGE->set_context($modcontext);
-$PAGE->navbar->add(format_string($post->subject, true), new moodle_url('/mod/ouilforum/forward.php', array('f' => $forumid, 'postid' => $postid)));
-$PAGE->navbar->add(get_string('forwardtitle', 'ouilforum'));
+$PAGE->navbar->add(format_string($post->subject, true), new moodle_url('/mod/forumx/forward.php', array('f' => $forumid, 'postid' => $postid)));
+$PAGE->navbar->add(get_string('forwardtitle', 'forumx'));
 $PAGE->set_title(format_string($discussion->name).': '.format_string($post->subject));
 $PAGE->set_heading($course->fullname);
 
@@ -81,11 +81,11 @@ if (!empty($quick_subject)) {
 	$forwardsubject = $quick_subject;
 }
 $form_params = array('course' => $course,
-		'ouilforum' => $ouilforum,
+		'forumx' => $forumx,
 		'cm' => $cm,
 		'post' => $post,
 		'subject' => $forwardsubject);
-$mform_mail = new mod_ouilforum_forward_form('forward.php', $form_params);
+$mform_mail = new mod_forumx_forward_form('forward.php', $form_params);
 
 $set = array();
 $quick_email = optional_param('quickemail', '', PARAM_EMAIL);
@@ -104,11 +104,11 @@ if (!empty($set)) {
 	$mform_mail->set_data($set);
 }
 if ($mform_mail->is_cancelled()) {
-	redirect('view.php?f='.$ouilforum->id, '', 0);
+	redirect('view.php?f='.$forumx->id, '', 0);
 	exit;
 }
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('forwardtitle', 'ouilforum'));
+echo $OUTPUT->heading(get_string('forwardtitle', 'forumx'));
 
 if ($form = $mform_mail->get_data()) {
 	
@@ -116,7 +116,7 @@ if ($form = $mform_mail->get_data()) {
 	$strictness = ($CFG->debugdeveloper) ? IGNORE_MULTIPLE : IGNORE_MISSING; //@todo: check the config variable
 
 	$userto = $DB->get_record('user', array('email' => $form->email), '*', $strictness);
-	$course_unique = ouilforum_extract_course_shortname($course->shortname);
+	$course_unique = forumx_extract_course_shortname($course->shortname);
 
 	$a = (object)array('name' => fullname($USER, true),
             'course_short'   => $course->shortname,
@@ -125,34 +125,34 @@ if ($form = $mform_mail->get_data()) {
             'course_unique'  => $course_unique,
             'course_link'    => $CFG->wwwroot.'/course/view.php?id='.$course->id,
             'link_to_sender' => $CFG->wwwroot.'/user/view.php?id='.$USER->id,
-            'forum_name'     => $ouilforum->name);
+            'forum_name'     => $forumx->name);
 
-	$post->message = ouilforum_handle_images_mail($post->message);
+	$post->message = forumx_handle_images_mail($post->message);
 	
-	$msg = ouilforum_print_post_plain($post, $cm, $course, $ouilforum, $form, get_string('forwardpreface', 'ouilforum', $a), false, $userto->timezone);
+	$msg = forumx_print_post_plain($post, $cm, $course, $forumx, $form, get_string('forwardpreface', 'forumx', $a), false, $userto->timezone);
 
-    $subject = stripslashes($form->subject).' '.get_string('strconsubject', 'ouilforum').' '.$course_unique;
+    $subject = stripslashes($form->subject).' '.get_string('strconsubject', 'forumx').' '.$course_unique;
     if (!email_to_user($userto, $USER, $subject, $msg[FORMAT_PLAIN], $msg[FORMAT_HTML])) {
-    	print_error('errorforwardemail', 'ouilforum', $userto->email);
+    	print_error('errorforwardemail', 'forumx', $userto->email);
     }
 	
 	// Send to me.
  	if (!empty($form->ccme)) {
 		if (!email_to_user($USER, $USER, $subject, $msg[FORMAT_PLAIN], $msg[FORMAT_HTML])) {
-			print_error('errorforwardemail', 'ouilforum', $USER->email);
+			print_error('errorforwardemail', 'forumx', $USER->email);
 		}
 	}
 	// Sending email done.
-	echo $OUTPUT->box(get_string('forwarddone', 'ouilforum'));
+	echo $OUTPUT->box(get_string('forwarddone', 'forumx'));
 
 } else {
 	$post->lastpost = true;
 	$mform_mail->display();
 	$discussion->discussion = $discussion->id;
-	echo '<span class="for-sr">'.get_string('posttosend', 'ouilforum').'</span>';
+	echo '<span class="for-sr">'.get_string('posttosend', 'forumx').'</span>';
 	echo '<div id="discussion'.$discussion->id.'">'.
-		ouilforum_print_post($post, $discussion, $ouilforum, $cm, $course, false, false, false, 
-				'', '', null, true, null, false, OUILFORUM_DISPLAY_OPEN_CLEAN).
+		forumx_print_post($post, $discussion, $forumx, $cm, $course, false, false, false, 
+				'', '', null, true, null, false, forumx_DISPLAY_OPEN_CLEAN).
 		'</div>';
 	
 }

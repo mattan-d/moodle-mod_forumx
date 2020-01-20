@@ -18,7 +18,7 @@
 /**
  * File containing the form definition to post in the forum.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright Jamie Pratt <me@jamiep.org>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -30,11 +30,11 @@ require_once($CFG->dirroot . '/repository/lib.php');
 /**
  * Class to post in a forum.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright Jamie Pratt <me@jamiep.org>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_ouilforum_post_form extends moodleform {
+class mod_forumx_post_form extends moodleform {
 
     /**
      * Returns the options array to use in filemanager for forum attachments
@@ -70,7 +70,7 @@ class mod_ouilforum_post_form extends moodleform {
             'maxbytes' => $maxbytes,
             'trusttext'=> true,
             'return_types'=> FILE_INTERNAL | FILE_EXTERNAL,
-            'subdirs' => file_area_contains_subdirs($context, 'mod_ouilforum', 'post', $postid)
+            'subdirs' => file_area_contains_subdirs($context, 'mod_forumx', 'post', $postid)
         );
     }
 
@@ -88,7 +88,7 @@ class mod_ouilforum_post_form extends moodleform {
         $cm = $this->_customdata['cm'];
         $coursecontext = $this->_customdata['coursecontext'];
         $modcontext = $this->_customdata['modcontext'];
-        $forum = $this->_customdata['ouilforum'];
+        $forum = $this->_customdata['forumx'];
         $post = $this->_customdata['post'];
         $subscribe = $this->_customdata['subscribe'];
         $edit = $this->_customdata['edit'];
@@ -108,50 +108,50 @@ class mod_ouilforum_post_form extends moodleform {
             }
         }
 
-        $mform->addElement('text', 'subject', get_string('subject', 'ouilforum'), 'size="48"');
+        $mform->addElement('text', 'subject', get_string('subject', 'forumx'), 'size="48"');
         $mform->setType('subject', PARAM_TEXT);
         $mform->addRule('subject', get_string('required'), 'required', null, 'client');
         $mform->addRule('subject', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
-        $mform->addElement('editor', 'message', get_string('message', 'ouilforum'), null, self::editor_options($modcontext, (empty($post->id) ? null : $post->id)));
+        $mform->addElement('editor', 'message', get_string('message', 'forumx'), null, self::editor_options($modcontext, (empty($post->id) ? null : $post->id)));
         $mform->setType('message', PARAM_RAW);
 
         $manageactivities = has_capability('moodle/course:manageactivities', $coursecontext);
 
-        if (\mod_ouilforum\subscriptions::is_forcesubscribed($forum)) {
-            $mform->addElement('checkbox', 'discussionsubscribe', get_string('discussionsubscription', 'ouilforum'));
+        if (\mod_forumx\subscriptions::is_forcesubscribed($forum)) {
+            $mform->addElement('checkbox', 'discussionsubscribe', get_string('discussionsubscription', 'forumx'));
             $mform->freeze('discussionsubscribe');
             $mform->setDefaults('discussionsubscribe', 0);
-            $mform->addHelpButton('discussionsubscribe', 'forcesubscribed', 'ouilforum');
+            $mform->addHelpButton('discussionsubscribe', 'forcesubscribed', 'forumx');
 
-        } else if (\mod_ouilforum\subscriptions::subscription_disabled($forum) && !$manageactivities) {
-            $mform->addElement('checkbox', 'discussionsubscribe', get_string('discussionsubscription', 'ouilforum'));
+        } else if (\mod_forumx\subscriptions::subscription_disabled($forum) && !$manageactivities) {
+            $mform->addElement('checkbox', 'discussionsubscribe', get_string('discussionsubscription', 'forumx'));
             $mform->freeze('discussionsubscribe');
             $mform->setDefaults('discussionsubscribe', 0);
-            $mform->addHelpButton('discussionsubscribe', 'disallowsubscription', 'ouilforum');
+            $mform->addHelpButton('discussionsubscribe', 'disallowsubscription', 'forumx');
 
         } else {
-            $mform->addElement('checkbox', 'discussionsubscribe', get_string('discussionsubscription', 'ouilforum'));
-            $mform->addHelpButton('discussionsubscribe', 'discussionsubscription', 'ouilforum');
+            $mform->addElement('checkbox', 'discussionsubscribe', get_string('discussionsubscription', 'forumx'));
+            $mform->addHelpButton('discussionsubscribe', 'discussionsubscription', 'forumx');
         }
 
-        if (!empty($forum->maxattachments) && $forum->maxbytes != 1 && has_capability('mod/ouilforum:createattachment', $modcontext))  {  //  1 = No attachments at all
-            $mform->addElement('filemanager', 'attachments', get_string('attachment', 'ouilforum'), null, self::attachment_options($forum));
-            $mform->addHelpButton('attachments', 'attachment', 'ouilforum');
+        if (!empty($forum->maxattachments) && $forum->maxbytes != 1 && has_capability('mod/forumx:createattachment', $modcontext))  {  //  1 = No attachments at all
+            $mform->addElement('filemanager', 'attachments', get_string('attachment', 'forumx'), null, self::attachment_options($forum));
+            $mform->addHelpButton('attachments', 'attachment', 'forumx');
         }
 
         if (empty($post->id) && $manageactivities) {
-            $mform->addElement('checkbox', 'mailnow', get_string('mailnow', 'ouilforum'));
+            $mform->addElement('checkbox', 'mailnow', get_string('mailnow', 'forumx'));
         }
 
-        if (!empty($CFG->ouilforum_enabletimedposts) && !$post->parent && has_capability('mod/ouilforum:viewhiddentimedposts', $coursecontext)) { // hack alert
-            $mform->addElement('header', 'displayperiod', get_string('displayperiod', 'ouilforum'));
+        if (!empty($CFG->forumx_enabletimedposts) && !$post->parent && has_capability('mod/forumx:viewhiddentimedposts', $coursecontext)) { // hack alert
+            $mform->addElement('header', 'displayperiod', get_string('displayperiod', 'forumx'));
 
-            $mform->addElement('date_time_selector', 'timestart', get_string('displaystart', 'ouilforum'), array('optional' => true));
-            $mform->addHelpButton('timestart', 'displaystart', 'ouilforum');
+            $mform->addElement('date_time_selector', 'timestart', get_string('displaystart', 'forumx'), array('optional' => true));
+            $mform->addHelpButton('timestart', 'displaystart', 'forumx');
 
-            $mform->addElement('date_time_selector', 'timeend', get_string('displayend', 'ouilforum'), array('optional' => true));
-            $mform->addHelpButton('timeend', 'displayend', 'ouilforum');
+            $mform->addElement('date_time_selector', 'timeend', get_string('displayend', 'forumx'), array('optional' => true));
+            $mform->addHelpButton('timeend', 'displayend', 'forumx');
 
         } else {
             $mform->addElement('hidden', 'timestart');
@@ -168,7 +168,7 @@ class mod_ouilforum_post_form extends moodleform {
             foreach ($groupdata as $groupid => $group) {
                 // Check whether this user can post in this group.
                 // We must make this check because all groups are returned for a visible grouped activity.
-                if (ouilforum_user_can_post_discussion($forum, $groupid, null, $cm, $modcontext)) {
+                if (forumx_user_can_post_discussion($forum, $groupid, null, $cm, $modcontext)) {
                     // Build the data for the groupinfo select.
                     $groupinfo[$groupid] = $group->name;
                 } else {
@@ -188,20 +188,20 @@ class mod_ouilforum_post_form extends moodleform {
             $canposttoowngroups = $canposttoowngroups && empty($post->parent);
 
             // 3) You also need the canposttoowngroups capability.
-            $canposttoowngroups = $canposttoowngroups && has_capability('mod/ouilforum:canposttomygroups', $modcontext);
+            $canposttoowngroups = $canposttoowngroups && has_capability('mod/forumx:canposttomygroups', $modcontext);
             if ($canposttoowngroups) {
                 // This user is in multiple groups, and can post to all of their own groups.
                 // Note: This is not the same as accessallgroups. This option will copy a post to all groups that a
                 // user is a member of.
-                $mform->addElement('checkbox', 'posttomygroups', get_string('posttomygroups', 'ouilforum'));
-                $mform->addHelpButton('posttomygroups', 'posttomygroups', 'ouilforum');
+                $mform->addElement('checkbox', 'posttomygroups', get_string('posttomygroups', 'forumx'));
+                $mform->addHelpButton('posttomygroups', 'posttomygroups', 'forumx');
                 $mform->disabledIf('groupinfo', 'posttomygroups', 'checked');
             }
 
             // Check whether this user can post to all groups.
             // Posts to the 'All participants' group go to all groups, not to each group in a list.
             // It makes sense to allow this, even if there currently aren't any groups because there may be in the future.
-            if (ouilforum_user_can_post_discussion($forum, -1, null, $cm, $modcontext)) {
+            if (forumx_user_can_post_discussion($forum, -1, null, $cm, $modcontext)) {
                 // Note: We must reverse in this manner because array_unshift renumbers the array.
                 $groupinfo = array_reverse($groupinfo, true );
                 $groupinfo[-1] = get_string('allparticipants');
@@ -216,7 +216,7 @@ class mod_ouilforum_post_form extends moodleform {
             // 2) This is editing of an existing post and the user is allowed to movediscussions.
             // We allow this because the post may have been moved from another forum where groups are not available.
             // We show this even if no groups are available as groups *may* have been available but now are not.
-            $canselectgroupformove = $groupcount && !empty($post->edit) && has_capability('mod/ouilforum:movediscussions', $modcontext);
+            $canselectgroupformove = $groupcount && !empty($post->edit) && has_capability('mod/forumx:movediscussions', $modcontext);
 
             // Important: You can *only* change the group for a top level post. Never any reply.
             $canselectgroup = empty($post->parent) && ($canselectgroupfornew || $canselectgroupformove);
@@ -239,7 +239,7 @@ class mod_ouilforum_post_form extends moodleform {
         if (isset($post->edit)) { // hack alert
             $submit_string = get_string('savechanges');
         } else {
-            $submit_string = get_string('posttoforum', 'ouilforum');
+            $submit_string = get_string('posttoforum', 'forumx');
         }
 
         $this->add_action_buttons(true, $submit_string);
@@ -247,8 +247,8 @@ class mod_ouilforum_post_form extends moodleform {
         $mform->addElement('hidden', 'course');
         $mform->setType('course', PARAM_INT);
 
-        $mform->addElement('hidden', 'ouilforum');
-        $mform->setType('ouilforum', PARAM_INT);
+        $mform->addElement('hidden', 'forumx');
+        $mform->setType('forumx', PARAM_INT);
 
         $mform->addElement('hidden', 'discussion');
         $mform->setType('discussion', PARAM_INT);
@@ -275,8 +275,8 @@ class mod_ouilforum_post_form extends moodleform {
             return false;
         }
         // Filter received data.
-        $data->subject = ouilforum_filter_post($data->subject);
-        $data->message['text'] = ouilforum_filter_post($data->message['text']);
+        $data->subject = forumx_filter_post($data->subject);
+        $data->message['text'] = forumx_filter_post($data->message['text']);
         return $data;
     }
 
@@ -288,8 +288,8 @@ class mod_ouilforum_post_form extends moodleform {
     	$subject = $mform->getElement('subject');
     	$message = $mform->getElement('message');
     	$message_values = $message->getValue();
-    	$message_values['text'] = ouilforum_filter_post($message_values['text']);
-    	$subject->setValue(ouilforum_filter_post($subject->getValue()));
+    	$message_values['text'] = forumx_filter_post($message_values['text']);
+    	$subject->setValue(forumx_filter_post($subject->getValue()));
     	$message->setValue($message_values);
     }
 
@@ -301,13 +301,13 @@ class mod_ouilforum_post_form extends moodleform {
      * @return array of errors.
      */
     function validation($data, $files) {
-    	$data['subject'] = ouilforum_filter_post($data['subject']); // Needed here to make sure the subject is valid.
+    	$data['subject'] = forumx_filter_post($data['subject']); // Needed here to make sure the subject is valid.
     	$errors = parent::validation($data, $files);
         if (($data['timeend']!=0) && ($data['timestart']!=0) && $data['timeend'] <= $data['timestart']) {
-            $errors['timeend'] = get_string('timestartenderror', 'ouilforum');
+            $errors['timeend'] = get_string('timestartenderror', 'forumx');
         }
         if (empty($data['subject'])) {
-            $errors['subject'] = get_string('erroremptysubject', 'ouilforum');
+            $errors['subject'] = get_string('erroremptysubject', 'forumx');
         }
         return $errors;
     }

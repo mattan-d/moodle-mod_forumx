@@ -16,10 +16,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'ouilforum', language 'he'.
+ * Strings for component 'forumx', language 'he'.
  *
- * @package   mod_ouilforum
- * @copyright 2018 onwards The Open University of Israel
+ * @package   mod_forumx
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -117,7 +117,7 @@ $string['configdisplaymode'] = 'תצוגת הדיונים במצב ברירת ה
 $string['configenableredirectpage'] = 'אם \'כן\', שליחת תגובות בפורום תעבור דרך דף הודעה.';
 $string['configenablerssfeeds'] = ' RSS לכל הפורומים. עדיין תצטרך להפעיל את ההזנות באופן ידני בהגדרות של כל פורום בנפרד.';
 $string['configenabletimedposts'] = 'הצב \'כן\' במידה ואתה רוצה לאשר הגדרה של מועדי ההצגה כאשר מציגים דיון חדש  בפורום (עדיין בנסיון ולא נבדק דיו)';
-$string['configlongpost'] = 'כל הודעה ארוכה מאורך זה (בתווים שאינם כוללים את תגי ה-HTML) נחשבת ארוכה. את ההודעות המתפרסמות בדף הראשי של האתר, עמודי הקורסים בפורמט חברתי או פרופילי המשתמשים, מקצרים בנקודה טבעית שנמצאת היכן-שהוא בין האורך המוגדר ע\"י ערכי ouilforum_shortpost ו-ouilforum_longpost.';
+$string['configlongpost'] = 'כל הודעה ארוכה מאורך זה (בתווים שאינם כוללים את תגי ה-HTML) נחשבת ארוכה. את ההודעות המתפרסמות בדף הראשי של האתר, עמודי הקורסים בפורמט חברתי או פרופילי המשתמשים, מקצרים בנקודה טבעית שנמצאת היכן-שהוא בין האורך המוגדר ע\"י ערכי forumx_shortpost ו-forumx_longpost.';
 $string['configmanydiscussions'] = 'מספר הדיונים המירבי שיוצג בכל דף בפורום';
 $string['configmaxattachments'] = 'המספר המכסימלי של קבצים שמותר לצרף להודעה';
 $string['configmaxbytes'] = 'גודל מירבי המשמש כברירת מחדל לקובץ המצורף להודעת פורום באתר (כפוף להגבלות ברמת הקורס והגדרות מקומיות אחרות)';
@@ -188,7 +188,7 @@ $string['discussion'] = 'דיון';
 $string['discussionflag'] = 'הדיון מכיל הודעות מסומנות';
 $string['discussionislocked'] = 'הדיון נעול';
 $string['discussionmoved'] = 'דיון זה הועבר ל-\'{$a}\'.';
-$string['discussionmovedpost'] = 'דיון זה הועבר ל<a href=\"{$a->discusshref}\">כאן</a> בפורום <a href=\"{$a->ouilforumhref}\">{$a->ouilforumname}</a>';
+$string['discussionmovedpost'] = 'דיון זה הועבר ל<a href=\"{$a->discusshref}\">כאן</a> בפורום <a href=\"{$a->forumxhref}\">{$a->forumxname}</a>';
 $string['discussionname'] = 'שם הדיון';
 $string['discussionnoreplies'] = 'הדיון אינו מכיל תגובות';
 $string['discussionnownotsubscribed'] = 'לא יגיעו אל {$a->name} התראות על הודעות ב\'{$a->discussion}\' מתוך \'{$a->forum}\'';
@@ -322,41 +322,41 @@ $string['forumslist'] = 'רשימת פורומים';
 $string['forumsubscription'] = 'מנוי לפורום';
 $string['forumsubscription_help'] = 'מנוי לפורום מאפשר למשתמש לקבל העתקים של הודעות הפורום לדוא"ל (כ-15 דקות מזמן פרסומן).
 יש באפשרותך להירשם כמנוי לכל הפורומים או לפורום/ים מסוים/ים.';
-$string['ouilforum:addinstance'] = 'הוספת פורום חדש';
-$string['ouilforum:addnews'] = 'הוסף חדשות';
-$string['ouilforum:addquestion'] = 'הוספת שאלה';
-$string['ouilforum:allowforcesubscribe'] = 'אפשר אילוץ הרשמה';
+$string['forumx:addinstance'] = 'הוספת פורום חדש';
+$string['forumx:addnews'] = 'הוסף חדשות';
+$string['forumx:addquestion'] = 'הוספת שאלה';
+$string['forumx:allowforcesubscribe'] = 'אפשר אילוץ הרשמה';
 $string['forumauthorhidden'] = 'מחבר (מוסתר)';
 $string['forumblockingalmosttoomanyposts'] = 'הינך מתקרב/ת למגבלת כמות ההודעות שלך. פרסמת {$a->numposts} פעמים ה{$a->blockperiod} האחרונים והמגבלה היא {$a->blockafter} הודעות.';
 $string['forumbodyhidden'] = 'הודעה זו לא ניתנת לצפייה על ידייך, ככל הנראה בגלל שלא פרסמת בתוך הדיון, זמן עריכת ההודעה המירבי לא הסתיים, הדיון עוד לא התחיל או שפג פרק הזמן של הדיון.';
 $string['forumslist'] = 'רשימת הפורומים';
 $string['forwardsent'] = 'ההודעה נשלחה';
-$string['ouilforum:canposttomygroups'] = 'באפשרותך לפרסם בכל הקבוצות אליהן יש לך גישה';
-$string['ouilforum:createattachment'] = 'צור קבצים מצורפים';
-$string['ouilforum:deleteanypost'] = 'מחק כל הודעה שהיא (בכל עת)';
-$string['ouilforum:deleteownpost'] = 'מחק את ההודעות שלי (תוך המועד הסופי)';
-$string['ouilforum:editanypost'] = 'ערוך כל הודעה שהיא';
-$string['ouilforum:exportdiscussion'] = 'ייצוא דיון שלם';
-$string['ouilforum:exportownpost'] = 'ייצוא הודעה שלי';
-$string['ouilforum:exportpost'] = 'ייצוא הודעה';
-$string['ouilforum:initialsubscriptions'] = 'הרשמה ראשונית';
+$string['forumx:canposttomygroups'] = 'באפשרותך לפרסם בכל הקבוצות אליהן יש לך גישה';
+$string['forumx:createattachment'] = 'צור קבצים מצורפים';
+$string['forumx:deleteanypost'] = 'מחק כל הודעה שהיא (בכל עת)';
+$string['forumx:deleteownpost'] = 'מחק את ההודעות שלי (תוך המועד הסופי)';
+$string['forumx:editanypost'] = 'ערוך כל הודעה שהיא';
+$string['forumx:exportdiscussion'] = 'ייצוא דיון שלם';
+$string['forumx:exportownpost'] = 'ייצוא הודעה שלי';
+$string['forumx:exportpost'] = 'ייצוא הודעה';
+$string['forumx:initialsubscriptions'] = 'הרשמה ראשונית';
 $string['forumintro'] = 'הקדמה לפורום';
-$string['ouilforum:lockmessage'] = 'קבע הודעה';
-$string['ouilforum:managesubscriptions'] = 'נהל מנויים';
-$string['ouilforum:markmessage'] = 'סמן הודעות';
-$string['ouilforum:movediscussions'] = 'הסט דיונים';
-$string['ouilforum:movemessage']  = 'העברת הודעות';
-$string['ouilforum:postwithoutthrottling'] = 'פטור ממגבלת מיכסת ההודעות';
+$string['forumx:lockmessage'] = 'קבע הודעה';
+$string['forumx:managesubscriptions'] = 'נהל מנויים';
+$string['forumx:markmessage'] = 'סמן הודעות';
+$string['forumx:movediscussions'] = 'הסט דיונים';
+$string['forumx:movemessage']  = 'העברת הודעות';
+$string['forumx:postwithoutthrottling'] = 'פטור ממגבלת מיכסת ההודעות';
 $string['forumname'] = 'שם הפורום';
 $string['forumposts'] = 'הודעות הפורום';
-$string['ouilforum:rate'] = 'דרג הודעות';
-$string['ouilforum:replynews'] = 'הגב לחדשות';
-$string['ouilforum:replypost'] = 'השב להודעות';
+$string['forumx:rate'] = 'דרג הודעות';
+$string['forumx:replynews'] = 'הגב לחדשות';
+$string['forumx:replypost'] = 'השב להודעות';
 $string['forums'] = 'פורומים';
-$string['ouilforum:splitdiscussions'] = 'פצל דיונים';
-$string['ouilforum:startdiscussion'] = 'התחל בדיונים חדשים';
-$string['ouilforum:throttlingapplies'] = 'המגבלה פעילה';
-$string['ouilforum:updateflag'] = 'סימון הודעה חדשה';
+$string['forumx:splitdiscussions'] = 'פצל דיונים';
+$string['forumx:startdiscussion'] = 'התחל בדיונים חדשים';
+$string['forumx:throttlingapplies'] = 'המגבלה פעילה';
+$string['forumx:updateflag'] = 'סימון הודעה חדשה';
 $string['filterpostconfig'] = 'סינון תוכן הודעות';
 $string['filterpostconfig_desc'] = 'סינון תוכן בזמן שליחה. כל שורה היא מחרוזת regex חדשה.';
 $string['forumauthorhidden'] = 'מחבר (מוסתר)';
@@ -377,13 +377,13 @@ $string['forumtype_help'] = 'ישנם 5 סיגוי פורומים:
 * פורום שאלות ותשובות (Q&A) - על הסטודנטים לפרסם קודם כל את הנושא שלהם לפני שיוכלו לצפות בהודעות של סטודנטים אחרים
 * פורום סטנדרטי המוצג בפורמט בסגנון בלוג - פורום פתוח בו כל אחד יכול ליצור דיון חדש בכל זמן, ובכל דיון הנושאים מופיעים בדף אחד עם קישורים "נהל דיום על נושא זה"
 * פורום סטנדרטי לשימוש כללי - פורום פתוח בו כל אחד יכול להתחיל דיון בכל זמן';
-$string['ouilforum:viewallratings'] = 'צפיה בכל הדירוגים הגולמיים שניתנו בידי משתמשים בודדים';
-$string['ouilforum:viewanyrating'] = 'ראה כל דירוגים שהם';
-$string['ouilforum:viewdiscussion'] = 'ראה דיונים';
-$string['ouilforum:viewhiddentimedposts'] = 'ראה הודעות מתוזמנות מוסתרות';
-$string['ouilforum:viewqandawithoutposting'] = 'תמיד ראה הודעות \'שאלה ותשובה\' (Q&A)';
-$string['ouilforum:viewrating'] = 'ראה דירוגים';
-$string['ouilforum:viewsubscribers'] = 'ראה מנויים';
+$string['forumx:viewallratings'] = 'צפיה בכל הדירוגים הגולמיים שניתנו בידי משתמשים בודדים';
+$string['forumx:viewanyrating'] = 'ראה כל דירוגים שהם';
+$string['forumx:viewdiscussion'] = 'ראה דיונים';
+$string['forumx:viewhiddentimedposts'] = 'ראה הודעות מתוזמנות מוסתרות';
+$string['forumx:viewqandawithoutposting'] = 'תמיד ראה הודעות \'שאלה ותשובה\' (Q&A)';
+$string['forumx:viewrating'] = 'ראה דירוגים';
+$string['forumx:viewsubscribers'] = 'ראה מנויים';
 $string['forummanagers'] = 'לבעלי הרשאות ניהול';
 $string['forwardbymail'] = 'שליחה במייל';
 $string['forwardccme'] = 'שלח העתק מהודעתי ל e-mail שלי';
@@ -496,14 +496,14 @@ $string['modulename_help'] = 'רכיב פעילות הפורום מאפשר למ
 * מרכז עזרה בו מורים וסטודנטים יכולים להציע עזרה
 * אזור תמיכה אחד על אחד לתקשורות פרטיות של סטודנט-מורה (בשימוש בפורום עם קבוצות נפרדות ועם סטודנט אחד לקבוצה)
 * עבור פעולות הרחבה, כמו למשל משחקי מחשבה לסטודנטים שיתעמקו בהם ויציעו פתרונות';
-$string['modulename_link'] = 'mod/ouilforum/view';
+$string['modulename_link'] = 'mod/forumx/view';
 $string['modulenameplural'] = 'פורומים';
 $string['more'] = 'עוד';
 $string['moreoptions'] = 'אפשרויות נוספות';
 $string['move:action'] = 'בחירת סוג העברה';
 $string['move:discussionslist'] = 'בחירת דיון יעד מהרשימה';
 $string['move:link'] = 'העברת הודעה';
-$string['move:newouilforum'] = 'העברה לפורום אחר כדיון חדש';
+$string['move:newforumx'] = 'העברה לפורום אחר כדיון חדש';
 $string['move:newtitle'] = 'כותרת חדשה (אפשרי)';
 $string['move:newtitle_help'] = 'באפשרות לשנות את הכותרת עבור הדיון החדש';
 $string['move:noavailableforums'] = 'אין פורומים זמינים';
@@ -512,8 +512,8 @@ $string['move:originaldiscussion'] = 'הדיון המקורי';
 $string['move:originalpost'] = 'ההודעה המקורית';
 $string['move:postplaceholder'] = 'זוהי ההודעה המיועדת להעברה';
 $string['move:select'] = 'בחירה:';
-$string['move:thisouilforum'] = 'העברה לתוך דיון אחר בפורום זה';
-$string['move:thisouilforumnew'] = 'קביעה כדיון חדש בפורום זה';
+$string['move:thisforumx'] = 'העברה לתוך דיון אחר בפורום זה';
+$string['move:thisforumxnew'] = 'קביעה כדיון חדש בפורום זה';
 $string['move:title'] = 'הודעות להעברה:';
 $string['movebutton'] = 'העברה';
 $string['movediscussion'] = 'העברת דיון';
@@ -522,7 +522,7 @@ $string['movedmarker'] = '(הוזז)';
 $string['movemessage'] = 'העברה';
 $string['movepost'] = 'העברת הודעה';
 $string['movethisdiscussionto'] = 'העבר דיון זה ל...';
-$string['movetoouilforum'] = 'העברה';
+$string['movetoforumx'] = 'העברה';
 $string['multidiscussionswarning'] = 'זהירות! הפורום מכיל יותר מדיון אחד - נבחר הדיון העדכני ביותר';
 $string['mustprovidediscussionorpost'] = 'עליך לתת מספר מזהה של דיון או של הודעה לייצא';
 $string['myprofileownpost'] = 'ההודעות שלי בפורום';
@@ -583,9 +583,9 @@ $string['opendiscussionthread'] = 'פריסת תוכן הדיון';
 $string['overviewnumpostssince'] = 'הודעות שפורסמו מאז התחברות אחרונה';
 $string['overviewnumunread'] = 'הסך הכולל שלא נקראו';
 $string['page'] = 'עמוד';
-$string['page-mod-ouilforum-x'] = 'כל עמוד של רכיב הפורום';
-$string['page-mod-ouilforum-view'] = 'עמוד ראשי של רכיב הפורום';
-$string['page-mod-ouilforum-discuss'] = 'עמוד פתיל דיון של רכיב הפורום';
+$string['page-mod-forumx-x'] = 'כל עמוד של רכיב הפורום';
+$string['page-mod-forumx-view'] = 'עמוד ראשי של רכיב הפורום';
+$string['page-mod-forumx-discuss'] = 'עמוד פתיל דיון של רכיב הפורום';
 $string['pagingbar'] = 'שורת ניווט';
 $string['pagingbar:first'] = 'לדף הראשון';
 $string['pagingbar:last'] = 'לדף האחרון';
@@ -607,7 +607,7 @@ $string['placeholderreplycontent'] = 'תוכן התגובה...';
 $string['placeholderdiscussionsubject'] = 'נושא הדיון...';
 $string['placeholderdiscussioncontent'] = 'תוכן הדיון...';
 $string['pluginadministration'] = 'ניהול הפורום';
-$string['pluginname'] = 'פורום או"פ';
+$string['pluginname'] = 'פורום מופ״ת';
 $string['postadded'] = '<p>הודעתך נוספה בהצלחה.</p>
 <p>יש לך {$a} כדי לערוך את הודעתך במידה ותרצה לבצע שינויים.</p>';
 $string['postaddedsuccess'] = 'פרסום הודעתך התווסף בהצלחה.';
@@ -853,7 +853,7 @@ $string['useremaildontexist'] = 'כתובת e-mail זו לא נמצאת במער
 $string['usermarksread'] = 'סימן הקריאה של מסר ידני';
 $string['viewalldiscussions'] = 'צפיה בכל הדיונים';
 $string['warnafter'] = 'מספר הודעות עד לשליחת אזהרה';
-$string['warnafter_help'] = 'סטודנטים יכולים לקבל התראה אם אם מתקרבים למספר ההודעות המירבי המותר להם בפרק זמן נתון. אפשרות זו קובעת אחרי כמה הודעות תופיע ההתרעה. משתמשים עם ההרשאה mod/ouilforum:postwithoutthrottling פטורים מההגבלות.';
+$string['warnafter_help'] = 'סטודנטים יכולים לקבל התראה אם אם מתקרבים למספר ההודעות המירבי המותר להם בפרק זמן נתון. אפשרות זו קובעת אחרי כמה הודעות תופיע ההתרעה. משתמשים עם ההרשאה mod/forumx:postwithoutthrottling פטורים מההגבלות.';
 $string['warnformorepost'] = 'אזהרה! יש יותר מדיון אחד בפורום זה - נבחר העדכני מביניהם';
 $string['yournewquestion'] = 'השאלה החדשה שלך';
 $string['yournewtopic'] = 'נושא הדיון החדש שלך';

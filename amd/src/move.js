@@ -16,9 +16,9 @@
 /**
  * This class manages the actions in the move form.
  *
- * @module    mod_ouilforum/move
- * @package   mod_ouilforum
- * @copyright 2018 onwards The Open University of Israel
+ * @module    mod_forumx/move
+ * @package   mod_forumx
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since     3.1
  */

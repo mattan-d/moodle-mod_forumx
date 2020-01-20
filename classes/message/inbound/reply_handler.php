@@ -17,17 +17,17 @@
 /**
  * A Handler to process replies to forum posts.
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @subpackage core_message
  * @copyright  2014 Andrew Nicols
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_ouilforum\message\inbound;
+namespace mod_forumx\message\inbound;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/mod/ouilforum/lib.php');
+require_once($CFG->dirroot.'/mod/forumx/lib.php');
 require_once($CFG->dirroot.'/repository/lib.php');
 require_once($CFG->libdir.'/completionlib.php');
 
@@ -45,7 +45,7 @@ class reply_handler extends \core\message\inbound\handler {
      * @return string
      */
     public function get_description() {
-        return get_string('reply_handler', 'mod_ouilforum');
+        return get_string('reply_handler', 'mod_forumx');
     }
 
     /**
@@ -55,7 +55,7 @@ class reply_handler extends \core\message\inbound\handler {
      * @return string
      */
     public function get_name() {
-        return get_string('reply_handler_name', 'mod_ouilforum');
+        return get_string('reply_handler_name', 'mod_forumx');
     }
 
     /**
@@ -70,29 +70,29 @@ class reply_handler extends \core\message\inbound\handler {
         global $DB, $USER;
 
         // Load the post being replied to.
-        $post = $DB->get_record('ouilforum_posts', array('id' => $record->datavalue));
+        $post = $DB->get_record('forumx_posts', array('id' => $record->datavalue));
         if (!$post) {
             mtrace("--> Unable to find a post matching with id {$record->datavalue}");
             return false;
         }
 
         // Load the discussion that this post is in.
-        $discussion = $DB->get_record('ouilforum_discussions', array('id' => $post->discussion));
+        $discussion = $DB->get_record('forumx_discussions', array('id' => $post->discussion));
         if (!$post) {
             mtrace("--> Unable to find the discussion for post {$record->datavalue}");
             return false;
         }
 
         // Load the other required data.
-        $forum = $DB->get_record('ouilforum', array('id' => $discussion->forum));
+        $forum = $DB->get_record('forumx', array('id' => $discussion->forum));
         $course = $DB->get_record('course', array('id' => $forum->course));
-        $cm = get_fast_modinfo($course->id)->instances['ouilforum'][$forum->id];
+        $cm = get_fast_modinfo($course->id)->instances['forumx'][$forum->id];
         $modcontext = \context_module::instance($cm->id);
         $usercontext = \context_user::instance($USER->id);
 
         // Make sure user can post in this discussion.
         $canpost = true;
-        if (!ouilforum_user_can_post($forum, $discussion, $USER, $cm, $course, $modcontext)) {
+        if (!forumx_user_can_post($forum, $discussion, $USER, $cm, $course, $modcontext)) {
             $canpost = false;
         }
 
@@ -114,28 +114,28 @@ class reply_handler extends \core\message\inbound\handler {
         if (!$canpost) {
             $data = new \stdClass();
             $data->forum = $forum;
-            throw new \core\message\inbound\processing_failed_exception('messageinboundnopostforum', 'mod_ouilforum', $data);
+            throw new \core\message\inbound\processing_failed_exception('messageinboundnopostforum', 'mod_forumx', $data);
         }
 
         // And check the availability.
         if (!\core_availability\info_module::is_user_visible($cm)) {
             $data = new \stdClass();
             $data->forum = $forum;
-            throw new \core\message\inbound\processing_failed_exception('messageinboundforumhidden', 'mod_ouilforum', $data);
+            throw new \core\message\inbound\processing_failed_exception('messageinboundforumhidden', 'mod_forumx', $data);
         }
 
         // Before we add this we must check that the user will not exceed the blocking threshold.
         // This should result in an appropriate reply.
-        $thresholdwarning = ouilforum_check_throttling($forum, $cm);
+        $thresholdwarning = forumx_check_throttling($forum, $cm);
         if (!empty($thresholdwarning) && !$thresholdwarning->canpost) {
             $data = new \stdClass();
             $data->forum = $forum;
             $data->message = get_string($thresholdwarning->errorcode, $thresholdwarning->module, $thresholdwarning->additional);
-            throw new \core\message\inbound\processing_failed_exception('messageinboundthresholdhit', 'mod_ouilforum', $data);
+            throw new \core\message\inbound\processing_failed_exception('messageinboundthresholdhit', 'mod_forumx', $data);
         }
 
         $subject = clean_param($messagedata->envelope->subject, PARAM_TEXT);
-        $restring = get_string('re', 'ouilforum');
+        $restring = get_string('re', 'forumx');
         if (strpos($subject, $discussion->name)) {
             // The discussion name is mentioned in the e-mail subject. This is probably just the standard reply. Use the
             // standard reply subject instead.
@@ -174,14 +174,14 @@ class reply_handler extends \core\message\inbound\handler {
         if (!empty($messagedata->attachments['attachment']) && count($messagedata->attachments['attachment'])) {
             $attachmentcount = count($messagedata->attachments['attachment']);
             if (empty($forum->maxattachments) || $forum->maxbytes == 1 ||
-                    !has_capability('mod/ouilforum:createattachment', $modcontext)) {
+                    !has_capability('mod/forumx:createattachment', $modcontext)) {
                 // Attachments are not allowed.
                 mtrace("--> User does not have permission to attach files in this forum. Rejecting e-mail.");
 
                 $data = new \stdClass();
                 $data->forum = $forum;
                 $data->attachmentcount = $attachmentcount;
-                throw new \core\message\inbound\processing_failed_exception('messageinboundattachmentdisallowed', 'mod_ouilforum', $data);
+                throw new \core\message\inbound\processing_failed_exception('messageinboundattachmentdisallowed', 'mod_forumx', $data);
             }
 
             if ($forum->maxattachments < $attachmentcount) {
@@ -192,7 +192,7 @@ class reply_handler extends \core\message\inbound\handler {
                 $data = new \stdClass();
                 $data->forum = $forum;
                 $data->attachmentcount = $attachmentcount;
-                throw new \core\message\inbound\processing_failed_exception('messageinboundfilecountexceeded', 'mod_ouilforum', $data);
+                throw new \core\message\inbound\processing_failed_exception('messageinboundfilecountexceeded', 'mod_forumx', $data);
             }
 
             $filesize = 0;
@@ -211,7 +211,7 @@ class reply_handler extends \core\message\inbound\handler {
                 $data->forum = $forum;
                 $data->maxbytes = display_size($forum->maxbytes);
                 $data->filesize = display_size($filesize);
-                throw new \core\message\inbound\processing_failed_exception('messageinboundfilesizeexceeded', 'mod_ouilforum', $data);
+                throw new \core\message\inbound\processing_failed_exception('messageinboundfilesizeexceeded', 'mod_forumx', $data);
             }
         }
 
@@ -228,7 +228,7 @@ class reply_handler extends \core\message\inbound\handler {
         }
 
         // Insert the message content now.
-        $addpost->id = ouilforum_add_new_post($addpost, true);
+        $addpost->id = forumx_add_new_post($addpost, true);
 
         // Log the new post creation.
         $params = array(
@@ -240,9 +240,9 @@ class reply_handler extends \core\message\inbound\handler {
                 'forumtype'     => $forum->type,
             )
         );
-        $event = \mod_ouilforum\event\post_created::create($params);
-        $event->add_record_snapshot('ouilforum_posts', $addpost);
-        $event->add_record_snapshot('ouilforum_discussions', $discussion);
+        $event = \mod_forumx\event\post_created::create($params);
+        $event->add_record_snapshot('forumx_posts', $addpost);
+        $event->add_record_snapshot('forumx_discussions', $discussion);
         $event->trigger();
 
         // Update completion state.
@@ -304,12 +304,12 @@ class reply_handler extends \core\message\inbound\handler {
     public function get_success_message(\stdClass $messagedata, $handlerresult) {
         $a = new \stdClass();
         $a->subject = $handlerresult->subject;
-        $discussionurl = new \moodle_url('/mod/ouilforum/discuss.php', array('d' => $handlerresult->discussion));
+        $discussionurl = new \moodle_url('/mod/forumx/discuss.php', array('d' => $handlerresult->discussion));
         $a->discussionurl = $discussionurl->out();
 
         $message = new \stdClass();
-        $message->plain = get_string('postbymailsuccess', 'mod_ouilforum', $a);
-        $message->html = get_string('postbymailsuccess_html', 'mod_ouilforum', $a);
+        $message->plain = get_string('postbymailsuccess', 'mod_forumx', $a);
+        $message->html = get_string('postbymailsuccess_html', 'mod_forumx', $a);
         return $message;
     }
 }

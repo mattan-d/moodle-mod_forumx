@@ -15,20 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_ouilforum read tracking enabled event.
+ * The mod_forumx read tracking enabled event.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2014 Dan Poltawski <dan@moodle.com>
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_ouilforum\event;
+namespace mod_forumx\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_ouilforum read tracking enabled event class.
+ * The mod_forumx read tracking enabled event class.
  *
  * @property-read array $other {
  *      Extra information about the event.
@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
  *      - int forumid: The id of the forum which readtracking has been enabled on.
  * }
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @since      Moodle 2.7
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -68,7 +68,7 @@ class readtracking_enabled extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventreadtrackingenabled', 'mod_ouilforum');
+        return get_string('eventreadtrackingenabled', 'mod_forumx');
     }
 
     /**
@@ -77,7 +77,7 @@ class readtracking_enabled extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/ouilforum/view.php', array('f' => $this->other['forumid']));
+        return new \moodle_url('/mod/forumx/view.php', array('f' => $this->other['forumid']));
     }
 
     /**
@@ -86,7 +86,7 @@ class readtracking_enabled extends \core\event\base {
      * @return array|null
      */
     protected function get_legacy_logdata() {
-        return array($this->courseid, 'ouilforum', 'start tracking', 'view.php?f=' . $this->other['forumid'],
+        return array($this->courseid, 'forumx', 'start tracking', 'view.php?f=' . $this->other['forumid'],
             $this->other['forumid'], $this->contextinstanceid);
     }
 
@@ -114,7 +114,7 @@ class readtracking_enabled extends \core\event\base {
 
     public static function get_other_mapping() {
         $othermapped = array();
-        $othermapped['forumid'] = array('db' => 'ouilforum', 'restore' => 'ouilforum');
+        $othermapped['forumid'] = array('db' => 'forumx', 'restore' => 'forumx');
 
         return $othermapped;
     }

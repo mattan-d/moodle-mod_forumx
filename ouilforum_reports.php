@@ -16,8 +16,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   mod_ouilforum
- * @copyright 2018 onwards The Open University of Israel
+ * @package   mod_forumx
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -25,7 +25,7 @@ require_once('../../config.php');
 global $CFG;
 require_once($CFG->libdir.'/filelib.php');
 
-$filepath = $CFG->dataroot."/ouilforum_reports";
+$filepath = $CFG->dataroot."/forumx_reports";
 
 require_login();
 if (!is_siteadmin()) {
@@ -35,7 +35,7 @@ if (!is_siteadmin()) {
 	$file1path = "";
 	
 	if ($file != '') {
-		$file1path = $CFG->dataroot."/ouilforum_reports/".$file;
+		$file1path = $CFG->dataroot."/forumx_reports/".$file;
 		send_file($file1path, basename($file1path), 1, 0, 0, 1);
 		echo "<br>Downloading file: ".$file;
 	} else {
@@ -43,8 +43,8 @@ if (!is_siteadmin()) {
 		echo "<b>Reports of clear_subscribe_cli:</b><br><ul>";
 		foreach ($fileslist as $file1) {
 			if (strpos($file1, "clear_subscribe_cli_") !== false) {
-				$file1path = $CFG->dataroot."/ouilforum_reports/".$file1;
-				echo '<li><a href="/mod/ouilforum/ouilforum_reports.php?file='.$file1.'">'.$file1.'</a></li>';
+				$file1path = $CFG->dataroot."/forumx_reports/".$file1;
+				echo '<li><a href="/mod/forumx/forumx_reports.php?file='.$file1.'">'.$file1.'</a></li>';
 			}
 		}
 		echo "</ul>";

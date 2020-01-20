@@ -15,27 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * OUILForum posts search area
+ * forumx posts search area
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @copyright  2015 David Monllao {@link http://www.davidmonllao.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_ouilforum\search;
+namespace mod_forumx\search;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/mod/ouilforum/lib.php');
+require_once($CFG->dirroot . '/mod/forumx/lib.php');
 
 /**
- * OUILForum posts search area.
+ * forumx posts search area.
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @copyright  2015 David Monllao {@link http://www.davidmonllao.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class post extends \core_search\area\base_mod {
+class post extends \core_search\base_mod {
 
     /**
      * @var array Internal quick static cache.
@@ -62,9 +62,9 @@ class post extends \core_search\area\base_mod {
         global $DB;
 
         $sql = 'SELECT fp.*, f.id AS forumid, f.course AS courseid
-                  FROM {ouilforum_posts} fp
-                  JOIN {ouilforum_discussions} fd ON fd.id = fp.discussion
-                  JOIN {ouilforum} f ON f.id = fd.ouilforum
+                  FROM {forumx_posts} fp
+                  JOIN {forumx_discussions} fd ON fd.id = fp.discussion
+                  JOIN {forumx} f ON f.id = fd.forumx
                  WHERE fp.modified >= ? ORDER BY fp.modified ASC';
         return $DB->get_recordset_sql($sql, array($modifiedfrom));
     }
@@ -79,7 +79,7 @@ class post extends \core_search\area\base_mod {
     public function get_document($record, $options = array()) {
 
         try {
-            $cm = $this->get_cm('ouilforum', $record->forumid, $record->courseid);
+            $cm = $this->get_cm('forumx', $record->forumid, $record->courseid);
             $context = \context_module::instance($cm->id);
         } catch (\dml_missing_record_exception $ex) {
             // Notify it as we run here as admin, we should see everything.
@@ -142,12 +142,12 @@ class post extends \core_search\area\base_mod {
         // Because this is used during indexing, we don't want to cache posts. Would result in memory leak.
         unset($this->postsdata[$postid]);
 
-        $cm = $this->get_cm('ouilforum', $post->ouilforum, $document->get('courseid'));
+        $cm = $this->get_cm('forumx', $post->forumx, $document->get('courseid'));
         $context = \context_module::instance($cm->id);
 
         // Get the files and attach them.
         $fs = get_file_storage();
-        $files = $fs->get_area_files($context->id, 'mod_ouilforum', 'attachment', $postid, "filename", false);
+        $files = $fs->get_area_files($context->id, 'mod_forumx', 'attachment', $postid, "filename", false);
         foreach ($files as $file) {
             $document->add_stored_file($file);
         }
@@ -166,9 +166,9 @@ class post extends \core_search\area\base_mod {
 
         try {
             $post = $this->get_post($id);
-            $ouilforum = $this->get_forum($post->ouilforum);
+            $forumx = $this->get_forum($post->forumx);
             $discussion = $this->get_discussion($post->discussion);
-            $cminfo = $this->get_cm('ouilforum', $ouilforum->id, $ouilforum->course);
+            $cminfo = $this->get_cm('forumx', $forumx->id, $forumx->course);
             $cm = $cminfo->get_course_module_record();
         } catch (\dml_missing_record_exception $ex) {
             return \core_search\manager::ACCESS_DELETED;
@@ -181,7 +181,7 @@ class post extends \core_search\area\base_mod {
             return \core_search\manager::ACCESS_DENIED;
         }
 
-        if (!ouilforum_user_can_see_post($ouilforum, $discussion, $post, $USER, $cm)) {
+        if (!forumx_user_can_see_post($forumx, $discussion, $post, $USER, $cm)) {
             return \core_search\manager::ACCESS_DENIED;
         }
 
@@ -197,7 +197,7 @@ class post extends \core_search\area\base_mod {
     public function get_doc_url(\core_search\document $doc) {
         // The post is already in static cache, we fetch it in self::search_access.
         $post = $this->get_post($doc->get('itemid'));
-        return new \moodle_url('/mod/ouilforum/discuss.php', array('d' => $post->discussion));
+        return new \moodle_url('/mod/forumx/discuss.php', array('d' => $post->discussion));
     }
 
     /**
@@ -208,7 +208,7 @@ class post extends \core_search\area\base_mod {
      */
     public function get_context_url(\core_search\document $doc) {
         $contextmodule = \context::instance_by_id($doc->get('contextid'));
-        return new \moodle_url('/mod/ouilforum/view.php', array('id' => $contextmodule->instanceid));
+        return new \moodle_url('/mod/forumx/view.php', array('id' => $contextmodule->instanceid));
     }
 
     /**
@@ -220,9 +220,9 @@ class post extends \core_search\area\base_mod {
      */
     protected function get_post($postid) {
         if (empty($this->postsdata[$postid])) {
-            $this->postsdata[$postid] = ouilforum_get_post_full($postid);
+            $this->postsdata[$postid] = forumx_get_post_full($postid);
             if (!$this->postsdata[$postid]) {
-                throw new \dml_missing_record_exception('ouilforum_posts');
+                throw new \dml_missing_record_exception('forumx_posts');
             }
         }
         return $this->postsdata[$postid];
@@ -241,7 +241,7 @@ class post extends \core_search\area\base_mod {
         global $DB;
 
         if (empty($this->forumsdata[$forumid])) {
-            $this->forumsdata[$forumid] = $DB->get_record('ouilforum', array('id' => $forumid), '*', MUST_EXIST);
+            $this->forumsdata[$forumid] = $DB->get_record('forumx', array('id' => $forumid), '*', MUST_EXIST);
         }
         return $this->forumsdata[$forumid];
     }
@@ -257,7 +257,7 @@ class post extends \core_search\area\base_mod {
         global $DB;
 
         if (empty($this->discussionsdata[$discussionid])) {
-            $this->discussionsdata[$discussionid] = $DB->get_record('ouilforum_discussions',
+            $this->discussionsdata[$discussionid] = $DB->get_record('forumx_discussions',
                 array('id' => $discussionid), '*', MUST_EXIST);
         }
         return $this->discussionsdata[$discussionid];

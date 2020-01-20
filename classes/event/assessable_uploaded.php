@@ -15,20 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_ouilforum assessable uploaded event.
+ * The mod_forumx assessable uploaded event.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2013 Frédéric Massart
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_ouilforum\event;
+namespace mod_forumx\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_ouilforum assessable uploaded event class.
+ * The mod_forumx assessable uploaded event class.
  *
  * @property-read array $other {
  *      Extra information about event.
@@ -37,7 +37,7 @@ defined('MOODLE_INTERNAL') || die();
  *      - string triggeredfrom: name of the function from where event was triggered.
  * }
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @since      Moodle 2.6
  * @copyright  2013 Frédéric Massart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -62,7 +62,7 @@ class assessable_uploaded extends \core\event\assessable_uploaded {
      */
     protected function get_legacy_eventdata() {
         $eventdata = new \stdClass();
-        $eventdata->modulename   = 'ouilforum';
+        $eventdata->modulename   = 'forumx';
         $eventdata->name         = $this->other['triggeredfrom'];
         $eventdata->cmid         = $this->contextinstanceid;
         $eventdata->itemid       = $this->objectid;
@@ -90,7 +90,7 @@ class assessable_uploaded extends \core\event\assessable_uploaded {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventassessableuploaded', 'mod_ouilforum');
+        return get_string('eventassessableuploaded', 'mod_forumx');
     }
 
     /**
@@ -99,7 +99,7 @@ class assessable_uploaded extends \core\event\assessable_uploaded {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/ouilforum/discuss.php', array('d' => $this->other['discussionid'], 'parent' => $this->objectid));
+        return new \moodle_url('/mod/forumx/discuss.php', array('d' => $this->other['discussionid'], 'parent' => $this->objectid));
     }
 
     /**
@@ -109,7 +109,7 @@ class assessable_uploaded extends \core\event\assessable_uploaded {
      */
     protected function init() {
         parent::init();
-        $this->data['objecttable'] = 'ouilforum_posts';
+        $this->data['objecttable'] = 'forumx_posts';
     }
 
     /**
@@ -129,12 +129,12 @@ class assessable_uploaded extends \core\event\assessable_uploaded {
     }
 
     public static function get_objectid_mapping() {
-        return array('db' => 'ouilforum_posts', 'restore' => 'ouilforum_post');
+        return array('db' => 'forumx_posts', 'restore' => 'forumx_post');
     }
 
     public static function get_other_mapping() {
         $othermapped = array();
-        $othermapped['discussionid'] = array('db' => 'ouilforum_discussions', 'restore' => 'ouilforum_discussion');
+        $othermapped['discussionid'] = array('db' => 'forumx_discussions', 'restore' => 'forumx_discussion');
 
         return $othermapped;
     }

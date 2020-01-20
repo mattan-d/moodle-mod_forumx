@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/ouilforum/db" VERSION="20140114" COMMENT="XMLDB file for Moodle mod/ouilforum"
+<XMLDB PATH="mod/forumx/db" VERSION="20140114" COMMENT="XMLDB file for Moodle mod/forumx"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="ouilforum" COMMENT="Forums contain and structure discussion">
+    <TABLE NAME="forumx" COMMENT="Forums contain and structure discussion">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -42,11 +42,11 @@
         <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="ouilforum_discussions" COMMENT="Forums are composed of discussions">
+    <TABLE NAME="forumx_discussions" COMMENT="Forums are composed of discussions">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="ouilforum" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="forumx" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="firstpost" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -61,14 +61,14 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="ouilforum" TYPE="foreign" FIELDS="ouilforum" REFTABLE="ouilforum" REFFIELDS="id"/>
+        <KEY NAME="forumx" TYPE="foreign" FIELDS="forumx" REFTABLE="forumx" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
         <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
         <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="ouilforum_posts" COMMENT="All posts are stored in this table">
+    <TABLE NAME="forumx_posts" COMMENT="All posts are stored in this table">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="discussion" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -88,8 +88,8 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="discussion" TYPE="foreign" FIELDS="discussion" REFTABLE="ouilforum_discussions" REFFIELDS="id"/>
-        <KEY NAME="parent" TYPE="foreign" FIELDS="parent" REFTABLE="ouilforum_posts" REFFIELDS="id" COMMENT="note that to make this recursive FK working someday, the parent field must be decalred NULL"/>
+        <KEY NAME="discussion" TYPE="foreign" FIELDS="discussion" REFTABLE="forumx_discussions" REFFIELDS="id"/>
+        <KEY NAME="parent" TYPE="foreign" FIELDS="parent" REFTABLE="forumx_posts" REFFIELDS="id" COMMENT="note that to make this recursive FK working someday, the parent field must be decalred NULL"/>
       </KEYS>
       <INDEXES>
         <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
@@ -97,7 +97,7 @@
         <INDEX NAME="mailed" UNIQUE="false" FIELDS="mailed"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="ouilforum_queue" COMMENT="For keeping track of posts that will be mailed in digest form">
+    <TABLE NAME="forumx_queue" COMMENT="For keeping track of posts that will be mailed in digest form">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -108,45 +108,45 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="discussionid" TYPE="foreign" FIELDS="discussionid" REFTABLE="forum_discussions" REFFIELDS="id"/>
-        <KEY NAME="postid" TYPE="foreign" FIELDS="postid" REFTABLE="ouilforum_posts" REFFIELDS="id"/>
+        <KEY NAME="postid" TYPE="foreign" FIELDS="postid" REFTABLE="forumx_posts" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
         <INDEX NAME="user" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="ouilforum_subscriptions" COMMENT="Keeps track of who is subscribed to what forum">
+    <TABLE NAME="forumx_subscriptions" COMMENT="Keeps track of who is subscribed to what forum">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="ouilforum" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="forumx" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="ouilforum" TYPE="foreign" FIELDS="ouilforum" REFTABLE="ouilforum" REFFIELDS="id"/>
+        <KEY NAME="forumx" TYPE="foreign" FIELDS="forumx" REFTABLE="forumx" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
         <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="ouilforum_digests" COMMENT="Keeps track of user mail delivery preferences for each forum">
+    <TABLE NAME="forumx_digests" COMMENT="Keeps track of user mail delivery preferences for each forum">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="ouilforum" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="forumx" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="maildigest" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="-1" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
-        <KEY NAME="ouilforum" TYPE="foreign" FIELDS="ouilforum" REFTABLE="ouilforum" REFFIELDS="id"/>
-        <KEY NAME="ouilforumdigest" TYPE="unique" FIELDS="ouilforum, userid, maildigest"/>
+        <KEY NAME="forumx" TYPE="foreign" FIELDS="forumx" REFTABLE="forumx" REFFIELDS="id"/>
+        <KEY NAME="forumxdigest" TYPE="unique" FIELDS="forumx, userid, maildigest"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="ouilforum_read" COMMENT="Tracks each users read posts">
+    <TABLE NAME="forumx_read" COMMENT="Tracks each users read posts">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="ouilforumid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="forumxid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="discussionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="postid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="firstread" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -156,25 +156,25 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="userid-ouilforumid" UNIQUE="false" FIELDS="userid, ouilforumid"/>
+        <INDEX NAME="userid-forumxid" UNIQUE="false" FIELDS="userid, forumxid"/>
         <INDEX NAME="userid-discussionid" UNIQUE="false" FIELDS="userid, discussionid"/>
         <INDEX NAME="postid-userid" UNIQUE="false" FIELDS="postid, userid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="ouilforum_track_prefs" COMMENT="Tracks each users untracked forums">
+    <TABLE NAME="forumx_track_prefs" COMMENT="Tracks each users untracked forums">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="ouilforumid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="forumxid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="userid-ouilforumid" UNIQUE="false" FIELDS="userid, ouilforumid"/>
+        <INDEX NAME="userid-forumxid" UNIQUE="false" FIELDS="userid, forumxid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="ouilforum_discussion_sub" COMMENT="for users who are subscribed to a discussion">
+    <TABLE NAME="forumx_discussion_sub" COMMENT="for users who are subscribed to a discussion">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -183,9 +183,9 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="forum" TYPE="foreign" FIELDS="forumid" REFTABLE="ouilforum" REFFIELDS="id"/>
+        <KEY NAME="forum" TYPE="foreign" FIELDS="forumid" REFTABLE="forumx" REFFIELDS="id"/>
         <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
-        <KEY NAME="discussionid" TYPE="foreign" FIELDS="discussionid" REFTABLE="ouilforum_discussions" REFFIELDS="id"/>
+        <KEY NAME="discussionid" TYPE="foreign" FIELDS="discussionid" REFTABLE="forumx_discussions" REFFIELDS="id"/>
         <KEY NAME="user_discussions" TYPE="unique" FIELDS="userid, discussionid" COMMENT="Users may only have one discussion preferences per discussion"/>
       </KEYS>
       <INDEXES>
@@ -193,7 +193,7 @@
         <INDEX NAME="discussion_subs_userid" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="ouilforum_flags" COMMENT="stores flaged posts">
+    <TABLE NAME="forumx_flags" COMMENT="stores flaged posts">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>

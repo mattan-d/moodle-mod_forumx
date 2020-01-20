@@ -19,13 +19,13 @@
  * Set the mail digest option in a specific forum for a user.
  *
  * @copyright 2013 Andrew Nicols
- * @copyright 2018 onwards The Open University of Israel
- * @package   mod_ouilforum
+ * @copyright 2020 onwards MOFET
+ * @package   mod_forumx
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(__DIR__)).'/config.php');
-require_once($CFG->dirroot.'/mod/ouilforum/lib.php');
+require_once($CFG->dirroot.'/mod/forumx/lib.php');
 
 $id          = required_param('id', PARAM_INT);
 $maildigest  = required_param('maildigest', PARAM_INT);
@@ -34,39 +34,39 @@ $backtoindex = optional_param('backtoindex', 0, PARAM_INT);
 // We must have a valid session key.
 require_sesskey();
 
-$forum   = $DB->get_record('ouilforum', array('id' => $id));
+$forum   = $DB->get_record('forumx', array('id' => $id));
 $course  = $DB->get_record('course', array('id' => $forum->course), '*', MUST_EXIST);
-$cm      = get_coursemodule_from_instance('ouilforum', $forum->id, $course->id, false, MUST_EXIST);
+$cm      = get_coursemodule_from_instance('forumx', $forum->id, $course->id, false, MUST_EXIST);
 $context = context_module::instance($cm->id);
 
 require_login($course, false, $cm);
 
-$url = new moodle_url('/mod/ouilforum/maildigest.php', array(
+$url = new moodle_url('/mod/forumx/maildigest.php', array(
     'id' => $id,
     'maildigest' => $maildigest,
 ));
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 
-$digestoptions = ouilforum_get_user_digest_options();
+$digestoptions = forumx_get_user_digest_options();
 
 $info = new stdClass();
 $info->name  = fullname($USER);
 $info->forum = format_string($forum->name);
-ouilforum_set_user_maildigest($forum, $maildigest);
+forumx_set_user_maildigest($forum, $maildigest);
 $info->maildigest = $maildigest;
 
 if ($maildigest === -1) {
     // Get the default maildigest options.
     $info->maildigest = $USER->maildigest;
     $info->maildigesttitle = $digestoptions[$info->maildigest];
-    $info->maildigestdescription = get_string('emaildigest_'.$info->maildigest, 'mod_ouilforum', $info);
-    $updatemessage = get_string('emaildigestupdated_default', 'ouilforum', $info);
+    $info->maildigestdescription = get_string('emaildigest_'.$info->maildigest, 'mod_forumx', $info);
+    $updatemessage = get_string('emaildigestupdated_default', 'forumx', $info);
 } else {
     $info->maildigesttitle = $digestoptions[$info->maildigest];
     $info->maildigestdescription = get_string('emaildigest_'.$info->maildigest,
-        'mod_ouilforum', $info);
-    $updatemessage = get_string('emaildigestupdated', 'ouilforum', $info);
+        'mod_forumx', $info);
+    $updatemessage = get_string('emaildigestupdated', 'forumx', $info);
 }
 
 if ($backtoindex) {

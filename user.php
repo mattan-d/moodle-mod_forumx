@@ -18,14 +18,14 @@
 /**
  * Display user activity reports for a course
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once($CFG->dirroot.'/mod/ouilforum/lib.php');
+require_once($CFG->dirroot.'/mod/forumx/lib.php');
 require_once($CFG->dirroot.'/rating/lib.php');
 
 $courseid = optional_param('course', null, PARAM_INT);    // Limit the posts to just this course.
@@ -45,7 +45,7 @@ $discussionsonly = ($mode !== 'posts');
 $isspecificcourse = !is_null($courseid);
 $iscurrentuser = ($USER->id == $userid);
 
-$url = new moodle_url('/mod/ouilforum/user.php', array('id' => $userid));
+$url = new moodle_url('/mod/forumx/user.php', array('id' => $userid));
 if ($isspecificcourse) {
     $url->param('course', $courseid);
 }
@@ -112,7 +112,7 @@ if ($isspecificcourse) {
 
     // Now we need to get all of the courses to search.
     // All courses where the user has posted within a forum will be returned.
-    $courses = ouilforum_get_courses_user_posted_in($user, $discussionsonly);
+    $courses = forumx_get_courses_user_posted_in($user, $discussionsonly);
 }
 
 $params = array(
@@ -120,11 +120,11 @@ $params = array(
     'relateduserid' => $user->id,
     'other' => array('reportmode' => $mode),
 );
-$event = \mod_ouilforum\event\user_report_viewed::create($params);
+$event = \mod_forumx\event\user_report_viewed::create($params);
 $event->trigger();
 
 // Get the posts by the requested user that the current user can access.
-$result = ouilforum_get_posts_by_user($user, $courses, $isspecificcourse, $discussionsonly, ($page * $perpage), $perpage);
+$result = forumx_get_posts_by_user($user, $courses, $isspecificcourse, $discussionsonly, ($page * $perpage), $perpage);
 
 // Check whether there are not posts to display.
 if (empty($result->posts)) {
@@ -159,13 +159,13 @@ if (empty($result->posts)) {
     }
 
     // Prepare the page title
-    $pagetitle = get_string('noposts', 'mod_ouilforum');
+    $pagetitle = get_string('noposts', 'mod_forumx');
 
     // Get the page heading
     if ($isspecificcourse) {
         $pageheading = format_string($course->fullname, true, array('context' => $coursecontext));
     } else {
-        $pageheading = get_string('pluginname', 'mod_ouilforum');
+        $pageheading = get_string('pluginname', 'mod_forumx');
     }
 
     // Next we need to set up the loading of the navigation and choose a message
@@ -174,9 +174,9 @@ if (empty($result->posts)) {
         // No need to extend the navigation it happens automatically for the
         // current user.
         if ($discussionsonly) {
-            $notification = get_string('nodiscussionsstartedbyyou', 'ouilforum');
+            $notification = get_string('nodiscussionsstartedbyyou', 'forumx');
         } else {
-            $notification = get_string('nopostsmadebyyou', 'ouilforum');
+            $notification = get_string('nopostsmadebyyou', 'forumx');
         }
         // These are the user's forum interactions.
         // Shut down the navigation 'Users' node.
@@ -189,10 +189,10 @@ if (empty($result->posts)) {
             $newusernode->make_active();
             // Check to see if this is a discussion or a post.
             if ($mode == 'posts') {
-                $navbar = $PAGE->navbar->add(get_string('posts', 'ouilforum'), new moodle_url('/mod/ouilforum/user.php',
+                $navbar = $PAGE->navbar->add(get_string('posts', 'forumx'), new moodle_url('/mod/forumx/user.php',
                         array('id' => $user->id, 'course' => $courseid)));
             } else {
-                $navbar = $PAGE->navbar->add(get_string('discussions', 'ouilforum'), new moodle_url('/mod/ouilforum/user.php',
+                $navbar = $PAGE->navbar->add(get_string('discussions', 'forumx'), new moodle_url('/mod/forumx/user.php',
                         array('id' => $user->id, 'course' => $courseid, 'mode' => 'discussions')));
             }
         }
@@ -207,24 +207,24 @@ if (empty($result->posts)) {
             $usernode->make_active();
             // Check to see if this is a discussion or a post.
             if ($mode == 'posts') {
-                $navbar = $PAGE->navbar->add(get_string('posts', 'ouilforum'), new moodle_url('/mod/ouilforum/user.php',
+                $navbar = $PAGE->navbar->add(get_string('posts', 'forumx'), new moodle_url('/mod/forumx/user.php',
                         array('id' => $user->id, 'course' => $courseid)));
             } else {
-                $navbar = $PAGE->navbar->add(get_string('discussions', 'ouilforum'), new moodle_url('/mod/ouilforum/user.php',
+                $navbar = $PAGE->navbar->add(get_string('discussions', 'forumx'), new moodle_url('/mod/forumx/user.php',
                         array('id' => $user->id, 'course' => $courseid, 'mode' => 'discussions')));
             }
         }
 
         $fullname = fullname($user);
         if ($discussionsonly) {
-            $notification = get_string('nodiscussionsstartedby', 'ouilforum', $fullname);
+            $notification = get_string('nodiscussionsstartedby', 'forumx', $fullname);
         } else {
-            $notification = get_string('nopostsmadebyuser', 'ouilforum', $fullname);
+            $notification = get_string('nopostsmadebyuser', 'forumx', $fullname);
         }
     } else {
         // Don't extend the navigation it would be giving out information that
         // the current uesr doesn't have access to.
-        $notification = get_string('cannotviewusersposts', 'ouilforum');
+        $notification = get_string('cannotviewusersposts', 'forumx');
         if ($isspecificcourse) {
             $url = new moodle_url('/course/view.php', array('id' => $courseid));
         } else {
@@ -267,27 +267,27 @@ $discussions = array();
 foreach ($result->posts as $post) {
     $discussions[] = $post->discussion;
 }
-$discussions = $DB->get_records_list('ouilforum_discussions', 'id', array_unique($discussions));
+$discussions = $DB->get_records_list('forumx_discussions', 'id', array_unique($discussions));
 
 //todo Rather than retrieving the ratings for each post individually it would be nice to do them in groups
 //however this requires creating arrays of posts with each array containing all of the posts from a particular forum,
 //retrieving the ratings then reassembling them all back into a single array sorted by post.modified (descending)
 $rm = new rating_manager();
 $ratingoptions = new stdClass;
-$ratingoptions->component = 'mod_ouilforum';
+$ratingoptions->component = 'mod_forumx';
 $ratingoptions->ratingarea = 'post';
 foreach ($result->posts as $post) {
-    if (!isset($result->forums[$post->ouilforum]) || !isset($discussions[$post->discussion])) {
+    if (!isset($result->forums[$post->forumx]) || !isset($discussions[$post->discussion])) {
         // Something very VERY dodgy has happened if we end up here
         continue;
     }
-    $forum = $result->forums[$post->ouilforum];
+    $forum = $result->forums[$post->forumx];
     $cm = $forum->cm;
     $discussion = $discussions[$post->discussion];
     $course = $result->courses[$discussion->course];
 
-    $forumurl = new moodle_url('/mod/ouilforum/view.php', array('id' => $cm->id));
-    $discussionurl = new moodle_url('/mod/ouilforum/discuss.php', array('d' => $post->discussion));
+    $forumurl = new moodle_url('/mod/forumx/view.php', array('id' => $cm->id));
+    $discussionurl = new moodle_url('/mod/forumx/discuss.php', array('d' => $post->discussion));
 
     // load ratings
     if ($forum->assessed != RATING_AGGREGATE_NONE) {
@@ -330,7 +330,7 @@ foreach ($result->posts as $post) {
         if ($post->parent != 0) {
             $postname = format_string($post->subject, true, array('context' => $cm->context));
             if (!$isspecificcourse && !$hasparentaccess) {
-                $fullsubjects[].= html_writer::link(new moodle_url('/mod/ouilforum/discuss.php', array('d' => $post->discussion, 'parent' => $post->id)), $postname);
+                $fullsubjects[].= html_writer::link(new moodle_url('/mod/forumx/discuss.php', array('d' => $post->discussion, 'parent' => $post->id)), $postname);
             } else {
                 $fullsubjects[].= html_writer::tag('span', $postname);
             }
@@ -341,17 +341,17 @@ foreach ($result->posts as $post) {
     // we've added will be lost.
     $post->subjectnoformat = true;
     $discussionurl->set_anchor('p'.$post->id);
-    $fulllink = html_writer::link($discussionurl, get_string("postincontext", "ouilforum"));
+    $fulllink = html_writer::link($discussionurl, get_string("postincontext", "forumx"));
 
-    $postoutput[] = ouilforum_print_post($post, $discussion, $forum, $cm, $course, false, false, false, null, null, null, null, null, true, OUILFORUM_DISPLAY_OPEN_CLEAN);
+    $postoutput[] = forumx_print_post($post, $discussion, $forum, $cm, $course, false, false, false, null, null, null, null, null, true, forumx_DISPLAY_OPEN_CLEAN);
 }
 
 $userfullname = fullname($user);
 
 if ($discussionsonly) {
-    $inpageheading = get_string('discussionsstartedby', 'mod_ouilforum', $userfullname);
+    $inpageheading = get_string('discussionsstartedby', 'mod_forumx', $userfullname);
 } else {
-    $inpageheading = get_string('postsmadebyuser', 'mod_ouilforum', $userfullname);
+    $inpageheading = get_string('postsmadebyuser', 'mod_forumx', $userfullname);
 }
 if ($isspecificcourse) {
     $a = new stdClass;
@@ -359,9 +359,9 @@ if ($isspecificcourse) {
     $a->coursename = format_string($course->fullname, true, array('context' => $coursecontext));
     $pageheading = $a->coursename;
     if ($discussionsonly) {
-        $pagetitle = get_string('discussionsstartedbyuserincourse', 'mod_ouilforum', $a);
+        $pagetitle = get_string('discussionsstartedbyuserincourse', 'mod_forumx', $a);
     } else {
-        $pagetitle = get_string('postsmadebyuserincourse', 'mod_ouilforum', $a);
+        $pagetitle = get_string('postsmadebyuserincourse', 'mod_forumx', $a);
     }
 } else {
     $pagetitle = $inpageheading;
@@ -380,10 +380,10 @@ if (isset($courseid) && $courseid != SITEID) {
     $usernode->make_active();
     // Check to see if this is a discussion or a post.
     if ($mode == 'posts') {
-        $navbar = $PAGE->navbar->add(get_string('posts', 'ouilforum'), new moodle_url('/mod/ouilforum/user.php',
+        $navbar = $PAGE->navbar->add(get_string('posts', 'forumx'), new moodle_url('/mod/forumx/user.php',
                 array('id' => $user->id, 'course' => $courseid)));
     } else {
-        $navbar = $PAGE->navbar->add(get_string('discussions', 'ouilforum'), new moodle_url('/mod/ouilforum/user.php',
+        $navbar = $PAGE->navbar->add(get_string('discussions', 'forumx'), new moodle_url('/mod/forumx/user.php',
                 array('id' => $user->id, 'course' => $courseid, 'mode' => 'discussions')));
     }
 }
@@ -400,9 +400,9 @@ if (!empty($postoutput)) {
     }
     echo $OUTPUT->paging_bar($result->totalcount, $page, $perpage, $url);
 } else if ($discussionsonly) {
-    echo $OUTPUT->heading(get_string('nodiscussionsstartedby', 'ouilforum', $userfullname));
+    echo $OUTPUT->heading(get_string('nodiscussionsstartedby', 'forumx', $userfullname));
 } else {
-    echo $OUTPUT->heading(get_string('noposts', 'ouilforum'));
+    echo $OUTPUT->heading(get_string('noposts', 'forumx'));
 }
 
 echo html_writer::end_tag('div');

@@ -15,20 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_ouilforum discussion created event.
+ * The mod_forumx discussion created event.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2014 Dan Poltawski <dan@moodle.com>
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_ouilforum\event;
+namespace mod_forumx\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_ouilforum discussion created event class.
+ * The mod_forumx discussion created event class.
  *
  * @property-read array $other {
  *      Extra information about the event.
@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
  *      - int forumid: The id of the forum the discussion is in.
  * }
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @since      Moodle 2.7
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -50,7 +50,7 @@ class discussion_created extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'c';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
-        $this->data['objecttable'] = 'ouilforum_discussions';
+        $this->data['objecttable'] = 'forumx_discussions';
     }
 
     /**
@@ -69,7 +69,7 @@ class discussion_created extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventdiscussioncreated', 'mod_ouilforum');
+        return get_string('eventdiscussioncreated', 'mod_forumx');
     }
 
     /**
@@ -78,7 +78,7 @@ class discussion_created extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/ouilforum/discuss.php', array('d' => $this->objectid));
+        return new \moodle_url('/mod/forumx/discuss.php', array('d' => $this->objectid));
     }
 
     /**
@@ -88,10 +88,10 @@ class discussion_created extends \core\event\base {
      */
     protected function get_legacy_logdata() {
 
-        // The legacy log table expects a relative path to /mod/ouilforum/.
-        $logurl = substr($this->get_url()->out_as_local_url(), strlen('/mod/ouilforum/'));
+        // The legacy log table expects a relative path to /mod/forumx/.
+        $logurl = substr($this->get_url()->out_as_local_url(), strlen('/mod/forumx/'));
 
-        return array($this->courseid, 'ouilforum', 'add discussion', $logurl, $this->objectid, $this->contextinstanceid);
+        return array($this->courseid, 'forumx', 'add discussion', $logurl, $this->objectid, $this->contextinstanceid);
     }
 
     /**
@@ -112,12 +112,12 @@ class discussion_created extends \core\event\base {
     }
 
     public static function get_objectid_mapping() {
-        return array('db' => 'ouilforum_discussions', 'restore' => 'ouilforum_discussion');
+        return array('db' => 'forumx_discussions', 'restore' => 'forumx_discussion');
     }
 
     public static function get_other_mapping() {
         $othermapped = array();
-        $othermapped['forumid'] = array('db' => 'ouilforum', 'restore' => 'ouilforum');
+        $othermapped['forumid'] = array('db' => 'forumx', 'restore' => 'forumx');
 
         return $othermapped;
     }

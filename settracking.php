@@ -18,9 +18,9 @@
 /**
  * Set tracking option for the forum.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2005 mchurch
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,22 +32,22 @@ $returnpage = optional_param('returnpage', 'index.php', PARAM_FILE); // Page to 
 
 require_sesskey();
 
-if (!$forum = $DB->get_record('ouilforum', array('id' => $id))) {
-    print_error('invalidforumid', 'ouilforum');
+if (!$forum = $DB->get_record('forumx', array('id' => $id))) {
+    print_error('invalidforumid', 'forumx');
 }
 
 if (!$course = $DB->get_record('course', array('id' => $forum->course))) {
     print_error('invalidcoursemodule');
 }
 
-if (!$cm = get_coursemodule_from_instance('ouilforum', $forum->id, $course->id)) {
+if (!$cm = get_coursemodule_from_instance('forumx', $forum->id, $course->id)) {
     print_error('invalidcoursemodule');
 }
 require_login($course, false, $cm);
-$returnpageurl = new moodle_url('/mod/ouilforum/'.$returnpage, array('id' => $course->id, 'f' => $forum->id));
+$returnpageurl = new moodle_url('/mod/forumx/'.$returnpage, array('id' => $course->id, 'f' => $forum->id));
 $returnto = $returnpageurl;
 
-if (!ouilforum_tp_can_track_forums($forum)) {
+if (!forumx_tp_can_track_forums($forum)) {
     redirect($returnto);
 }
 
@@ -61,20 +61,20 @@ $eventparams = array(
     'other' => array('forumid' => $forum->id),
 );
 
-if (ouilforum_tp_is_tracked($forum) ) {
-    if (ouilforum_tp_stop_tracking($forum->id)) {
-        $event = \mod_ouilforum\event\readtracking_disabled::create($eventparams);
+if (forumx_tp_is_tracked($forum) ) {
+    if (forumx_tp_stop_tracking($forum->id)) {
+        $event = \mod_forumx\event\readtracking_disabled::create($eventparams);
         $event->trigger();
-        redirect($returnto, get_string('nownottracking', 'ouilforum', $info), 1);
+        redirect($returnto, get_string('nownottracking', 'forumx', $info), 1);
     } else {
         print_error('cannottrack', '', get_local_referer(false));
     }
 
 } else { // subscribe
-    if (ouilforum_tp_start_tracking($forum->id)) {
-        $event = \mod_ouilforum\event\readtracking_enabled::create($eventparams);
+    if (forumx_tp_start_tracking($forum->id)) {
+        $event = \mod_forumx\event\readtracking_enabled::create($eventparams);
         $event->trigger();
-        redirect($returnto, get_string('nowtracking', 'ouilforum', $info), 1);
+        redirect($returnto, get_string('nowtracking', 'forumx', $info), 1);
     } else {
         print_error('cannottrack', '', get_local_referer(false));
     }

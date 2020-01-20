@@ -17,7 +17,7 @@
 /**
  * Event observers used in forum.
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @copyright  2013 Rajesh Taneja <rajesh@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,9 +25,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Event observer for mod_ouilforum.
+ * Event observer for mod_forumx.
  */
-class mod_ouilforum_observer {
+class mod_forumx_observer {
 
     /**
      * Triggered via user_enrolment_deleted event.
@@ -41,16 +41,16 @@ class mod_ouilforum_observer {
         // Get user enrolment info from event.
         $cp = (object)$event->other['userenrolment'];
         if ($cp->lastenrol) {
-            if (!$forums = $DB->get_records('ouilforum', array('course' => $cp->courseid),'', 'id')) {
+            if (!$forums = $DB->get_records('forumx', array('course' => $cp->courseid),'', 'id')) {
             	return;
             }
             list($forumselect, $params) = $DB->get_in_or_equal(array_keys($forums), SQL_PARAMS_NAMED);
             $params['userid'] = $cp->userid;
 
-            $DB->delete_records_select('ouilforum_digests', 'userid = :userid AND ouilforum '.$forumselect, $params);
-            $DB->delete_records_select('ouilforum_subscriptions', 'userid = :userid AND ouilforum '.$forumselect, $params);
-            $DB->delete_records_select('ouilforum_track_prefs', 'userid = :userid AND ouilforumid '.$forumselect, $params);
-            $DB->delete_records_select('ouilforum_read', 'userid = :userid AND ouilforumid '.$forumselect, $params);
+            $DB->delete_records_select('forumx_digests', 'userid = :userid AND forumx '.$forumselect, $params);
+            $DB->delete_records_select('forumx_subscriptions', 'userid = :userid AND forumx '.$forumselect, $params);
+            $DB->delete_records_select('forumx_track_prefs', 'userid = :userid AND forumxid '.$forumselect, $params);
+            $DB->delete_records_select('forumx_read', 'userid = :userid AND forumxid '.$forumselect, $params);
         }
     }
 
@@ -72,19 +72,19 @@ class mod_ouilforum_observer {
         }
 
         // Forum lib required for the constant used below.
-        require_once($CFG->dirroot.'/mod/ouilforum/lib.php');
+        require_once($CFG->dirroot.'/mod/forumx/lib.php');
 
         $userid = $event->relateduserid;
         $sql = "SELECT f.id, f.course as course, cm.id AS cmid, f.forcesubscribe
-                  FROM {ouilforum} f
+                  FROM {forumx} f
                   JOIN {course_modules} cm ON (cm.instance = f.id)
                   JOIN {modules} m ON (m.id = cm.module)
-             LEFT JOIN {ouilforum_subscriptions} fs ON (fs.ouilforum = f.id AND fs.userid = :userid)
+             LEFT JOIN {forumx_subscriptions} fs ON (fs.forumx = f.id AND fs.userid = :userid)
                  WHERE f.course = :courseid
                    AND f.forcesubscribe = :initial
-                   AND m.name = 'ouilforum'
+                   AND m.name = 'forumx'
                    AND fs.id IS NULL";
-        $params = array('courseid' => $context->instanceid, 'userid' => $userid, 'initial' => OUILFORUM_INITIALSUBSCRIBE);
+        $params = array('courseid' => $context->instanceid, 'userid' => $userid, 'initial' => forumx_INITIALSUBSCRIBE);
 
         $forums = $DB->get_records_sql($sql, $params);
         foreach ($forums as $forum) {
@@ -92,8 +92,8 @@ class mod_ouilforum_observer {
         	$uservisible = \core_availability\info_module::is_user_visible($forum->cmid,$userid, false);
         	
             $modcontext = context_module::instance($forum->cmid);
-            if (has_capability('mod/ouilforum:allowforcesubscribe', $modcontext, $userid)  && $uservisible) {
-                \mod_ouilforum\subscriptions::subscribe_user($userid, $forum, $modcontext);
+            if (has_capability('mod/forumx:allowforcesubscribe', $modcontext, $userid)  && $uservisible) {
+                \mod_forumx\subscriptions::subscribe_user($userid, $forum, $modcontext);
             }
         }
     }
@@ -107,12 +107,12 @@ class mod_ouilforum_observer {
     public static function course_module_created(\core\event\course_module_created $event) {
         global $CFG;
 
-        if ($event->other['modulename'] === 'ouilforum') {
-            // Include the forum library to make use of the ouilforum_instance_created function.
-            require_once($CFG->dirroot.'/mod/ouilforum/lib.php');
+        if ($event->other['modulename'] === 'forumx') {
+            // Include the forum library to make use of the forumx_instance_created function.
+            require_once($CFG->dirroot.'/mod/forumx/lib.php');
 
-            $forum = $event->get_record_snapshot('ouilforum', $event->other['instanceid']);
-            ouilforum_instance_created($event->get_context(), $forum);
+            $forum = $event->get_record_snapshot('forumx', $event->other['instanceid']);
+            forumx_instance_created($event->get_context(), $forum);
         }
     }
     
@@ -127,12 +127,12 @@ class mod_ouilforum_observer {
     	$userid = $event->relateduserid;
     	$groupid = $event->objectid;
     	// Include the forum library to make use of the forum_instance_created function.
-    	require_once($CFG->dirroot.'/mod/ouilforum/lib.php');
+    	require_once($CFG->dirroot.'/mod/forumx/lib.php');
     	if ($group_object = $DB->get_record('groups', array('id'=>$groupid))) {
     		if ($group_object->name == 'exam') {
-    			ouilforum_forceunsubscribe_user($group_object->courseid, $userid);
+    			forumx_forceunsubscribe_user($group_object->courseid, $userid);
     		} else {
-    			ouilforum_forcesubscribe_user_by_groupid($group_object->courseid, $userid, $groupid);
+    			forumx_forcesubscribe_user_by_groupid($group_object->courseid, $userid, $groupid);
     		}
     	}
     }
@@ -150,13 +150,13 @@ class mod_ouilforum_observer {
     	//mtrace ("<br>remve from   " .$groupid);
     	// Include the forum library to make use of the forum_instance_created function.
     	if ($group_object = $DB->get_record('groups', array('id'=>$groupid))) {
-	    	require_once($CFG->dirroot.'/mod/ouilforum/lib.php');
+	    	require_once($CFG->dirroot.'/mod/forumx/lib.php');
     	
 	    	if ($group_object->name == 'exam') {
-	    	//	mtrace ("<br>ouilforum_forcesubscribe_user_by_groupid from   " .$groupid);
-	    		ouilforum_forcesubscribe_user_by_groupid($group_object->courseid, $userid, $groupid);
+	    	//	mtrace ("<br>forumx_forcesubscribe_user_by_groupid from   " .$groupid);
+	    		forumx_forcesubscribe_user_by_groupid($group_object->courseid, $userid, $groupid);
 	    	} else{
-	    		ouilforum_forceunsubscribe_user($group_object->courseid, $userid);
+	    		forumx_forceunsubscribe_user($group_object->courseid, $userid);
 	    	}
     	
     	}
@@ -176,8 +176,8 @@ class mod_ouilforum_observer {
     	$courseid = $context->instanceid;
 //    	mtrace ("<br>role_unassigned  " .$courseid);
     	// Include the forum library to make use of the forum_instance_created function.
-   		require_once($CFG->dirroot.'/mod/ouilforum/lib.php');
-   		ouilforum_forceunsubscribe_user_role($courseid, $userid);
+   		require_once($CFG->dirroot.'/mod/forumx/lib.php');
+   		forumx_forceunsubscribe_user_role($courseid, $userid);
     	
     }
     
@@ -189,9 +189,9 @@ class mod_ouilforum_observer {
     	 
     	$groupingid=$event->objectid;
     	// Include the forum library to make use of the forum_instance_created function.
-    	require_once($CFG->dirroot . '/mod/ouilforum/lib.php');
+    	require_once($CFG->dirroot . '/mod/forumx/lib.php');
     		
-    	ouilforum_subscribe_grouping_update($courseid , $groupingid);
+    	forumx_subscribe_grouping_update($courseid , $groupingid);
     
     }
     
@@ -203,8 +203,8 @@ class mod_ouilforum_observer {
     	$groupingid=$event->objectid;
     	$courseid=$event->courseid;
     	// Include the forum library to make use of the forum_instance_created function.
-    	require_once($CFG->dirroot . '/mod/ouilforum/lib.php');
-    	ouilforum_subscribe_grouping_update($courseid , $groupingid);
+    	require_once($CFG->dirroot . '/mod/forumx/lib.php');
+    	forumx_subscribe_grouping_update($courseid , $groupingid);
     
     }
     
@@ -216,8 +216,8 @@ class mod_ouilforum_observer {
     	$groupingid=$event->objectid;
     	$courseid=$event->courseid;
     	// Include the forum library to make use of the forum_instance_created function.
-    	require_once($CFG->dirroot . '/mod/ouilforum/lib.php');
-    	ouilforum_subscribe_grouping_update($courseid , $groupingid);
+    	require_once($CFG->dirroot . '/mod/forumx/lib.php');
+    	forumx_subscribe_grouping_update($courseid , $groupingid);
     
     }
    

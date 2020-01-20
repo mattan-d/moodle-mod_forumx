@@ -16,9 +16,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +37,7 @@ $course = null;
 if (!$course = $DB->get_record('course', array('id' => $cm->course))) {
 	print_error('coursemisconf');
 }
-$PAGE->set_url('/mod/ouilforum/ouilforum_news.php', $params);
+$PAGE->set_url('/mod/forumx/forumx_news.php', $params);
 
 // Print header.
 $PAGE->set_title("news");

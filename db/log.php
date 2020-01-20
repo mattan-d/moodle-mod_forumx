@@ -18,10 +18,10 @@
 /**
  * Definition of log events
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @category  log
  * @copyright 2010 Petr Skoda (http://skodak.org)
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,16 +30,16 @@ defined('MOODLE_INTERNAL') || die();
 global $DB; // TODO: this is a hack, we should really do something with the SQL in SQL tables
 
 $logs = array(
-    array('module'=>'ouilforum', 'action'=>'add', 'mtable'=>'ouilforum', 'field'=>'name'),
-    array('module'=>'ouilforum', 'action'=>'update', 'mtable'=>'ouilforum', 'field'=>'name'),
-    array('module'=>'ouilforum', 'action'=>'add discussion', 'mtable'=>'ouilforum_discussions', 'field'=>'name'),
-    array('module'=>'ouilforum', 'action'=>'add post', 'mtable'=>'ouilforum_posts', 'field'=>'subject'),
-    array('module'=>'ouilforum', 'action'=>'update post', 'mtable'=>'ouilforum_posts', 'field'=>'subject'),
-    array('module'=>'ouilforum', 'action'=>'user report', 'mtable'=>'user', 'field'=>$DB->sql_concat('firstname', "' '" , 'lastname')),
-    array('module'=>'ouilforum', 'action'=>'move discussion', 'mtable'=>'ouilforum_discussions', 'field'=>'name'),
-    array('module'=>'ouilforum', 'action'=>'view subscribers', 'mtable'=>'ouilforum', 'field'=>'name'),
-    array('module'=>'ouilforum', 'action'=>'view discussion', 'mtable'=>'ouilforum_discussions', 'field'=>'name'),
-    array('module'=>'ouilforum', 'action'=>'view forum', 'mtable'=>'ouilforum', 'field'=>'name'),
-    array('module'=>'ouilforum', 'action'=>'subscribe', 'mtable'=>'ouilforum', 'field'=>'name'),
-    array('module'=>'ouilforum', 'action'=>'unsubscribe', 'mtable'=>'ouilforum', 'field'=>'name'),
+    array('module'=>'forumx', 'action'=>'add', 'mtable'=>'forumx', 'field'=>'name'),
+    array('module'=>'forumx', 'action'=>'update', 'mtable'=>'forumx', 'field'=>'name'),
+    array('module'=>'forumx', 'action'=>'add discussion', 'mtable'=>'forumx_discussions', 'field'=>'name'),
+    array('module'=>'forumx', 'action'=>'add post', 'mtable'=>'forumx_posts', 'field'=>'subject'),
+    array('module'=>'forumx', 'action'=>'update post', 'mtable'=>'forumx_posts', 'field'=>'subject'),
+    array('module'=>'forumx', 'action'=>'user report', 'mtable'=>'user', 'field'=>$DB->sql_concat('firstname', "' '" , 'lastname')),
+    array('module'=>'forumx', 'action'=>'move discussion', 'mtable'=>'forumx_discussions', 'field'=>'name'),
+    array('module'=>'forumx', 'action'=>'view subscribers', 'mtable'=>'forumx', 'field'=>'name'),
+    array('module'=>'forumx', 'action'=>'view discussion', 'mtable'=>'forumx_discussions', 'field'=>'name'),
+    array('module'=>'forumx', 'action'=>'view forum', 'mtable'=>'forumx', 'field'=>'name'),
+    array('module'=>'forumx', 'action'=>'subscribe', 'mtable'=>'forumx', 'field'=>'name'),
+    array('module'=>'forumx', 'action'=>'unsubscribe', 'mtable'=>'forumx', 'field'=>'name'),
 );

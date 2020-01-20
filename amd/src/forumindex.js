@@ -16,13 +16,13 @@
 /**
  * This class manages activities in a forum index.
  *
- * @module    mod_ouilforum/forumindex
- * @package   mod_ouilforum
- * @copyright 2018 onwards The Open University of Israel
+ * @module    mod_forumx/forumindex
+ * @package   mod_forumx
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since     3.1
  */
-define(['jquery', 'jqueryui', 'core/ajax', 'core/str', 'mod_ouilforum/accessibility', 'mod_ouilforum/stagebutton', 'mod_ouilforum/toast'], function($, jqui, ajax, s, acc, sb) {
+define(['jquery', 'jqueryui', 'core/ajax', 'core/str', 'mod_forumx/accessibility', 'mod_forumx/stagebutton', 'mod_forumx/toast'], function($, jqui, ajax, s, acc, sb) {
     // Private variables and functions.
 	var PARAMS = {
 		course: 0,
@@ -72,7 +72,7 @@ define(['jquery', 'jqueryui', 'core/ajax', 'core/str', 'mod_ouilforum/accessibil
     	var forum = node.attr('data-forumid');
     	var action = node.attr('data-actiontype');
     	var promise = ajax.call([{
-    		methodname: 'mod_ouilforum_subscribe_forum',
+    		methodname: 'mod_forumx_subscribe_forum',
     		args: {
                 forumid: forum,
                 subscribe: action
@@ -127,7 +127,7 @@ define(['jquery', 'jqueryui', 'core/ajax', 'core/str', 'mod_ouilforum/accessibil
     	}
     	acc.setWait(node, true);
     	var promise = ajax.call([{
-    		methodname: 'mod_ouilforum_subscribe_forums',
+    		methodname: 'mod_forumx_subscribe_forums',
     		args: {
                 courseid: PARAMS.course,
                 subscribe: action
@@ -169,7 +169,7 @@ define(['jquery', 'jqueryui', 'core/ajax', 'core/str', 'mod_ouilforum/accessibil
     	var trackOn = action == 'track';
     	acc.setWait(node, true);
     	var promise = ajax.call([{
-    		methodname: 'mod_ouilforum_track_forums',
+    		methodname: 'mod_forumx_track_forums',
     		args: {
                 courseid: PARAMS.course,
                 track: action
@@ -218,7 +218,7 @@ define(['jquery', 'jqueryui', 'core/ajax', 'core/str', 'mod_ouilforum/accessibil
     	var forum = node.attr('data-forumid');
     	var action = node.attr('data-actiontype');
     	var promise = ajax.call([{
-    		methodname: 'mod_ouilforum_track_forum',
+    		methodname: 'mod_forumx_track_forum',
     		args: {
                 forumid: forum,
                 track: action,
@@ -385,7 +385,7 @@ define(['jquery', 'jqueryui', 'core/ajax', 'core/str', 'mod_ouilforum/accessibil
     	var forumId = node.attr('data-forumid');
 		acc.setWait(node, true);
     	var promise = ajax.call([{
-    		methodname: 'mod_ouilforum_mark_forum_read',
+    		methodname: 'mod_forumx_mark_forum_read',
     		args: {
                 forumid: forumId,
     		}
@@ -437,7 +437,7 @@ define(['jquery', 'jqueryui', 'core/ajax', 'core/str', 'mod_ouilforum/accessibil
     	               'trackingindex:yes', 'trackingindex:yeslabel', 'enabled', 'disabled'];
     	var strings = [];
     	$.each(strList, function(strId, strStr) {
-    		strings.push({key: strStr, component: 'ouilforum'});
+    		strings.push({key: strStr, component: 'forumx'});
     	});
 		s.get_strings(strings).done(function(s) {
 			PARAMS.str.done = s[0];

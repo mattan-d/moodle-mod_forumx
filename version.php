@@ -17,15 +17,15 @@
 /**
  * Version information
  *
- * @package   mod_ouilforum
- * @copyright 2018 onwards The Open University of Israel
+ * @package   mod_forumx
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2018042200;       // The current module version (Date: YYYYMMDDXX)
+$plugin->version   = 2018042200.7;       // The current module version (Date: YYYYMMDDXX)
 $plugin->requires  = 2017102500;       // Requires this Moodle version
-$plugin->component = 'mod_ouilforum';  // Full name of the plugin (used for diagnostics)
+$plugin->component = 'mod_forumx';  // Full name of the plugin (used for diagnostics)
 $plugin->maturity = MATURITY_BETA;
 $plugin->release = '1.0.0';

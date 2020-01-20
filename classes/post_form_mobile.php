@@ -18,7 +18,7 @@
 /**
  * File containing the form definition to post in the forum.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright Jamie Pratt <me@jamiep.org>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -30,11 +30,11 @@ require_once($CFG->dirroot . '/repository/lib.php');
 /**
  * Class to post in a forum.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright Jamie Pratt <me@jamiep.org>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_ouilforum_post_form_mobile extends moodleform {
+class mod_forumx_post_form_mobile extends moodleform {
 
     /**
      * Returns the options array to use in filemanager for forum attachments
@@ -70,7 +70,7 @@ class mod_ouilforum_post_form_mobile extends moodleform {
             'maxbytes' => $maxbytes,
             'trusttext'=> true,
             'return_types'=> FILE_INTERNAL | FILE_EXTERNAL,
-            'subdirs' => file_area_contains_subdirs($context, 'mod_ouilforum', 'post', $postid)
+            'subdirs' => file_area_contains_subdirs($context, 'mod_forumx', 'post', $postid)
         );
     }
 
@@ -88,7 +88,7 @@ class mod_ouilforum_post_form_mobile extends moodleform {
         $cm = $this->_customdata['cm'];
         $coursecontext = $this->_customdata['coursecontext'];
         $modcontext = $this->_customdata['modcontext'];
-        $forum = $this->_customdata['ouilforum'];
+        $forum = $this->_customdata['forumx'];
         $post = $this->_customdata['post'];
         $subscribe = $this->_customdata['subscribe'];
         $edit = $this->_customdata['edit'];
@@ -108,16 +108,16 @@ class mod_ouilforum_post_form_mobile extends moodleform {
            // }
        // }
 
-        $mform->addElement('text', 'subject', get_string('mobile_forum_title', 'ouilforum'), 'size="48"');
+        $mform->addElement('text', 'subject', get_string('mobile_forum_title', 'forumx'), 'size="48"');
         $mform->setType('subject', PARAM_TEXT);
         $mform->addRule('subject', get_string('required'), 'required', null, 'client');
         $mform->addRule('subject', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
-        //$mform->addElement('editor', 'message', get_string('message', 'ouilforum'), null, self::editor_options($modcontext, (empty($post->id) ? null : $post->id)));
+        //$mform->addElement('editor', 'message', get_string('message', 'forumx'), null, self::editor_options($modcontext, (empty($post->id) ? null : $post->id)));
         //$mform->setType('message', PARAM_RAW);
         
        
-        $mform->addElement('textarea', 'message', get_string('mobile_forum_message', 'ouilforum'), 'wrap="virtual" rows="5" cols="37"');
+        $mform->addElement('textarea', 'message', get_string('mobile_forum_message', 'forumx'), 'wrap="virtual" rows="5" cols="37"');
         $mform->setType('message', PARAM_TEXT);
 
             $mform->addElement('hidden', 'timestart');
@@ -133,7 +133,7 @@ class mod_ouilforum_post_form_mobile extends moodleform {
         if (isset($post->edit)) { // hack alert
             $submit_string = get_string('savechanges');
         } else {
-            $submit_string = get_string('posttoforum_news', 'ouilforum');
+            $submit_string = get_string('posttoforum_news', 'forumx');
         }
 
  
@@ -141,8 +141,8 @@ class mod_ouilforum_post_form_mobile extends moodleform {
         $mform->addElement('hidden', 'course');
         $mform->setType('course', PARAM_INT);
 
-        $mform->addElement('hidden', 'ouilforum');
-        $mform->setType('ouilforum', PARAM_INT);
+        $mform->addElement('hidden', 'forumx');
+        $mform->setType('forumx', PARAM_INT);
 
         $mform->addElement('hidden', 'discussion');
         $mform->setType('discussion', PARAM_INT);
@@ -173,8 +173,8 @@ class mod_ouilforum_post_form_mobile extends moodleform {
             return false;
         }
         // Filter received data.
-        $data->subject = ouilforum_filter_post($data->subject, true);
-        $data->message = ouilforum_filter_post($data->message);
+        $data->subject = forumx_filter_post($data->subject, true);
+        $data->message = forumx_filter_post($data->message);
         return $data;
     }
 
@@ -185,8 +185,8 @@ class mod_ouilforum_post_form_mobile extends moodleform {
     	// Filter user input.
     	$subject = $mform->getElement('subject');
     	$message = $mform->getElement('message');
-    	$subject->setValue(ouilforum_filter_post($subject->getValue()));
-    	$message->setValue(ouilforum_filter_post($message->getValue()));
+    	$subject->setValue(forumx_filter_post($subject->getValue()));
+    	$message->setValue(forumx_filter_post($message->getValue()));
     }
 
     /**
@@ -206,7 +206,7 @@ class mod_ouilforum_post_form_mobile extends moodleform {
     		//when two elements we need a group
     		$buttonarray=array();
     		$buttonarray[] = &$mform->createElement('button', 'submitbutton', $submitlabel);
-    		$buttonarray[] = &$mform->createElement('button','cancel',get_string('cancelforum_news','ouilforum'));
+    		$buttonarray[] = &$mform->createElement('button','cancel',get_string('cancelforum_news','forumx'));
     		$mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
     		$mform->closeHeaderBefore('buttonar');
     	} else {
@@ -221,10 +221,10 @@ class mod_ouilforum_post_form_mobile extends moodleform {
     function validation($data, $files) {
         $errors = parent::validation($data, $files);
         if (($data['timeend']!=0) && ($data['timestart']!=0) && $data['timeend'] <= $data['timestart']) {
-            $errors['timeend'] = get_string('timestartenderror', 'ouilforum');
+            $errors['timeend'] = get_string('timestartenderror', 'forumx');
         }
         if (empty($data['subject'])) {
-            $errors['subject'] = get_string('erroremptysubject', 'ouilforum');
+            $errors['subject'] = get_string('erroremptysubject', 'forumx');
         }
         return $errors;
     }*/

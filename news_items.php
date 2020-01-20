@@ -16,9 +16,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -36,7 +36,7 @@ $course =null;
 if (!$course = $DB->get_record('course', array('id' => $id))) {
 	print_error('coursemisconf');
 }
-$PAGE->set_url('/mod/ouilforum/news_items.php', $params);
+$PAGE->set_url('/mod/forumx/news_items.php', $params);
 $PAGE->set_pagelayout('course');
 $context = context_course::instance($course->id, MUST_EXIST);
 
@@ -49,8 +49,8 @@ $PAGE->set_heading($course->fullname);
 
 echo $OUTPUT->header();    
 echo'<div class="back_to_home_page"><span class="news_post_action">
-    <a href="/course/view.php?id='.$course->id.'"><i class="fa fa-arrow-right"></i>'.get_string('to_home_page', 'ouilforum').'</a>
+    <a href="/course/view.php?id='.$course->id.'"><i class="fa fa-arrow-right"></i>'.get_string('to_home_page', 'forumx').'</a>
     </span></div>';
 
-echo ouilforum_print_news_items($course, null, 1);
+echo forumx_print_news_items($course, null, 1);
 echo $OUTPUT->footer($course);

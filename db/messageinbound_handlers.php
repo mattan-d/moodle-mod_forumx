@@ -17,9 +17,9 @@
 /**
  * Message Inbound Handlers for mod_forum.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2014 Andrew Nicols
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,6 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $handlers = array(
     array(
-        'classname' => '\mod_ouilforum\message\inbound\reply_handler',
+        'classname' => '\mod_forumx\message\inbound\reply_handler',
     ),
 );

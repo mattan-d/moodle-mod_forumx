@@ -18,9 +18,9 @@
 /**
  * Defines message providers (types of messages being sent)
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 1999 onwards  Martin Dougiamas  http://moodle.com
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

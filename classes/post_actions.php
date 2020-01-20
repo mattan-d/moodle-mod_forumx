@@ -17,11 +17,11 @@
 /**
  * Forum subscription manager.
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_ouilforum;
+namespace mod_forumx;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -41,9 +41,9 @@ class post_actions {
 		global $DB;
 		if (is_object($post)) {
 			$post->mark = 0;
-			return $DB->update_record('ouilforum_posts', $post);
+			return $DB->update_record('forumx_posts', $post);
 		} else 
-			return $DB->set_field('ouilforum_posts', 'mark', 0, array('id'=>$post));
+			return $DB->set_field('forumx_posts', 'mark', 0, array('id'=>$post));
 	}
 
 	/**
@@ -55,9 +55,9 @@ class post_actions {
 		global $DB;
 		if (is_object($post)) {
 			$post->mark = 1;
-			return $DB->update_record('ouilforum_posts', $post);
+			return $DB->update_record('forumx_posts', $post);
 		} else 
-			return $DB->set_field('ouilforum_posts', 'mark', 1, array('id'=>$post));
+			return $DB->set_field('forumx_posts', 'mark', 1, array('id'=>$post));
 	}
 	
 	/**
@@ -69,21 +69,21 @@ class post_actions {
 		global $DB;
 		if (is_object($post))
 			$post = $post->id;
-		if ($record = $DB->get_record('ouilforum_flags', array('userid'=>$userid, 'postid'=>$post))) {
+		if ($record = $DB->get_record('forumx_flags', array('userid'=>$userid, 'postid'=>$post))) {
 			if ($record->flag != $flag) {
 				$record->flag = $flag;
 				$record->flagged_date = time();
-				$DB->update_record('ouilforum_flags', $record);
+				$DB->update_record('forumx_flags', $record);
 				return true;
 			}
 			return true;
 		} else {
-			$ouilforum_flag = new \stdClass();
-			$ouilforum_flag->userid			= $userid;
-			$ouilforum_flag->postid			= $post;
-			$ouilforum_flag->flagged_date	= time();
-			$ouilforum_flag->flag			= $flag;
-			return $DB->insert_record('ouilforum_flags', $ouilforum_flag, false);
+			$forumx_flag = new \stdClass();
+			$forumx_flag->userid			= $userid;
+			$forumx_flag->postid			= $post;
+			$forumx_flag->flagged_date	= time();
+			$forumx_flag->flag			= $flag;
+			return $DB->insert_record('forumx_flags', $forumx_flag, false);
 		}
 	}
 	
@@ -94,7 +94,7 @@ class post_actions {
 	 */
 	public static function remove_flag($postid, $userid) {
 		global $DB;
-		$DB->delete_records_select('ouilforum_flags', 'userid = ? AND postid = ?', array($userid, $postid));
+		$DB->delete_records_select('forumx_flags', 'userid = ? AND postid = ?', array($userid, $postid));
 	}
 
 	/**
@@ -104,7 +104,7 @@ class post_actions {
 	 */
 	public static function remove_flags($postid) {
 		global $DB;
-		$DB->delete_records_select('ouilforum_flags', 'postid = ?', array($postid));
+		$DB->delete_records_select('forumx_flags', 'postid = ?', array($postid));
 	}
 
 	/**
@@ -118,9 +118,9 @@ class post_actions {
 		if (!$userid)
 			$userid = $USER->id;
 		$sql = 'SELECT count(f.id)
-    FROM {ouilforum_flags} f
-	JOIN {ouilforum_posts} p on (f.postid = p.id AND f.userid = ?)
-	JOIN {ouilforum_discussions} d on d.id = p.discussion
+    FROM {forumx_flags} f
+	JOIN {forumx_posts} p on (f.postid = p.id AND f.userid = ?)
+	JOIN {forumx_discussions} d on d.id = p.discussion
     WHERE d.id  = ?';
 	
 		return $DB->count_records_sql($sql, array($userid, $discussionid));
@@ -135,7 +135,7 @@ class post_actions {
 		global $DB;
 	
 		$sql = 'SELECT count(p.discussion)
-	FROM {ouilforum_posts} p
+	FROM {forumx_posts} p
 	WHERE p.discussion = ? AND mark = 1';
 	
 		return $DB->count_records_sql($sql, array($discussionid));
@@ -149,7 +149,7 @@ class post_actions {
 	public static function is_discussion_recommended($discussionid) {
 		global $DB;
 		$sql = 'SELECT "x"
-	FROM {ouilforum_posts}
+	FROM {forumx_posts}
 	WHERE discussion = ? AND mark = 1';
 		return $DB->record_exists_sql($sql, array($discussionid));
 	}
@@ -164,9 +164,9 @@ class post_actions {
 		if (!$userid)
 			$userid = $USER->id;
 		$sql = 'SELECT "x"
-    FROM {ouilforum_flags} f
-	JOIN {ouilforum_posts} p on (f.postid = p.id AND f.userid = ?)
-	JOIN {ouilforum_discussions} d on d.id = p.discussion
+    FROM {forumx_flags} f
+	JOIN {forumx_posts} p on (f.postid = p.id AND f.userid = ?)
+	JOIN {forumx_discussions} d on d.id = p.discussion
     WHERE d.id  = ?';
 		return $DB->record_exists_sql($sql, array($userid, $discussionid));
 	}
@@ -179,8 +179,8 @@ class post_actions {
 	 */
 	public static function delete_all_flags($discussionid, $userid) {
 		global $DB;
-		$where_sql = 'userid = ? and postid in (select id from {ouilforum_posts} where discussion = ?)';
-		return $DB->delete_records_select('ouilforum_flags', $where_sql, array($userid, $discussionid));
+		$where_sql = 'userid = ? and postid in (select id from {forumx_posts} where discussion = ?)';
+		return $DB->delete_records_select('forumx_flags', $where_sql, array($userid, $discussionid));
 	}
 
 	/**
@@ -196,11 +196,11 @@ class post_actions {
 		if (!$userid)
 			$userid = $USER->id;
 		$sql = 'SELECT f.id, d.id AS discussion, f.flag
-	FROM {ouilforum_discussions} d
-	JOIN {ouilforum_posts} p ON p.discussion = d.id
-	JOIN {ouilforum_flags} f
+	FROM {forumx_discussions} d
+	JOIN {forumx_posts} p ON p.discussion = d.id
+	JOIN {forumx_flags} f
 	ON (f.postid = p.id AND f.userid = ?)
-	WHERE d.ouilforum = ?';
+	WHERE d.forumx = ?';
 	
 		if ($flagged_array = $DB->get_records_sql($sql, array($userid, $forumid))) {
 			$discussions_array = array();
@@ -222,9 +222,9 @@ class post_actions {
 		global $DB;
 	
 		$sql = 'SELECT DISTINCT d.id
-	FROM {ouilforum_discussions} d
-	JOIN {ouilforum_posts} p ON p.discussion = d.id
-	WHERE d.ouilforum = ?
+	FROM {forumx_discussions} d
+	JOIN {forumx_posts} p ON p.discussion = d.id
+	WHERE d.forumx = ?
 	AND p.mark = 1';
 	
 		if ($recommended_array = $DB->get_records_sql($sql, array($forumid))) {

@@ -16,11 +16,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'ouilforum', language 'en'.
+ * Strings for component 'forumx', language 'en'.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -52,16 +52,16 @@ $string['attachmentnopost'] = 'You cannot export attachments without a post id';
 $string['attachments'] = 'Attachments';
 $string['attachmentswordcount'] = 'Attachments and word count';
 $string['blockafter'] = 'Post threshold for blocking';
-$string['blockafter_help'] = 'This setting specifies the maximum number of posts which a user can post in the given time period. Users with the capability mod/ouilforum:postwithoutthrottling are exempt from post limits.';
+$string['blockafter_help'] = 'This setting specifies the maximum number of posts which a user can post in the given time period. Users with the capability mod/forumx:postwithoutthrottling are exempt from post limits.';
 $string['blockperiod'] = 'Time period for blocking';
-$string['blockperiod_help'] = 'Students can be blocked from posting more than a given number of posts in a given time period. Users with the capability mod/ouilforum:postwithoutthrottling are exempt from post limits.';
+$string['blockperiod_help'] = 'Students can be blocked from posting more than a given number of posts in a given time period. Users with the capability mod/forumx:postwithoutthrottling are exempt from post limits.';
 $string['blockperioddisabled'] = 'Don\'t block';
 $string['blogforum'] = 'Standard forum displayed in a blog-like format';
 $string['button:activate'] = 'Activate';
 $string['button:deactivate'] = 'Deactivate';
 $string['by'] = 'By';
 $string['bynameondate'] = 'by {$a->name} - {$a->date}';
-$string['cancel']  = 'Cancel';
+$string['cancel'] = 'Cancel';
 $string['cannotadd'] = 'Could not add the discussion for this forum';
 $string['cannotadddiscussion'] = 'Adding discussions to this forum requires group membership.';
 $string['cannotadddiscussionall'] = 'You do not have permission to add a new discussion topic for all participants.';
@@ -115,7 +115,7 @@ $string['configdisplaymode'] = 'The default display mode for discussions if one 
 $string['configenableredirectpage'] = 'If \'yes\', post actions will go through a notice page before continuing.';
 $string['configenablerssfeeds'] = 'This switch will enable the possibility of RSS feeds for all forums.  You will still need to turn feeds on manually in the settings for each forum.';
 $string['configenabletimedposts'] = 'Set to \'yes\' if you want to allow setting of display periods when posting a new forum discussion (Experimental as not yet fully tested)';
-$string['configlongpost'] = 'Any post over this length (in characters not including HTML) is considered long. Posts displayed on the site front page, social format course pages, or user profiles are shortened to a natural break somewhere between the ouilforum_shortpost and ouilforum_longpost values.';
+$string['configlongpost'] = 'Any post over this length (in characters not including HTML) is considered long. Posts displayed on the site front page, social format course pages, or user profiles are shortened to a natural break somewhere between the forumx_shortpost and forumx_longpost values.';
 $string['configmanydiscussions'] = 'Maximum number of discussions shown in a forum per page';
 $string['configmaxattachments'] = 'Default maximum number of attachments allowed per post.';
 $string['configmaxbytes'] = 'Default maximum size for all forum attachments on the site (subject to course limits and other local settings)';
@@ -155,7 +155,7 @@ $string['couldnotadd'] = 'Could not add your post due to an unknown error';
 $string['couldnotdeletereplies'] = 'Sorry, that cannot be deleted as people have already responded to it';
 $string['couldnotupdate'] = 'Could not update your post due to an unknown error';
 $string['couldnotupdateoriginalpost'] = 'Could not update the original post';
-$string['coursecoordinator']= 'Editing teacher';
+$string['coursecoordinator'] = 'Editing teacher';
 $string['crontask'] = 'Forum mailings and maintenance jobs';
 $string['date'] = 'On the date';
 $string['delete'] = 'Delete';
@@ -315,35 +315,35 @@ $string['forcesubscribed'] = 'This forum forces everyone to be subscribed';
 $string['forcesubscribed_help'] = 'This forum has been configured so that you cannot unsubscribe from discussions.';
 $string['forum'] = 'Forum';
 $string['forwardsent'] = 'Message sent';
-$string['ouilforum:addinstance'] = 'Add a new forum';
-$string['ouilforum:addnews'] = 'Add news';
-$string['ouilforum:addquestion'] = 'Add question';
-$string['ouilforum:allowforcesubscribe'] = 'Allow force subscribe';
+$string['forumx:addinstance'] = 'Add a new forum';
+$string['forumx:addnews'] = 'Add news';
+$string['forumx:addquestion'] = 'Add question';
+$string['forumx:allowforcesubscribe'] = 'Allow force subscribe';
 $string['forumauthorhidden'] = 'Author (hidden)';
 $string['forumblockingalmosttoomanyposts'] = 'You are approaching the posting threshold. You have posted {$a->numposts} times in the last {$a->blockperiod} and the limit is {$a->blockafter} posts.';
 $string['forumbodyhidden'] = 'This post cannot be viewed by you, probably because you have not posted in the discussion, the maximum editing time hasn\'t passed yet, the discussion has not started or the discussion has expired.';
-$string['ouilforum:canposttomygroups'] = 'Can post to all groups you have access to';
-$string['ouilforum:createattachment'] = 'Create attachments';
-$string['ouilforum:deleteanypost'] = 'Delete any posts (anytime)';
-$string['ouilforum:deleteownpost'] = 'Delete own posts (within deadline)';
-$string['ouilforum:editanypost'] = 'Edit any post';
-$string['ouilforum:exportdiscussion'] = 'Export whole discussion';
-$string['ouilforum:exportownpost'] = 'Export own post';
-$string['ouilforum:exportpost'] = 'Export post';
-$string['ouilforum:initialsubscriptions'] = 'Initial subscription';
-$string['ouilforum:lockmessage'] = 'Lock message';
-$string['ouilforum:markmessage'] = 'Mark messages';
+$string['forumx:canposttomygroups'] = 'Can post to all groups you have access to';
+$string['forumx:createattachment'] = 'Create attachments';
+$string['forumx:deleteanypost'] = 'Delete any posts (anytime)';
+$string['forumx:deleteownpost'] = 'Delete own posts (within deadline)';
+$string['forumx:editanypost'] = 'Edit any post';
+$string['forumx:exportdiscussion'] = 'Export whole discussion';
+$string['forumx:exportownpost'] = 'Export own post';
+$string['forumx:exportpost'] = 'Export post';
+$string['forumx:initialsubscriptions'] = 'Initial subscription';
+$string['forumx:lockmessage'] = 'Lock message';
+$string['forumx:markmessage'] = 'Mark messages';
 $string['forumintro'] = 'Description';
-$string['ouilforum:managesubscriptions'] = 'Manage subscriptions';
-$string['ouilforum:movediscussions'] = 'Move discussions';
-$string['ouilforum:movemessage']  = 'Move messages';
-$string['ouilforum:postwithoutthrottling'] = 'Exempt from post threshold';
-$string['ouilforum:rate'] = 'Rate posts';
-$string['ouilforum:replynews'] = 'Reply to news';
-$string['ouilforum:replypost'] = 'Reply to posts';
-$string['ouilforum:splitdiscussions'] = 'Split discussions';
-$string['ouilforum:startdiscussion'] = 'Start new discussions';
-$string['ouilforum:updateflag'] = 'Mark new post';
+$string['forumx:managesubscriptions'] = 'Manage subscriptions';
+$string['forumx:movediscussions'] = 'Move discussions';
+$string['forumx:movemessage'] = 'Move messages';
+$string['forumx:postwithoutthrottling'] = 'Exempt from post threshold';
+$string['forumx:rate'] = 'Rate posts';
+$string['forumx:replynews'] = 'Reply to news';
+$string['forumx:replypost'] = 'Reply to posts';
+$string['forumx:splitdiscussions'] = 'Split discussions';
+$string['forumx:startdiscussion'] = 'Start new discussions';
+$string['forumx:updateflag'] = 'Mark new post';
 $string['forumslist'] = 'Forums list';
 $string['forumstatus'] = 'Forum status';
 $string['forumsubscription'] = 'Forum subscription';
@@ -369,19 +369,19 @@ $string['forumtype_help'] = 'There are 5 forum types:
 * Q and A forum - Students must first post their perspectives before viewing other students\' posts
 * Standard forum displayed in a blog-like format - An open forum where anyone can start a new discussion at any time, and in which discussion topics are displayed on one page with "Discuss this topic" links
 * Standard forum for general use - An open forum where anyone can start a new discussion at any time';
-$string['ouilforum:viewallratings'] = 'View all raw ratings given by individuals';
-$string['ouilforum:viewanyrating'] = 'View total ratings that anyone received';
-$string['ouilforum:viewdiscussion'] = 'View discussions';
-$string['ouilforum:viewhiddentimedposts'] = 'View hidden timed posts';
-$string['ouilforum:viewqandawithoutposting'] = 'Always see Q and A posts';
-$string['ouilforum:viewrating'] = 'View the total rating you received';
-$string['ouilforum:viewsubscribers'] = 'View subscribers';
+$string['forumx:viewallratings'] = 'View all raw ratings given by individuals';
+$string['forumx:viewanyrating'] = 'View total ratings that anyone received';
+$string['forumx:viewdiscussion'] = 'View discussions';
+$string['forumx:viewhiddentimedposts'] = 'View hidden timed posts';
+$string['forumx:viewqandawithoutposting'] = 'Always see Q and A posts';
+$string['forumx:viewrating'] = 'View the total rating you received';
+$string['forumx:viewsubscribers'] = 'View subscribers';
 $string['forumslist'] = 'Forums list';
 $string['forwardbymail'] = 'Forward by mail';
 $string['forwardccme'] = 'Copy to your own email';
 $string['forwarddone'] = 'The email has been sent.';
-$string['forwardemailaddress'] ='Email address of recipient';
-$string['forwardemailaddress_help'] ='Email address of recipient';
+$string['forwardemailaddress'] = 'Email address of recipient';
+$string['forwardemailaddress_help'] = 'Email address of recipient';
 $string['forwarderror:empty'] = 'This field cannot be empty';
 $string['forwarderror:invalidemail'] = 'Invalid email format';
 $string['forwardintro'] = 'Optional introduction: ';
@@ -430,7 +430,7 @@ $string['lockedlabel_help'] = 'The forum has two options:
 When selecting \'Locked for writing\', users will not be able to post or reply. All other activities remain the same.
 You can choose in advance the time limit in which the forum will be unlocked, by activating the timed lock option.';
 $string['lockmessage'] = 'Lock message';
-$string['lockmessage_alt']  = 'Message is locked';
+$string['lockmessage_alt'] = 'Message is locked';
 $string['logblocked'] = 'List of blocked emails';
 $string['longpost'] = 'Long post';
 $string['mailnow'] = 'Mail now';
@@ -471,7 +471,7 @@ $string['modeall'] = 'Show all';
 $string['modenested'] = 'Display replies in nested form';
 $string['modeonlydiscussion'] = 'Discussions only';
 $string['modethreaded'] = 'Display replies in threaded form';
-$string['modulename'] = 'OUILForum';
+$string['modulename'] = 'forumx';
 $string['modulename_help'] = 'The forum activity module enables participants to have asynchronous discussions i.e. discussions that take place over an extended period of time.
 
 There are several forum types to choose from, such as a standard forum where anyone can start a new discussion at any time; a forum where each student can post exactly one discussion; or a question and answer forum where students must first post before being able to view other students\' posts. A teacher can allow files to be attached to forum posts. Attached images are displayed in the forum post.
@@ -490,14 +490,14 @@ Forums have many uses, such as
 * A help centre where tutors and students can give advice
 * A one-on-one support area for private student-teacher communications (using a forum with separate groups and with one student per group)
 * For extension activities, for example ‘brain teasers’ for students to ponder and suggest solutions to';
-$string['modulename_link'] = 'mod/ouilforum/view';
-$string['modulenameplural'] = 'OUILForums';
+$string['modulename_link'] = 'mod/forumx/view';
+$string['modulenameplural'] = 'forumxs';
 $string['more'] = 'More';
 $string['moreoptions'] = 'More options';
 $string['move:action'] = 'Select a move type';
 $string['move:discussionslist'] = 'Select a terget discussion from the list';
 $string['move:link'] = 'Move message';
-$string['move:newouilforum'] = 'Move into another forum as a new discussion';
+$string['move:newforumx'] = 'Move into another forum as a new discussion';
 $string['move:newtitle'] = 'New title (optional)';
 $string['move:newtitle_help'] = 'You can change the title to for the new discussion.';
 $string['move:noavailableforums'] = 'There are no other available forums';
@@ -506,8 +506,8 @@ $string['move:originaldiscussion'] = 'The original discussion';
 $string['move:originalpost'] = 'The original post';
 $string['move:postplaceholder'] = 'This the post you are moving';
 $string['move:select'] = 'Select:';
-$string['move:thisouilforum'] = 'Move into another discussion in this forum';
-$string['move:thisouilforumnew'] = 'Set as a new discussion in this forum';
+$string['move:thisforumx'] = 'Move into another discussion in this forum';
+$string['move:thisforumxnew'] = 'Set as a new discussion in this forum';
 $string['move:title'] = 'Massages to move:';
 $string['movebutton'] = 'Move';
 $string['movediscussion'] = 'Move discussion';
@@ -516,7 +516,7 @@ $string['movedmarker'] = '(Moved)';
 $string['movemessage'] = 'Move';
 $string['movepost'] = 'Move post';
 $string['movethisdiscussionto'] = 'Move this discussion to ...';
-$string['movetoouilforum'] = 'Move';
+$string['movetoforumx'] = 'Move';
 $string['multidiscussionswarning'] = 'Attention! The forum contains more than one discussion - The most recent discussion was selected';
 $string['mustprovidediscussionorpost'] = 'You must provide either a discussion id or post id to export';
 $string['myprofileownpost'] = 'My forum posts';
@@ -610,7 +610,7 @@ $string['posttosend'] = 'The post to send';
 $string['postunread'] = 'This post is unread';
 $string['prevdiscussiona'] = 'Previous discussion: {$a}';
 $string['pluginadministration'] = 'Forum administration';
-$string['pluginname'] = 'OUILForum';
+$string['pluginname'] = 'ForumX';
 $string['postadded'] = '<p>Your post was successfully added.</p> <p>You have {$a} to edit it if you want to make any changes.</p>';
 $string['postaddedsuccess'] = 'Your post was successfully added.';
 $string['postaddedtimeleft'] = 'You have {$a} to edit it if you want to make any changes.';
@@ -691,8 +691,8 @@ $string['rsstype_help'] = 'To enable the RSS feed for this activity, select eith
 $string['rsstypedefault'] = 'RSS feed type';
 $string['save'] = 'Save';
 $string['search'] = 'Search';
-$string['search:post'] = 'OUILForum - posts';
-$string['search:activity'] = 'OUILForum - activity information';
+$string['search:post'] = 'forumx - posts';
+$string['search:activity'] = 'forumx - activity information';
 $string['searchdatefrom'] = 'Posts must be newer than this';
 $string['searchdateto'] = 'Posts must be older than this';
 $string['searchforumintro'] = 'Please enter search terms into one or more of the following fields:';
@@ -756,8 +756,8 @@ $string['subscription'] = 'Subscription';
 $string['subscription_help'] = 'If you are subscribed to a forum it means you will receive notification of new forum posts. Usually you can choose whether you wish to be subscribed, though sometimes subscription is forced so that everyone receives notifications.';
 $string['subscriptionandtracking'] = 'Subscription and tracking';
 $string['subscriptiondiscussion'] = 'Subscribe to discussion';
-$string['subscriptiondiscussion_help'] = 
-'Subscribing to a discussion will enable you to receive email copies of all new posts in this discussion.
+$string['subscriptiondiscussion_help'] =
+    'Subscribing to a discussion will enable you to receive email copies of all new posts in this discussion.
 
 You can unsubscribe anytime by clicking the unsubscribe link in the emails.
 
@@ -839,7 +839,7 @@ $string['usermarksread'] = 'Manual message read marking';
 $string['useremaildontexist'] = 'Email address not found in the system';
 $string['viewalldiscussions'] = 'View all discussions';
 $string['warnafter'] = 'Post threshold for warning';
-$string['warnafter_help'] = 'Students can be warned as they approach the maximum number of posts allowed in a given period. This setting specifies after how many posts they are warned. Users with the capability mod/ouilforum:postwithoutthrottling are exempt from post limits.';
+$string['warnafter_help'] = 'Students can be warned as they approach the maximum number of posts allowed in a given period. This setting specifies after how many posts they are warned. Users with the capability mod/forumx:postwithoutthrottling are exempt from post limits.';
 $string['warnformorepost'] = 'Warning! There is more than one discussion in this forum - using the most recent';
 $string['yournewquestion'] = 'Your new question';
 $string['yournewtopic'] = 'Your new discussion topic';
@@ -847,13 +847,13 @@ $string['yourreply'] = 'Your reply';
 
 // Deprecated since Moodle 3.0.
 $string['subscribersto'] = 'Subscribers to "{$a->name}"';
-$string['overview_unread_messages']=' Published {$a} unread  messages in forum ';
-$string ['to_all_news']='to all news';
-$string ['mobile_forum_title']='message title';
-$string ['mobile_forum_message']='message body';
-$string ['posttoforum_news']='publish news';
-$string ['cancelforum_news']='cancel';
-$string ['forum_news_new']='new';
-$string['checkSubscibe']='check subscibe';
+$string['overview_unread_messages'] = ' Published {$a} unread  messages in forum ';
+$string ['to_all_news'] = 'to all news';
+$string ['mobile_forum_title'] = 'message title';
+$string ['mobile_forum_message'] = 'message body';
+$string ['posttoforum_news'] = 'publish news';
+$string ['cancelforum_news'] = 'cancel';
+$string ['forum_news_new'] = 'new';
+$string['checkSubscibe'] = 'check subscibe';
 
-$string['to_home_page']='to home page';
+$string['to_home_page'] = 'to home page';

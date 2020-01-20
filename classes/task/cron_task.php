@@ -19,11 +19,11 @@
  *
  * @todo MDL-44734 This job will be split up properly.
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace mod_ouilforum\task;
+namespace mod_forumx\task;
 
 class cron_task extends \core\task\scheduled_task {
 
@@ -33,7 +33,7 @@ class cron_task extends \core\task\scheduled_task {
      * @return string
      */
     public function get_name() {
-        return get_string('crontask', 'mod_ouilforum');
+        return get_string('crontask', 'mod_forumx');
     }
 
     /**
@@ -41,8 +41,8 @@ class cron_task extends \core\task\scheduled_task {
      */
     public function execute() {
         global $CFG;
-        require_once($CFG->dirroot.'/mod/ouilforum/lib.php');
-        ouilforum_cron();
+        require_once($CFG->dirroot.'/mod/forumx/lib.php');
+        forumx_cron();
     }
 
 }

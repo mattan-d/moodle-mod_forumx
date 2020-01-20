@@ -16,9 +16,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright  2008 Petr Skoda (http://skodak.org)
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,7 +27,7 @@ require_once("lib.php");
 
 $confirm = optional_param('confirm', false, PARAM_BOOL);
 
-$PAGE->set_url('/mod/ouilforum/unsubscribeall.php');
+$PAGE->set_url('/mod/forumx/unsubscribeall.php');
 
 // Do not autologin guest. Only proper users can have forum subscriptions.
 require_login(null, false);
@@ -39,8 +39,8 @@ if (isguestuser()) {
     redirect($return);
 }
 
-$strunsubscribeall = get_string('unsubscribeall', 'ouilforum');
-$PAGE->navbar->add(get_string('modulename', 'ouilforum'));
+$strunsubscribeall = get_string('unsubscribeall', 'forumx');
+$PAGE->navbar->add(get_string('modulename', 'forumx'));
 $PAGE->navbar->add($strunsubscribeall);
 $PAGE->set_title($strunsubscribeall);
 $PAGE->set_heading($COURSE->fullname);
@@ -48,38 +48,38 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading($strunsubscribeall);
 
 if (data_submitted() && $confirm and confirm_sesskey()) {
-    $forums = \mod_ouilforum\subscriptions::get_unsubscribable_forums();
+    $forums = \mod_forumx\subscriptions::get_unsubscribable_forums();
 
     foreach($forums as $forum) {
-        \mod_ouilforum\subscriptions::unsubscribe_user($USER->id, $forum, context_module::instance($forum->cm), true);
+        \mod_forumx\subscriptions::unsubscribe_user($USER->id, $forum, context_module::instance($forum->cm), true);
     }
-    $DB->delete_records('ouilforum_discussion_subs', array('userid' => $USER->id));
+    $DB->delete_records('forumx_discussion_subs', array('userid' => $USER->id));
     $DB->set_field('user', 'autosubscribe', 0, array('id'=>$USER->id));
 
-    echo $OUTPUT->box(get_string('unsubscribealldone', 'ouilforum'));
+    echo $OUTPUT->box(get_string('unsubscribealldone', 'forumx'));
     echo $OUTPUT->continue_button($return);
     echo $OUTPUT->footer();
     die;
 
 } else {
     $count = new stdClass();
-    $count->forums = count(\mod_ouilforum\subscriptions::get_unsubscribable_forums());
-    $count->discussions = $DB->count_records('ouilforum_discussion_subs', array('userid' => $USER->id));
+    $count->forums = count(\mod_forumx\subscriptions::get_unsubscribable_forums());
+    $count->discussions = $DB->count_records('forumx_discussion_subs', array('userid' => $USER->id));
 
     if ($count->forums || $count->discussions) {
         if ($count->forums && $count->discussions) {
-            $msg = get_string('unsubscribeallconfirm', 'ouilforum', $count);
+            $msg = get_string('unsubscribeallconfirm', 'forumx', $count);
         } else if ($count->forums) {
-            $msg = get_string('unsubscribeallconfirmforums', 'ouilforum', $count);
+            $msg = get_string('unsubscribeallconfirmforums', 'forumx', $count);
         } else if ($count->discussions) {
-            $msg = get_string('unsubscribeallconfirmdiscussions', 'ouilforum', $count);
+            $msg = get_string('unsubscribeallconfirmdiscussions', 'forumx', $count);
         }
         echo $OUTPUT->confirm($msg, new moodle_url('unsubscribeall.php', array('confirm'=>1)), $return);
         echo $OUTPUT->footer();
         die;
 
     } else {
-        echo $OUTPUT->box(get_string('unsubscribeallempty', 'ouilforum'));
+        echo $OUTPUT->box(get_string('unsubscribeallempty', 'forumx'));
         echo $OUTPUT->continue_button($return);
         echo $OUTPUT->footer();
         die;

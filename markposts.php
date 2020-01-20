@@ -18,9 +18,9 @@
 /**
  * Set tracking option for the forum.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2005 mchurch
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +32,7 @@ $mark       = required_param('mark', PARAM_ALPHA);                   // Read or 
 $d          = optional_param('d', 0, PARAM_INT);                     // Discussion to mark.
 $returnpage = optional_param('returnpage', 'index.php', PARAM_FILE); // Page to return to.
 
-$url = new moodle_url('/mod/ouilforum/markposts.php', array('f'=>$f, 'mark'=>$mark));
+$url = new moodle_url('/mod/forumx/markposts.php', array('f'=>$f, 'mark'=>$mark));
 if ($d !== 0) {
     $url->param('d', $d);
 }
@@ -41,15 +41,15 @@ if ($returnpage !== 'index.php') {
 }
 $PAGE->set_url($url);
 
-if (! $forum = $DB->get_record('ouilforum', array('id' => $f))) {
-    print_error('invalidforumid', 'ouilforum');
+if (! $forum = $DB->get_record('forumx', array('id' => $f))) {
+    print_error('invalidforumid', 'forumx');
 }
 
 if (! $course = $DB->get_record('course', array('id' => $forum->course))) {
     print_error('invalidcourseid');
 }
 
-if (!$cm = get_coursemodule_from_instance('ouilforum', $forum->id, $course->id)) {
+if (!$cm = get_coursemodule_from_instance('forumx', $forum->id, $course->id)) {
     print_error('invalidcoursemodule');
 }
 
@@ -58,16 +58,16 @@ $user = $USER;
 require_login($course, false, $cm);
 
 if ($returnpage == 'index.php') {
-    $returnto = new moodle_url('/mod/ouilforum/'.$returnpage, array('id' => $course->id));
+    $returnto = new moodle_url('/mod/forumx/'.$returnpage, array('id' => $course->id));
 } else {
-    $returnto = new moodle_url('/mod/ouilforum/'.$returnpage, array('f' => $forum->id));
+    $returnto = new moodle_url('/mod/forumx/'.$returnpage, array('f' => $forum->id));
 }
 
 if (isguestuser()) { // Guests can't change forum.
     $PAGE->set_title($course->shortname);
     $PAGE->set_heading($course->fullname);
     echo $OUTPUT->header();
-    echo $OUTPUT->confirm(get_string('noguesttracking', 'ouilforum').'<br /><br />'.get_string('liketologin'), get_login_url(), $returnto);
+    echo $OUTPUT->confirm(get_string('noguesttracking', 'forumx').'<br /><br />'.get_string('liketologin'), get_login_url(), $returnto);
     echo $OUTPUT->footer();
     exit;
 }
@@ -78,11 +78,11 @@ $info->forum = format_string($forum->name);
 
 if ($mark == 'read') {
     if (!empty($d)) {
-        if (! $discussion = $DB->get_record('ouilforum_discussions', array('id'=> $d, 'ouilforum'=> $forum->id))) {
-            print_error('invaliddiscussionid', 'ouilforum');
+        if (! $discussion = $DB->get_record('forumx_discussions', array('id'=> $d, 'forumx'=> $forum->id))) {
+            print_error('invaliddiscussionid', 'forumx');
         }
 
-        ouilforum_tp_mark_discussion_read($user, $d);
+        forumx_tp_mark_discussion_read($user, $d);
     } else {
         // Mark all messages read in current group.
         $currentgroup = groups_get_activity_group($cm);
@@ -90,7 +90,7 @@ if ($mark == 'read') {
             // mark_forum_read requires ===false, while get_activity_group may return 0.
             $currentgroup = false;
         }
-        ouilforum_tp_mark_forum_read($user, $forum->id, $currentgroup);
+        forumx_tp_mark_forum_read($user, $forum->id, $currentgroup);
     }
 }
 

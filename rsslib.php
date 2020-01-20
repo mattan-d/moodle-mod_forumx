@@ -18,10 +18,10 @@
 /**
  * This file adds support to rss feeds generation
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @category  rss
  * @copyright 2001 Eloy Lafuente (stronk7) http://contiento.com
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,37 +34,37 @@ require_once($CFG->libdir.'/rsslib.php');
  * @param array    $args    the arguments received in the url
  * @return string the full path to the cached RSS feed directory. Null if there is a problem.
  */
-function ouilforum_rss_get_feed($context, $args) {
+function forumx_rss_get_feed($context, $args) {
     global $CFG, $DB, $USER;
 
     $status = true;
 
     // Are RSS feeds enabled?
-    if (empty($CFG->ouilforum_enablerssfeeds)) {
+    if (empty($CFG->forumx_enablerssfeeds)) {
         debugging('DISABLED (module configuration)');
         return null;
     }
 
     $forumid = clean_param($args[3], PARAM_INT);
-    $cm = get_coursemodule_from_instance('ouilforum', $forumid, 0, false, MUST_EXIST);
+    $cm = get_coursemodule_from_instance('forumx', $forumid, 0, false, MUST_EXIST);
     $modcontext = context_module::instance($cm->id);
 
     // Context id from db should match the submitted one.
-    if ($context->id != $modcontext->id || !has_capability('mod/ouilforum:viewdiscussion', $modcontext)) {
+    if ($context->id != $modcontext->id || !has_capability('mod/forumx:viewdiscussion', $modcontext)) {
         return null;
     }
 
-    $forum = $DB->get_record('ouilforum', array('id' => $forumid), '*', MUST_EXIST);
-    if (!rss_enabled_for_mod('ouilforum', $forum)) {
+    $forum = $DB->get_record('forumx', array('id' => $forumid), '*', MUST_EXIST);
+    if (!rss_enabled_for_mod('forumx', $forum)) {
         return null;
     }
 
     // The sql that will retreive the data for the feed and be hashed to get the cache filename.
-    list($sql, $params) = ouilforum_rss_get_sql($forum, $cm);
+    list($sql, $params) = forumx_rss_get_sql($forum, $cm);
 
     // Hash the sql to get the cache file name.
     $filename = rss_get_file_name($forum, $sql, $params);
-    $cachedfilepath = rss_get_file_full_name('mod_ouilforum', $filename);
+    $cachedfilepath = rss_get_file_full_name('mod_forumx', $filename);
 
     //Is the cache out of date?
     $cachedfilelastmodified = 0;
@@ -77,10 +77,10 @@ function ouilforum_rss_get_feed($context, $args) {
     // If it hasn't been generated we need to create it.
     // Otherwise, if it has been > 60 seconds since we last updated, check for new items.
     if (($cachedfilelastmodified == 0) || (($dontrecheckcutoff > $cachedfilelastmodified) &&
-        ouilforum_rss_newstuff($forum, $cm, $cachedfilelastmodified))) {
+        forumx_rss_newstuff($forum, $cm, $cachedfilelastmodified))) {
         // Need to regenerate the cached version.
-        $result = ouilforum_rss_feed_contents($forum, $sql, $params, $modcontext);
-        $status = rss_save_file('mod_ouilforum', $filename, $result);
+        $result = forumx_rss_feed_contents($forum, $sql, $params, $modcontext);
+        $status = rss_save_file('mod_forumx', $filename, $result);
     }
 
     // Return the path to the cached version.
@@ -92,8 +92,8 @@ function ouilforum_rss_get_feed($context, $args) {
  *
  * @param stdClass $forum
  */
-function ouilforum_rss_delete_file($forum) {
-    rss_delete_file('mod_ouilforum', $forum);
+function forumx_rss_delete_file($forum) {
+    rss_delete_file('mod_forumx', $forum);
 }
 
 ///////////////////////////////////////////////////////
@@ -108,10 +108,10 @@ function ouilforum_rss_delete_file($forum) {
  * @param int      $time  check for items since this epoch timestamp
  * @return bool True for new items
  */
-function ouilforum_rss_newstuff($forum, $cm, $time) {
+function forumx_rss_newstuff($forum, $cm, $time) {
     global $DB;
 
-    list($sql, $params) = ouilforum_rss_get_sql($forum, $cm, $time);
+    list($sql, $params) = forumx_rss_get_sql($forum, $cm, $time);
     return $DB->record_exists_sql($sql, $params);
 }
 
@@ -123,11 +123,11 @@ function ouilforum_rss_newstuff($forum, $cm, $time) {
  * @param int      $time  check for items since this epoch timestamp
  * @return string the SQL query to be used to get the Discussion/Post details from the forum table of the database
  */
-function ouilforum_rss_get_sql($forum, $cm, $time=0) {
+function forumx_rss_get_sql($forum, $cm, $time=0) {
     if ($forum->rsstype == 1) { // Discussion RSS.
-        return ouilforum_rss_feed_discussions_sql($forum, $cm, $time);
+        return forumx_rss_feed_discussions_sql($forum, $cm, $time);
     } else { // Post RSS.
-        return ouilforum_rss_feed_posts_sql($forum, $cm, $time);
+        return forumx_rss_feed_posts_sql($forum, $cm, $time);
     }
 }
 
@@ -139,7 +139,7 @@ function ouilforum_rss_get_sql($forum, $cm, $time=0) {
  * @param int      $newsince  check for items since this epoch timestamp
  * @return string the SQL query to be used to get the Discussion details from the forum table of the database
  */
-function ouilforum_rss_feed_discussions_sql($forum, $cm, $newsince=0) {
+function forumx_rss_feed_discussions_sql($forum, $cm, $newsince=0) {
     global $CFG, $DB, $USER;
 
     $timelimit = '';
@@ -151,8 +151,8 @@ function ouilforum_rss_feed_discussions_sql($forum, $cm, $newsince=0) {
 
     $modcontext = context_module::instance($cm->id);
 
-    if (!empty($CFG->ouilforum_enabletimedposts)) { /// Users must fulfill timed posts.
-        if (!has_capability('mod/ouilforum:viewhiddentimedposts', $modcontext)) {
+    if (!empty($CFG->forumx_enabletimedposts)) { /// Users must fulfill timed posts.
+        if (!has_capability('mod/forumx:viewhiddentimedposts', $modcontext)) {
             $timelimit = " AND ((d.timestart <= :now1 AND (d.timeend = 0 OR d.timeend > :now2))";
             $params['now1'] = $now;
             $params['now2'] = $now;
@@ -175,7 +175,7 @@ function ouilforum_rss_feed_discussions_sql($forum, $cm, $newsince=0) {
     // Get group enforcing SQL.
     $groupmode = groups_get_activity_groupmode($cm);
     $currentgroup = groups_get_activity_group($cm);
-    list($groupselect, $groupparams) = ouilforum_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext);
+    list($groupselect, $groupparams) = forumx_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext);
 
     // Add the groupparams to the params array.
     $params = array_merge($params, $groupparams);
@@ -186,10 +186,10 @@ function ouilforum_rss_feed_discussions_sql($forum, $cm, $newsince=0) {
 
     $sql = "SELECT $postdata, d.id as discussionid, d.name as discussionname, d.timemodified, d.usermodified, d.groupid,
                    d.timestart, d.timeend, $userpicturefields
-              FROM {ouilforum_discussions} d
-                   JOIN {ouilforum_posts} p ON p.discussion = d.id
+              FROM {forumx_discussions} d
+                   JOIN {forumx_posts} p ON p.discussion = d.id
                    JOIN {user} u ON p.userid = u.id
-             WHERE d.ouilforum = {$forum->id} AND p.parent = 0
+             WHERE d.forumx = {$forum->id} AND p.parent = 0
                    $timelimit $groupselect $newsince
           ORDER BY $forumsort";
     return array($sql, $params);
@@ -203,7 +203,7 @@ function ouilforum_rss_feed_discussions_sql($forum, $cm, $newsince=0) {
  * @param int      $newsince  check for items since this epoch timestamp
  * @return string the SQL query to be used to get the Post details from the forum table of the database
  */
-function ouilforum_rss_feed_posts_sql($forum, $cm, $newsince=0) {
+function forumx_rss_feed_posts_sql($forum, $cm, $newsince=0) {
     $modcontext = context_module::instance($cm->id);
 
     // Get group enforcement SQL.
@@ -211,7 +211,7 @@ function ouilforum_rss_feed_posts_sql($forum, $cm, $newsince=0) {
     $currentgroup = groups_get_activity_group($cm);
     $params = array();
 
-    list($groupselect, $groupparams) = ouilforum_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext);
+    list($groupselect, $groupparams) = forumx_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext);
 
     // Add the groupparams to the params array.
     $params = array_merge($params, $groupparams);
@@ -239,10 +239,10 @@ function ouilforum_rss_feed_posts_sql($forum, $cm, $newsince=0) {
                  p.messageformat AS postformat,
                  p.messagetrust AS posttrust,
                  p.parent as postparent
-            FROM {ouilforum_discussions} d,
-               {ouilforum_posts} p,
+            FROM {forumx_discussions} d,
+               {forumx_posts} p,
                {user} u
-            WHERE d.ouilforum = {$forum->id} AND
+            WHERE d.forumx = {$forum->id} AND
                 p.discussion = d.id AND
                 u.id = p.userid $newsince
                 $groupselect
@@ -260,7 +260,7 @@ function ouilforum_rss_feed_posts_sql($forum, $cm, $newsince=0) {
  * @param stdClass $modcontext   The context instance of the forum module
  * @return string SQL Query for group details of the forum
  */
-function ouilforum_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext=null) {
+function forumx_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext=null) {
     $groupselect = '';
     $params = array();
 
@@ -297,7 +297,7 @@ function ouilforum_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext
  * @Todo MDL-31129 implement post attachment handling
  */
 
-function ouilforum_rss_feed_contents($forum, $sql, $params, $context) {
+function forumx_rss_feed_contents($forum, $sql, $params, $context) {
     global $CFG, $DB, $USER;
 
     $status = true;
@@ -310,7 +310,7 @@ function ouilforum_rss_feed_contents($forum, $sql, $params, $context) {
         $isdiscussion = false;
     }
 
-    if (!$cm = get_coursemodule_from_instance('ouilforum', $forum->id, $forum->course)) {
+    if (!$cm = get_coursemodule_from_instance('forumx', $forum->id, $forum->course)) {
         print_error('invalidcoursemodule');
     }
 
@@ -333,16 +333,16 @@ function ouilforum_rss_feed_contents($forum, $sql, $params, $context) {
                 $post->userid = $rec->userid;
             }
 
-            if ($isdiscussion && !ouilforum_user_can_see_discussion($forum, $discussion, $context)) {
+            if ($isdiscussion && !forumx_user_can_see_discussion($forum, $discussion, $context)) {
                 // This is a discussion which the user has no permission to view.
-                $item->title = get_string('forumsubjecthidden', 'ouilforum');
-                $message = get_string('forumbodyhidden', 'ouilforum');
-                $item->author = get_string('forumauthorhidden', 'ouilforum');
-            } else if (!$isdiscussion && !ouilforum_user_can_see_post($forum, $discussion, $post, $USER, $cm)) {
+                $item->title = get_string('forumsubjecthidden', 'forumx');
+                $message = get_string('forumbodyhidden', 'forumx');
+                $item->author = get_string('forumauthorhidden', 'forumx');
+            } else if (!$isdiscussion && !forumx_user_can_see_post($forum, $discussion, $post, $USER, $cm)) {
                 // This is a post which the user has no permission to view.
-                $item->title = get_string('forumsubjecthidden', 'ouilforum');
-                $message = get_string('forumbodyhidden', 'ouilforum');
-                $item->author = get_string('forumauthorhidden', 'ouilforum');
+                $item->title = get_string('forumsubjecthidden', 'forumx');
+                $message = get_string('forumbodyhidden', 'forumx');
+                $item->author = get_string('forumauthorhidden', 'forumx');
             } else {
                 // The user must have permission to view.
                 if ($isdiscussion && !empty($rec->discussionname)) {
@@ -355,14 +355,14 @@ function ouilforum_rss_feed_contents($forum, $sql, $params, $context) {
                 }
                 $item->author = fullname($rec);
                 $message = file_rewrite_pluginfile_urls($rec->postmessage, 'pluginfile.php', $context->id,
-                        'mod_ouilforum', 'post', $rec->postid);
+                        'mod_forumx', 'post', $rec->postid);
                 $formatoptions->trusted = $rec->posttrust;
             }
 
             if ($isdiscussion) {
-                $item->link = $CFG->wwwroot."/mod/ouilforum/discuss.php?d=".$rec->discussionid;
+                $item->link = $CFG->wwwroot."/mod/forumx/discuss.php?d=".$rec->discussionid;
             } else {
-                $item->link = $CFG->wwwroot."/mod/ouilforum/discuss.php?d=".$rec->discussionid."&parent=".$rec->postid;
+                $item->link = $CFG->wwwroot."/mod/forumx/discuss.php?d=".$rec->discussionid."&parent=".$rec->postid;
             }
 
             $formatoptions->trusted = $rec->posttrust;
@@ -375,7 +375,7 @@ function ouilforum_rss_feed_contents($forum, $sql, $params, $context) {
 
     // Create the RSS header.
     $header = rss_standard_header(strip_tags(format_string($forum->name,true)),
-                                  $CFG->wwwroot."/mod/ouilforum/view.php?f=".$forum->id,
+                                  $CFG->wwwroot."/mod/forumx/view.php?f=".$forum->id,
                                   format_string($forum->intro,true)); // TODO: fix format
     // Now all the RSS items, if there are any.
     $articles = '';

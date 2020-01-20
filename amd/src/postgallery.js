@@ -18,9 +18,9 @@
  * This is a very simple lightbox gallery, specially made for images in a post.
  * The gallery also detects formulas (MathJax and Wiris).
  *
- * @module    mod_ouilforum/postgallery
- * @package   mod_ouilforum
- * @copyright 2018 onwards The Open University of Israel
+ * @module    mod_forumx/postgallery
+ * @package   mod_forumx
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since     3.1
  */
@@ -99,19 +99,19 @@ define(['jquery', 'core/str', 'jqueryui'], function($, s) {
 		s.get_strings([
 		    {
    		    	key:       'pgl:loadbutton',
-                component: 'ouilforum'
+                component: 'forumx'
             },
             {
                 key:       'pgl:buttonclose',
-                component: 'ouilforum'
+                component: 'forumx'
             },
             {
             	key:       'pgl:buttonnext',
-               	component: 'ouilforum'
+               	component: 'forumx'
             },
             {
                	key:       'pgl:buttonprev',
-               	component: 'ouilforum'
+               	component: 'forumx'
             }
    		]).done(function(s) {
    			PARAMS.str.loadButton = s[0];

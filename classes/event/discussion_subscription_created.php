@@ -15,20 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_ouilforum discussion_subscription created event.
+ * The mod_forumx discussion_subscription created event.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2014 Andrew Nicols <andrew@nicols.co.uk>
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_ouilforum\event;
+namespace mod_forumx\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_ouilforum discussion_subscription created event class.
+ * The mod_forumx discussion_subscription created event class.
  *
  * @property-read array $other {
  *      Extra information about the event.
@@ -37,7 +37,7 @@ defined('MOODLE_INTERNAL') || die();
  *      - int discussion: The id of the discussion which has been subscribed to.
  * }
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @since      Moodle 2.8
  * @copyright  2014 Andrew Nicols <andrew@nicols.co.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -51,7 +51,7 @@ class discussion_subscription_created extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'c';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
-        $this->data['objecttable'] = 'ouilforum_discussion_sub';
+        $this->data['objecttable'] = 'forumx_discussion_sub';
     }
 
     /**
@@ -70,7 +70,7 @@ class discussion_subscription_created extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventdiscussionsubscriptioncreated', 'mod_ouilforum');
+        return get_string('eventdiscussionsubscriptioncreated', 'mod_forumx');
     }
 
     /**
@@ -79,7 +79,7 @@ class discussion_subscription_created extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/ouilforum/subscribe.php', array(
+        return new \moodle_url('/mod/forumx/subscribe.php', array(
             'id' => $this->other['forumid'],
             'd' => $this->other['discussion'],
         ));
@@ -112,13 +112,13 @@ class discussion_subscription_created extends \core\event\base {
     }
 
     public static function get_objectid_mapping() {
-        return array('db' => 'ouilforum_discussion_subs', 'restore' => 'ouilforum_discussion_sub');
+        return array('db' => 'forumx_discussion_subs', 'restore' => 'forumx_discussion_sub');
     }
 
     public static function get_other_mapping() {
         $othermapped = array();
-        $othermapped['forumid'] = array('db' => 'ouilforum', 'restore' => 'ouilforum');
-        $othermapped['discussion'] = array('db' => 'ouilforum_discussions', 'restore' => 'ouilforum_discussion');
+        $othermapped['forumid'] = array('db' => 'forumx', 'restore' => 'forumx');
+        $othermapped['discussion'] = array('db' => 'forumx_discussions', 'restore' => 'forumx_discussion');
 
         return $othermapped;
     }

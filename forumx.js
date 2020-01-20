@@ -5,7 +5,7 @@ function forum_produce_subscribe_link(forumid, backtoindex, ltext, ltitle) {
     var elementid = 'subscriptionlink';
     var subs_link = document.getElementById(elementid);
     if(subs_link){
-        subs_link.innerHTML = "<a title='"+ltitle+"' href='"+M.cfg.wwwroot+"/mod/ouilforum/subscribe.php?id="+forumid+backtoindex+"&amp;sesskey="+M.cfg.sesskey+"'>"+ltext+"<\/a>";
+        subs_link.innerHTML = "<a title='"+ltitle+"' href='"+M.cfg.wwwroot+"/mod/forumx/subscribe.php?id="+forumid+backtoindex+"&amp;sesskey="+M.cfg.sesskey+"'>"+ltext+"<\/a>";
     }
 }
 
@@ -13,7 +13,7 @@ function forum_produce_tracking_link(forumid, ltext, ltitle) {
     var elementid = "trackinglink";
     var subs_link = document.getElementById(elementid);
     if(subs_link){
-        subs_link.innerHTML = "<a title='"+ltitle+"' href='"+M.cfg.wwwroot+"/mod/ouilforum/settracking.php?id="+forumid+"&amp;sesskey="+M.cfg.sesskey+"'>"+ltext+"<\/a>";
+        subs_link.innerHTML = "<a title='"+ltitle+"' href='"+M.cfg.wwwroot+"/mod/forumx/settracking.php?id="+forumid+"&amp;sesskey="+M.cfg.sesskey+"'>"+ltext+"<\/a>";
     }
 }
 

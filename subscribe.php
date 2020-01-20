@@ -26,14 +26,14 @@
  * through a confirmation page that redirects the user back with the
  * sesskey.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once($CFG->dirroot.'/mod/ouilforum/lib.php');
+require_once($CFG->dirroot.'/mod/forumx/lib.php');
 
 $id             = required_param('id', PARAM_INT);              // The forum to set subscription on.
 $mode           = optional_param('mode', null, PARAM_INT);      // The forum's subscription mode.
@@ -42,7 +42,7 @@ $discussionid   = optional_param('d', null, PARAM_INT);         // The discussio
 $sesskey        = optional_param('sesskey', null, PARAM_RAW);
 $returnurl      = optional_param('returnurl', null, PARAM_RAW);
 
-$url = new moodle_url('/mod/ouilforum/subscribe.php', array('id'=>$id));
+$url = new moodle_url('/mod/forumx/subscribe.php', array('id'=>$id));
 if (!is_null($mode)) {
     $url->param('mode', $mode);
 }
@@ -54,19 +54,19 @@ if (!is_null($sesskey)) {
 }
 if (!is_null($discussionid)) {
     $url->param('d', $discussionid);
-    $discussion = $DB->get_record('ouilforum_discussions', array('id' => $discussionid), '*', MUST_EXIST);
+    $discussion = $DB->get_record('forumx_discussions', array('id' => $discussionid), '*', MUST_EXIST);
 }
 $PAGE->set_url($url);
 
-$forum   = $DB->get_record('ouilforum', array('id' => $id), '*', MUST_EXIST);
+$forum   = $DB->get_record('forumx', array('id' => $id), '*', MUST_EXIST);
 $course  = $DB->get_record('course', array('id' => $forum->course), '*', MUST_EXIST);
-$cm      = get_coursemodule_from_instance('ouilforum', $forum->id, $course->id, false, MUST_EXIST);
+$cm      = get_coursemodule_from_instance('forumx', $forum->id, $course->id, false, MUST_EXIST);
 $context = context_module::instance($cm->id);
 
 if ($user) {
     require_sesskey();
-    if (!has_capability('mod/ouilforum:managesubscriptions', $context)) {
-        print_error('nopermissiontosubscribe', 'ouilforum');
+    if (!has_capability('mod/forumx:managesubscriptions', $context)) {
+        print_error('nopermissiontosubscribe', 'forumx');
     }
     $user = $DB->get_record('user', array('id' => $user), '*', MUST_EXIST);
 } else {
@@ -79,12 +79,12 @@ if (isset($cm->groupmode) && empty($course->groupmodeforce)) {
     $groupmode = $course->groupmode;
 }
 
-$issubscribed = \mod_ouilforum\subscriptions::is_subscribed($user->id, $forum, $discussionid, $cm);
+$issubscribed = \mod_forumx\subscriptions::is_subscribed($user->id, $forum, $discussionid, $cm);
 
 // For a user to subscribe when a groupmode is set, they must have access to at least one group.
 if ($groupmode && !$issubscribed && !has_capability('moodle/site:accessallgroups', $context)) {
     if (!groups_get_all_groups($course->id, $USER->id)) {
-        print_error('cannotsubscribe', 'ouilforum');
+        print_error('cannotsubscribe', 'forumx');
     }
 }
 
@@ -95,13 +95,13 @@ if (is_null($mode) and !is_enrolled($context, $USER, '', true)) { // Guests and 
     $PAGE->set_heading($course->fullname);
     if (isguestuser()) {
         echo $OUTPUT->header();
-        echo $OUTPUT->confirm(get_string('subscribeenrolledonly', 'ouilforum').'<br /><br />'.get_string('liketologin'),
-                     get_login_url(), new moodle_url('/mod/ouilforum/view.php', array('f'=>$id)));
+        echo $OUTPUT->confirm(get_string('subscribeenrolledonly', 'forumx').'<br /><br />'.get_string('liketologin'),
+                     get_login_url(), new moodle_url('/mod/forumx/view.php', array('f'=>$id)));
         echo $OUTPUT->footer();
         exit;
     } else {
         // There should not be any links leading to this place, just redirect.
-        redirect(new moodle_url('/mod/ouilforum/view.php', array('f'=>$id)), get_string('subscribeenrolledonly', 'ouilforum'));
+        redirect(new moodle_url('/mod/forumx/view.php', array('f'=>$id)), get_string('subscribeenrolledonly', 'forumx'));
     }
 }
 
@@ -113,38 +113,38 @@ if ($returnurl) {
     $returnto = $returnurl;
 }
 
-if (!is_null($mode) && has_capability('mod/ouilforum:managesubscriptions', $context)) {
+if (!is_null($mode) && has_capability('mod/forumx:managesubscriptions', $context)) {
     require_sesskey();
     switch ($mode) {
-        case OUILFORUM_CHOOSESUBSCRIBE : // 0
-            \mod_ouilforum\subscriptions::set_subscription_mode($forum->id, OUILFORUM_CHOOSESUBSCRIBE);
-            redirect($returnto, get_string("everyonecannowchoose", "ouilforum"), 1);
+        case forumx_CHOOSESUBSCRIBE : // 0
+            \mod_forumx\subscriptions::set_subscription_mode($forum->id, forumx_CHOOSESUBSCRIBE);
+            redirect($returnto, get_string("everyonecannowchoose", "forumx"), 1);
             break;
-        case OUILFORUM_FORCESUBSCRIBE : // 1
-            \mod_ouilforum\subscriptions::set_subscription_mode($forum->id, OUILFORUM_FORCESUBSCRIBE);
-            redirect($returnto, get_string("everyoneisnowsubscribed", "ouilforum"), 1);
+        case forumx_FORCESUBSCRIBE : // 1
+            \mod_forumx\subscriptions::set_subscription_mode($forum->id, forumx_FORCESUBSCRIBE);
+            redirect($returnto, get_string("everyoneisnowsubscribed", "forumx"), 1);
             break;
-        case OUILFORUM_INITIALSUBSCRIBE : // 2
-            if ($forum->forcesubscribe <> OUILFORUM_INITIALSUBSCRIBE) {
-                $users = \mod_ouilforum\subscriptions::get_potential_subscribers($context, 0, 'u.id, u.email', '');
+        case forumx_INITIALSUBSCRIBE : // 2
+            if ($forum->forcesubscribe <> forumx_INITIALSUBSCRIBE) {
+                $users = \mod_forumx\subscriptions::get_potential_subscribers($context, 0, 'u.id, u.email', '');
                 foreach ($users as $user) {
-                    \mod_ouilforum\subscriptions::subscribe_user($user->id, $forum, $context);
+                    \mod_forumx\subscriptions::subscribe_user($user->id, $forum, $context);
                 }
             }
-            \mod_ouilforum\subscriptions::set_subscription_mode($forum->id, OUILFORUM_INITIALSUBSCRIBE);
-            redirect($returnto, get_string("everyoneisnowsubscribed", "ouilforum"), 1);
+            \mod_forumx\subscriptions::set_subscription_mode($forum->id, forumx_INITIALSUBSCRIBE);
+            redirect($returnto, get_string("everyoneisnowsubscribed", "forumx"), 1);
             break;
-        case OUILFORUM_DISALLOWSUBSCRIBE : // 3
-            \mod_ouilforum\subscriptions::set_subscription_mode($forum->id, OUILFORUM_DISALLOWSUBSCRIBE);
-            redirect($returnto, get_string("noonecansubscribenow", "ouilforum"), 1);
+        case forumx_DISALLOWSUBSCRIBE : // 3
+            \mod_forumx\subscriptions::set_subscription_mode($forum->id, forumx_DISALLOWSUBSCRIBE);
+            redirect($returnto, get_string("noonecansubscribenow", "forumx"), 1);
             break;
         default:
-            print_error(get_string('invalidforcesubscribe', 'ouilforum'));
+            print_error(get_string('invalidforcesubscribe', 'forumx'));
     }
 }
 
-if (\mod_ouilforum\subscriptions::is_forcesubscribed($forum)) {
-    redirect($returnto, get_string("everyoneisnowsubscribed", "ouilforum"), 1);
+if (\mod_forumx\subscriptions::is_forcesubscribed($forum)) {
+    redirect($returnto, get_string("everyoneisnowsubscribed", "forumx"), 1);
 }
 
 $info = new stdClass();
@@ -158,15 +158,15 @@ if ($issubscribed) {
         $PAGE->set_heading($course->fullname);
         echo $OUTPUT->header();
 
-        $viewurl = new moodle_url('/mod/ouilforum/view.php', array('f' => $id));
+        $viewurl = new moodle_url('/mod/forumx/view.php', array('f' => $id));
         if ($discussionid) {
             $a = new stdClass();
             $a->forum = format_string($forum->name);
             $a->discussion = format_string($discussion->name);
-            echo $OUTPUT->confirm(get_string('confirmunsubscribediscussion', 'ouilforum', $a),
+            echo $OUTPUT->confirm(get_string('confirmunsubscribediscussion', 'forumx', $a),
                     $PAGE->url, $viewurl);
         } else {
-            echo $OUTPUT->confirm(get_string('confirmunsubscribe', 'ouilforum', format_string($forum->name)),
+            echo $OUTPUT->confirm(get_string('confirmunsubscribe', 'forumx', format_string($forum->name)),
                     $PAGE->url, $viewurl);
         }
         echo $OUTPUT->footer();
@@ -174,26 +174,26 @@ if ($issubscribed) {
     }
     require_sesskey();
     if ($discussionid === null) {
-        if (\mod_ouilforum\subscriptions::unsubscribe_user($user->id, $forum, $context, true)) {
-            redirect($returnto, get_string("nownotsubscribed", "ouilforum", $info), 1);
+        if (\mod_forumx\subscriptions::unsubscribe_user($user->id, $forum, $context, true)) {
+            redirect($returnto, get_string("nownotsubscribed", "forumx", $info), 1);
         } else {
-            print_error('cannotunsubscribe', 'ouilforum', get_local_referer(false));
+            print_error('cannotunsubscribe', 'forumx', get_local_referer(false));
         }
     } else {
-        if (\mod_ouilforum\subscriptions::unsubscribe_user_from_discussion($user->id, $discussion, $context)) {
+        if (\mod_forumx\subscriptions::unsubscribe_user_from_discussion($user->id, $discussion, $context)) {
             $info->discussion = $discussion->name;
-            redirect($returnto, get_string("discussionnownotsubscribed", "ouilforum", $info), 1);
+            redirect($returnto, get_string("discussionnownotsubscribed", "forumx", $info), 1);
         } else {
-            print_error('cannotunsubscribe', 'ouilforum', get_local_referer(false));
+            print_error('cannotunsubscribe', 'forumx', get_local_referer(false));
         }
     }
 
 } else {  // Subscribe.
-    if (\mod_ouilforum\subscriptions::subscription_disabled($forum) && !has_capability('mod/ouilforum:managesubscriptions', $context)) {
-        print_error('disallowsubscribe', 'ouilforum', get_local_referer(false));
+    if (\mod_forumx\subscriptions::subscription_disabled($forum) && !has_capability('mod/forumx:managesubscriptions', $context)) {
+        print_error('disallowsubscribe', 'forumx', get_local_referer(false));
     }
-    if (!has_capability('mod/ouilforum:viewdiscussion', $context)) {
-        print_error('noviewdiscussionspermission', 'ouilforum', get_local_referer(false));
+    if (!has_capability('mod/forumx:viewdiscussion', $context)) {
+        print_error('noviewdiscussionspermission', 'forumx', get_local_referer(false));
     }
     if (is_null($sesskey)) {
         // We came here via link in email.
@@ -201,15 +201,15 @@ if ($issubscribed) {
         $PAGE->set_heading($course->fullname);
         echo $OUTPUT->header();
 
-        $viewurl = new moodle_url('/mod/ouilforum/view.php', array('f' => $id));
+        $viewurl = new moodle_url('/mod/forumx/view.php', array('f' => $id));
         if ($discussionid) {
             $a = new stdClass();
             $a->forum = format_string($forum->name);
             $a->discussion = format_string($discussion->name);
-            echo $OUTPUT->confirm(get_string('confirmsubscribediscussion', 'ouilforum', $a),
+            echo $OUTPUT->confirm(get_string('confirmsubscribediscussion', 'forumx', $a),
                     $PAGE->url, $viewurl);
         } else {
-            echo $OUTPUT->confirm(get_string('confirmsubscribe', 'ouilforum', format_string($forum->name)),
+            echo $OUTPUT->confirm(get_string('confirmsubscribe', 'forumx', format_string($forum->name)),
                     $PAGE->url, $viewurl);
         }
         echo $OUTPUT->footer();
@@ -217,11 +217,11 @@ if ($issubscribed) {
     }
     require_sesskey();
     if ($discussionid == null) {
-        \mod_ouilforum\subscriptions::subscribe_user($user->id, $forum, $context, true);
-        redirect($returnto, get_string("nowsubscribed", "ouilforum", $info), 1);
+        \mod_forumx\subscriptions::subscribe_user($user->id, $forum, $context, true);
+        redirect($returnto, get_string("nowsubscribed", "forumx", $info), 1);
     } else {
         $info->discussion = $discussion->name;
-        \mod_ouilforum\subscriptions::subscribe_user_to_discussion($user->id, $discussion, $context);
-        redirect($returnto, get_string("discussionnowsubscribed", "ouilforum", $info), 1);
+        \mod_forumx\subscriptions::subscribe_user_to_discussion($user->id, $discussion, $context);
+        redirect($returnto, get_string("discussionnowsubscribed", "forumx", $info), 1);
     }
 }

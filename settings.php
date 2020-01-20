@@ -16,107 +16,107 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2009 Petr Skoda (http://skodak.org)
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
-    require_once($CFG->dirroot.'/mod/ouilforum/lib.php');
+    require_once($CFG->dirroot.'/mod/forumx/lib.php');
 
-    $settings->add(new admin_setting_configselect('ouilforum_displaymode', get_string('displaymode', 'ouilforum'),
-                       get_string('configdisplaymode', 'ouilforum'), OUILFORUM_MODE_NESTED, ouilforum_get_layout_modes()));
+    $settings->add(new admin_setting_configselect('forumx_displaymode', get_string('displaymode', 'forumx'),
+                       get_string('configdisplaymode', 'forumx'), forumx_MODE_NESTED, forumx_get_layout_modes()));
 
-    $settings->add(new admin_setting_configcheckbox('ouilforum_replytouser', get_string('replytouser', 'ouilforum'),
-                       get_string('configreplytouser', 'ouilforum'), 1));
+    $settings->add(new admin_setting_configcheckbox('forumx_replytouser', get_string('replytouser', 'forumx'),
+                       get_string('configreplytouser', 'forumx'), 1));
 
     // Less non-HTML characters than this is short.
-    $settings->add(new admin_setting_configtext('ouilforum_shortpost', get_string('shortpost', 'ouilforum'),
-                       get_string('configshortpost', 'ouilforum'), 300, PARAM_INT));
+    $settings->add(new admin_setting_configtext('forumx_shortpost', get_string('shortpost', 'forumx'),
+                       get_string('configshortpost', 'forumx'), 300, PARAM_INT));
 
     // More non-HTML characters than this is long.
-    $settings->add(new admin_setting_configtext('ouilforum_longpost', get_string('longpost', 'ouilforum'),
-                       get_string('configlongpost', 'ouilforum'), 600, PARAM_INT));
+    $settings->add(new admin_setting_configtext('forumx_longpost', get_string('longpost', 'forumx'),
+                       get_string('configlongpost', 'forumx'), 600, PARAM_INT));
 
     // Number of discussions on a page.
-    $settings->add(new admin_setting_configtext('ouilforum_manydiscussions', get_string('manydiscussions', 'ouilforum'),
-                       get_string('configmanydiscussions', 'ouilforum'), 100, PARAM_INT));
+    $settings->add(new admin_setting_configtext('forumx_manydiscussions', get_string('manydiscussions', 'forumx'),
+                       get_string('configmanydiscussions', 'forumx'), 100, PARAM_INT));
 
     // Number of replies on a view page.
-    $settings->add(new admin_setting_configtext('ouilforum_replieslimit', get_string('replieslimit', 'ouilforum'),
-                       get_string('configreplieslimit', 'ouilforum'), 50, PARAM_INT));
+    $settings->add(new admin_setting_configtext('forumx_replieslimit', get_string('replieslimit', 'forumx'),
+                       get_string('configreplieslimit', 'forumx'), 50, PARAM_INT));
 
     if (isset($CFG->maxbytes)) {
         $maxbytes = 0;
-        if (isset($CFG->ouilforum_maxbytes)) {
-            $maxbytes = $CFG->ouilforum_maxbytes;
+        if (isset($CFG->forumx_maxbytes)) {
+            $maxbytes = $CFG->forumx_maxbytes;
         }
-        $settings->add(new admin_setting_configselect('ouilforum_maxbytes', get_string('maxattachmentsize', 'ouilforum'),
-                           get_string('configmaxbytes', 'ouilforum'), 512000, get_max_upload_sizes($CFG->maxbytes, 0, 0, $maxbytes)));
+        $settings->add(new admin_setting_configselect('forumx_maxbytes', get_string('maxattachmentsize', 'forumx'),
+                           get_string('configmaxbytes', 'forumx'), 512000, get_max_upload_sizes($CFG->maxbytes, 0, 0, $maxbytes)));
     }
 
     // Default number of attachments allowed per post in all forums.
-    $settings->add(new admin_setting_configtext('ouilforum_maxattachments', get_string('maxattachments', 'ouilforum'),
-                       get_string('configmaxattachments', 'ouilforum'), 9, PARAM_INT));
+    $settings->add(new admin_setting_configtext('forumx_maxattachments', get_string('maxattachments', 'forumx'),
+                       get_string('configmaxattachments', 'forumx'), 9, PARAM_INT));
 
     // Default Read Tracking setting.
     $options = array();
-    $options[OUILFORUM_TRACKING_OPTIONAL] = get_string('trackingoptional', 'ouilforum');
-    $options[OUILFORUM_TRACKING_OFF] = get_string('trackingoff', 'ouilforum');
-    $options[OUILFORUM_TRACKING_FORCED] = get_string('trackingon', 'ouilforum');
-    $settings->add(new admin_setting_configselect('ouilforum_trackingtype', get_string('trackingtype', 'ouilforum'),
-                       get_string('configtrackingtype', 'ouilforum'), OUILFORUM_TRACKING_OPTIONAL, $options));
+    $options[forumx_TRACKING_OPTIONAL] = get_string('trackingoptional', 'forumx');
+    $options[forumx_TRACKING_OFF] = get_string('trackingoff', 'forumx');
+    $options[forumx_TRACKING_FORCED] = get_string('trackingon', 'forumx');
+    $settings->add(new admin_setting_configselect('forumx_trackingtype', get_string('trackingtype', 'forumx'),
+                       get_string('configtrackingtype', 'forumx'), forumx_TRACKING_OPTIONAL, $options));
 
     // Default whether user needs to mark a post as read.
-    $settings->add(new admin_setting_configcheckbox('ouilforum_trackreadposts', get_string('trackforum', 'ouilforum'),
-                       get_string('configtrackreadposts', 'ouilforum'), 1));
+    $settings->add(new admin_setting_configcheckbox('forumx_trackreadposts', get_string('trackforum', 'forumx'),
+                       get_string('configtrackreadposts', 'forumx'), 1));
 
     // Default whether user needs to mark a post as read.
-    $settings->add(new admin_setting_configcheckbox('ouilforum_allowforcedreadtracking', get_string('forcedreadtracking', 'ouilforum'),
-                       get_string('forcedreadtracking_desc', 'ouilforum'), 0));
+    $settings->add(new admin_setting_configcheckbox('forumx_allowforcedreadtracking', get_string('forcedreadtracking', 'forumx'),
+                       get_string('forcedreadtracking_desc', 'forumx'), 0));
 
     // Default number of days that a post is considered old.
-    $settings->add(new admin_setting_configtext('ouilforum_oldpostdays', get_string('oldpostdays', 'ouilforum'),
-                       get_string('configoldpostdays', 'ouilforum'), 14, PARAM_INT));
+    $settings->add(new admin_setting_configtext('forumx_oldpostdays', get_string('oldpostdays', 'forumx'),
+                       get_string('configoldpostdays', 'forumx'), 14, PARAM_INT));
 
     // Default whether user needs to mark a post as read.
-    $settings->add(new admin_setting_configcheckbox('ouilforum_usermarksread', get_string('usermarksread', 'ouilforum'),
-                       get_string('configusermarksread', 'ouilforum'), 0));
+    $settings->add(new admin_setting_configcheckbox('forumx_usermarksread', get_string('usermarksread', 'forumx'),
+                       get_string('configusermarksread', 'forumx'), 0));
 
     $options = array();
     for ($i = 0; $i < 24; $i++) {
         $options[$i] = sprintf("%02d", $i);
     }
     // Default time (hour) to execute 'clean_read_records' cron.
-    $settings->add(new admin_setting_configselect('ouilforum_cleanreadtime', get_string('cleanreadtime', 'ouilforum'),
-                       get_string('configcleanreadtime', 'ouilforum'), 2, $options));
+    $settings->add(new admin_setting_configselect('forumx_cleanreadtime', get_string('cleanreadtime', 'forumx'),
+                       get_string('configcleanreadtime', 'forumx'), 2, $options));
 
     // Default time (hour) to send digest email.
-    $settings->add(new admin_setting_configselect('ouildigestmailtime', get_string('digestmailtime', 'ouilforum'),
-                       get_string('configdigestmailtime', 'ouilforum'), 17, $options));
+    $settings->add(new admin_setting_configselect('ouildigestmailtime', get_string('digestmailtime', 'forumx'),
+                       get_string('configdigestmailtime', 'forumx'), 17, $options));
 
     if (empty($CFG->enablerssfeeds)) {
         $options = array(0 => get_string('rssglobaldisabled', 'admin'));
-        $str = get_string('configenablerssfeeds', 'ouilforum').'<br />'.get_string('configenablerssfeedsdisabled2', 'admin');
+        $str = get_string('configenablerssfeeds', 'forumx').'<br />'.get_string('configenablerssfeedsdisabled2', 'admin');
 
     } else {
         $options = array(0=>get_string('no'), 1=>get_string('yes'));
-        $str = get_string('configenablerssfeeds', 'ouilforum');
+        $str = get_string('configenablerssfeeds', 'forumx');
     }
-    $settings->add(new admin_setting_configselect('ouilforum_enablerssfeeds', get_string('enablerssfeeds', 'admin'),
+    $settings->add(new admin_setting_configselect('forumx_enablerssfeeds', get_string('enablerssfeeds', 'admin'),
                        $str, 0, $options));
 
     if (!empty($CFG->enablerssfeeds)) {
         $options = array(
             0 => get_string('none'),
-            1 => get_string('discussions', 'ouilforum'),
-            2 => get_string('posts', 'ouilforum')
+            1 => get_string('discussions', 'forumx'),
+            2 => get_string('posts', 'forumx')
         );
-        $settings->add(new admin_setting_configselect('ouilforum_rsstype', get_string('rsstypedefault', 'ouilforum'),
-                get_string('configrsstypedefault', 'ouilforum'), 0, $options));
+        $settings->add(new admin_setting_configselect('forumx_rsstype', get_string('rsstypedefault', 'forumx'),
+                get_string('configrsstypedefault', 'forumx'), 0, $options));
 
         $options = array(
             0  => '0',
@@ -133,27 +133,27 @@ if ($ADMIN->fulltree) {
             40 => '40',
             50 => '50'
         );
-        $settings->add(new admin_setting_configselect('ouilforum_rssarticles', get_string('rssarticles', 'ouilforum'),
-                get_string('configrssarticlesdefault', 'ouilforum'), 0, $options));
+        $settings->add(new admin_setting_configselect('forumx_rssarticles', get_string('rssarticles', 'forumx'),
+                get_string('configrssarticlesdefault', 'forumx'), 0, $options));
     }
 
-    $settings->add(new admin_setting_configcheckbox('ouilforum_enabletimedposts', get_string('timedposts', 'ouilforum'),
-                       get_string('configenabletimedposts', 'ouilforum'), 0));
+    $settings->add(new admin_setting_configcheckbox('forumx_enabletimedposts', get_string('timedposts', 'forumx'),
+                       get_string('configenabletimedposts', 'forumx'), 0));
 
-    $settings->add(new admin_setting_configcheckbox('ouilforum_enableredirectpage', get_string('enableredirectpage', 'ouilforum'),
-                       get_string('configenableredirectpage', 'ouilforum'), 0));
+    $settings->add(new admin_setting_configcheckbox('forumx_enableredirectpage', get_string('enableredirectpage', 'forumx'),
+                       get_string('configenableredirectpage', 'forumx'), 0));
     
-    $settings->add(new admin_setting_configselect('ouilforum_splitshortname', get_string('splitshortname', 'ouilforum'),
-    		get_string('configsplitshortname', 'ouilforum'), 0, array(
-    				OUILFORUM_EXTRACT_SHORTNAME_NONE => get_string('splitshortname:none', 'ouilforum'),
-    				OUILFORUM_EXTRACT_SHORTNAME_PRE => get_string('splitshortname:pre', 'ouilforum'),
-    				OUILFORUM_EXTRACT_SHORTNAME_POST => get_string('splitshortname:post', 'ouilforum')
+    $settings->add(new admin_setting_configselect('forumx_splitshortname', get_string('splitshortname', 'forumx'),
+    		get_string('configsplitshortname', 'forumx'), 0, array(
+    				forumx_EXTRACT_SHORTNAME_NONE => get_string('splitshortname:none', 'forumx'),
+    				forumx_EXTRACT_SHORTNAME_PRE => get_string('splitshortname:pre', 'forumx'),
+    				forumx_EXTRACT_SHORTNAME_POST => get_string('splitshortname:post', 'forumx')
     		)));
     
-    $settings->add(new admin_setting_configtext_with_maxlength('ouilforum_shortnamedelimiter', get_string('shortnamedelimiter', 'ouilforum'),
-    		get_string('configshortnamedelimiter', 'ouilforum'), '', PARAM_RAW_TRIMMED, 1, 1));
+    $settings->add(new admin_setting_configtext_with_maxlength('forumx_shortnamedelimiter', get_string('shortnamedelimiter', 'forumx'),
+    		get_string('configshortnamedelimiter', 'forumx'), '', PARAM_RAW_TRIMMED, 1, 1));
 
-    $settings->add(new admin_setting_configtextarea('ouilforum_filterpost', get_string('filterpostconfig', 'ouilforum'),
-    		get_string('filterpostconfig_desc', 'ouilforum'),
+    $settings->add(new admin_setting_configtextarea('forumx_filterpost', get_string('filterpostconfig', 'forumx'),
+    		get_string('filterpostconfig_desc', 'forumx'),
     		null, PARAM_RAW_TRIMMED));
 }

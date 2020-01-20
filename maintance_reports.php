@@ -16,8 +16,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   mod_ouilforum
- * @copyright 2018 onwards The Open University of Israel
+ * @package   mod_forumx
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -26,7 +26,7 @@ global $arg, $CFG;
 require_once($CFG->libdir.'/filelib.php');
 
 
-$filepath= $CFG->dataroot."/ouilforum_reports/";
+$filepath= $CFG->dataroot."/forumx_reports/";
 
 require_login();
 if (!is_siteadmin()) {
@@ -46,7 +46,7 @@ if (!is_siteadmin()) {
 		foreach ($fileslist as $file1) {
 			if (strpos($file1,"clear_subscribe_cli_") !== false) {
 				$file1path = $filepath.$file1;
-				echo '<li><a href="/mod/ouilforum/maintance_reports.php?file='.$file1.'">'.$file1.'</a></li>';
+				echo '<li><a href="/mod/forumx/maintance_reports.php?file='.$file1.'">'.$file1.'</a></li>';
 			}
 		}
 		echo "</ul>";

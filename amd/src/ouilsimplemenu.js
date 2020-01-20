@@ -16,9 +16,9 @@
 /**
  * This class handles the ouilsimplemenu module.
  *
- * @module    mod_ouilforum/ouilsimplemenu
- * @package   mod_ouilforum
- * @copyright 2018 onwards The Open University of Israel
+ * @module    mod_forumx/ouilsimplemenu
+ * @package   mod_forumx
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since     3.1
  */

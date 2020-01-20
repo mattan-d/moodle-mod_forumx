@@ -15,20 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_ouilforum post updated event.
+ * The mod_forumx post updated event.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2014 Dan Poltawski <dan@moodle.com>
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_ouilforum\event;
+namespace mod_forumx\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_ouilforum post updated event class.
+ * The mod_forumx post updated event class.
  *
  * @property-read array $other {
  *      Extra information about the event.
@@ -38,7 +38,7 @@ defined('MOODLE_INTERNAL') || die();
  *      - string forumtype: The type of forum the post is part of.
  * }
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @since      Moodle 2.7
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -52,7 +52,7 @@ class post_updated extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'u';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
-        $this->data['objecttable'] = 'ouilforum_posts';
+        $this->data['objecttable'] = 'forumx_posts';
     }
 
     /**
@@ -71,7 +71,7 @@ class post_updated extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventpostupdated', 'mod_ouilforum');
+        return get_string('eventpostupdated', 'mod_forumx');
     }
 
     /**
@@ -84,9 +84,9 @@ class post_updated extends \core\event\base {
             // Single discussion forums are an exception. We show
             // the forum itself since it only has one discussion
             // thread.
-            $url = new \moodle_url('/mod/ouilforum/view.php', array('f' => $this->other['forumid']));
+            $url = new \moodle_url('/mod/forumx/view.php', array('f' => $this->other['forumid']));
         } else {
-            $url = new \moodle_url('/mod/ouilforum/discuss.php', array('d' => $this->other['discussionid']));
+            $url = new \moodle_url('/mod/forumx/discuss.php', array('d' => $this->other['discussionid']));
         }
         $url->set_anchor('p'.$this->objectid);
         return $url;
@@ -98,10 +98,10 @@ class post_updated extends \core\event\base {
      * @return array|null
      */
     protected function get_legacy_logdata() {
-        // The legacy log table expects a relative path to /mod/ouilforum/.
-        $logurl = substr($this->get_url()->out_as_local_url(), strlen('/mod/ouilforum/'));
+        // The legacy log table expects a relative path to /mod/forumx/.
+        $logurl = substr($this->get_url()->out_as_local_url(), strlen('/mod/forumx/'));
 
-        return array($this->courseid, 'ouilforum', 'update post', $logurl, $this->objectid, $this->contextinstanceid);
+        return array($this->courseid, 'forumx', 'update post', $logurl, $this->objectid, $this->contextinstanceid);
     }
 
     /**
@@ -131,13 +131,13 @@ class post_updated extends \core\event\base {
     }
 
     public static function get_objectid_mapping() {
-        return array('db' => 'ouilforum_posts', 'restore' => 'ouilforum_post');
+        return array('db' => 'forumx_posts', 'restore' => 'forumx_post');
     }
 
     public static function get_other_mapping() {
         $othermapped = array();
-        $othermapped['forumid'] = array('db' => 'ouilforum', 'restore' => 'ouilforum');
-        $othermapped['discussionid'] = array('db' => 'ouilforum_discussions', 'restore' => 'ouilforum_discussion');
+        $othermapped['forumid'] = array('db' => 'forumx', 'restore' => 'forumx');
+        $othermapped['discussionid'] = array('db' => 'forumx_discussions', 'restore' => 'forumx_discussion');
 
         return $othermapped;
     }

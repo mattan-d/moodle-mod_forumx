@@ -17,13 +17,13 @@
 /**
  * Simple action menu.
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @copyright  2016 The Open University of Israel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
-namespace mod_ouilforum;
+namespace mod_forumx;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -179,7 +179,7 @@ class simpleaction_menu {
 		if (!$initialised) {
 			global $PAGE;
 			// This will inlude the custom jquery plugin and call it on page load.
-			$PAGE->requires->js_call_amd('mod_ouilforum/callplugin', 'init', array('.simpleactionmenu'));
+			$PAGE->requires->js_call_amd('mod_forumx/callplugin', 'init', array('.simpleactionmenu'));
 			$initialised = true;
 		}
 	}

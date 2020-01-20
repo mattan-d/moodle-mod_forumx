@@ -18,9 +18,9 @@
 /**
  * This file contains a custom renderer class used by the forum module.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2009 Sam Hemelryk
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,11 +28,11 @@
  * A custom renderer class that extends the plugin_renderer_base and
  * is used by the forum module.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2009 Sam Hemelryk
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
-class mod_ouilforum_renderer extends plugin_renderer_base {
+class mod_forumx_renderer extends plugin_renderer_base {
 
     /**
      * Returns the navigation to the previous and next discussion.
@@ -45,20 +45,20 @@ class mod_ouilforum_renderer extends plugin_renderer_base {
         $html = '';
         if ($prev || $next) {
             $html.= html_writer::start_tag('nav', array('class' => 'discussion-nav clearfix', 
-            		'aria-label' => get_string('navigate:closediscussions', 'ouilforum')));
+            		'aria-label' => get_string('navigate:closediscussions', 'forumx')));
             $html.= html_writer::start_tag('ul');
             if ($prev) {
-                $url = new moodle_url('/mod/ouilforum/discuss.php', array('d' => $prev->id));
+                $url = new moodle_url('/mod/forumx/discuss.php', array('d' => $prev->id));
                 $html.= html_writer::start_tag('li', array('class' => 'prev-discussion'));
                 $html.= html_writer::link($url, format_string($prev->name),
-                    array('aria-label' => get_string('prevdiscussiona', 'mod_ouilforum', format_string($prev->name))));
+                    array('aria-label' => get_string('prevdiscussiona', 'mod_forumx', format_string($prev->name))));
                 $html.= html_writer::end_tag('li');
             }
             if ($next) {
-                $url = new moodle_url('/mod/ouilforum/discuss.php', array('d' => $next->id));
+                $url = new moodle_url('/mod/forumx/discuss.php', array('d' => $next->id));
                 $html.= html_writer::start_tag('li', array('class' => 'next-discussion'));
                 $html.= html_writer::link($url, format_string($next->name),
-                    array('aria-label' => get_string('nextdiscussiona', 'mod_ouilforum', format_string($next->name))));
+                    array('aria-label' => get_string('nextdiscussiona', 'mod_forumx', format_string($next->name))));
                 $html.= html_writer::end_tag('li');
             }
             $html.= html_writer::end_tag('ul');
@@ -120,16 +120,16 @@ class mod_ouilforum_renderer extends plugin_renderer_base {
         $output = '';
         $modinfo = get_fast_modinfo($course);
         if (!$users || !is_array($users) || count($users) === 0) {
-            $output.= $this->output->heading(get_string("nosubscribers", "ouilforum"));
-        } else if (!isset($modinfo->instances['ouilforum'][$forum->id])) {
+            $output.= $this->output->heading(get_string("nosubscribers", "forumx"));
+        } else if (!isset($modinfo->instances['forumx'][$forum->id])) {
             $output.= $this->output->heading(get_string("invalidmodule", "error"));
         } else {
-            $cm = $modinfo->instances['ouilforum'][$forum->id];
+            $cm = $modinfo->instances['forumx'][$forum->id];
             $canviewemail = in_array('email', get_extra_user_fields(context_module::instance($cm->id)));
             $strparams = new stdclass();
             $strparams->name = format_string($forum->name);
             $strparams->count = count($users);
-            $output.= $this->output->heading(get_string("subscriberstowithcount", "ouilforum", $strparams));
+            $output.= $this->output->heading(get_string("subscriberstowithcount", "forumx", $strparams));
             $table = new html_table();
             $table->cellpadding = 5;
             $table->cellspacing = 5;
@@ -156,7 +156,7 @@ class mod_ouilforum_renderer extends plugin_renderer_base {
      */
     public function subscribed_users(user_selector_base $existingusers) {
         $output  = $this->output->box_start('subscriberdiv boxaligncenter');
-        $output .= html_writer::tag('p', get_string('forcesubscribed', 'ouilforum'));
+        $output .= html_writer::tag('p', get_string('forcesubscribed', 'forumx'));
         $output .= $existingusers->display(true);
         $output .= $this->output->box_end();
         return $output;
@@ -173,14 +173,14 @@ class mod_ouilforum_renderer extends plugin_renderer_base {
     public function timed_discussion_tooltip($discussion, $visiblenow) {
         $dates = array();
         if ($discussion->timestart) {
-            $dates[] = get_string('displaystart', 'mod_ouilforum').': '.userdate($discussion->timestart);
+            $dates[] = get_string('displaystart', 'mod_forumx').': '.userdate($discussion->timestart);
         }
         if ($discussion->timeend) {
-            $dates[] = get_string('displayend', 'mod_ouilforum').': '.userdate($discussion->timeend);
+            $dates[] = get_string('displayend', 'mod_forumx').': '.userdate($discussion->timeend);
         }
 
         $str = $visiblenow ? 'timedvisible' : 'timedhidden';
-        $dates[] = get_string($str, 'mod_ouilforum');
+        $dates[] = get_string($str, 'mod_forumx');
 
         $tooltip = implode("\n", $dates);
         return $this->pix_icon('i/calendar', $tooltip, 'moodle', array('class' => 'smallicon timedpost'));
@@ -189,12 +189,12 @@ class mod_ouilforum_renderer extends plugin_renderer_base {
     /**
      * Display a forum post in the relevant context.
      *
-     * @param \mod_ouilforum\output\ouilforum_post $post The post to display.
+     * @param \mod_forumx\output\forumx_post $post The post to display.
      * @return string
      */
-    public function render_ouilforum_post_email(\mod_ouilforum\output\ouilforum_post_email $post) {
+    public function render_forumx_post_email(\mod_forumx\output\forumx_post_email $post) {
         $data = $post->export_for_template($this, $this->target === RENDERER_TARGET_TEXTEMAIL);
-        return $this->render_from_template('mod_ouilforum/' . $this->ouilforum_post_template(), $data);
+        return $this->render_from_template('mod_forumx/' . $this->forumx_post_template(), $data);
     }
 
     /**
@@ -202,7 +202,7 @@ class mod_ouilforum_renderer extends plugin_renderer_base {
      *
      * @return string
      */
-    public function ouilforum_post_template() {
-        return 'ouilforum_post';
+    public function forumx_post_template() {
+        return 'forumx_post';
     }
 }

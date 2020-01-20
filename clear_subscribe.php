@@ -16,15 +16,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   mod_ouilforum
- * @copyright 2018 onwards The Open University of Israel
+ * @package   mod_forumx
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 */
 
 require_once('../../config.php');
 require_once('lib.php');
 
-$PAGE->set_url('/mod/ouilforum/clear_subscribe.php');
+$PAGE->set_url('/mod/forumx/clear_subscribe.php');
 require_login();
 if (!is_siteadmin()) {
 	die;
@@ -36,7 +36,7 @@ if (!is_siteadmin()) {
 	$PAGE->set_context($context);
 	$PAGE->set_pagelayout('mypublic');
 	$PAGE->set_pagetype('user-profile');
-	$strpublicprofile = get_string('checkSubscibe','ouilforum');
+	$strpublicprofile = get_string('checkSubscibe','forumx');
 	$PAGE->blocks->add_region('content');
 	$PAGE->set_title(fullname($USER).": $strpublicprofile");
 	$PAGE->set_heading(fullname($USER).": $strpublicprofile");
@@ -137,13 +137,13 @@ if (!is_siteadmin()) {
 		// Check permisiion  if no permission - remove user from subscribe.
 		 
 		if ($grouping === 'all') {
-			$query = "SELECT ouforum.id as id  , ouforum.course as course ,ouforum.name as name , forcesubscribe FROM ".$CFG->prefix."ouilforum  as ouforum where ".$query_cond;
+			$query = "SELECT ouforum.id as id  , ouforum.course as course ,ouforum.name as name , forcesubscribe FROM ".$CFG->prefix."forumx  as ouforum where ".$query_cond;
 		} else {
 
 			$params['grouping']	= $grouping;
 
 			$query = "SELECT ouforum.id , ouforum.course  , ouforum.name  , grouping.name groupmembersonly , groupingid , forcesubscribe ";
-			$query.= " FROM  {ouilforum} AS ouforum    , {course_modules} AS module , {groupings} AS grouping";
+			$query.= " FROM  {forumx} AS ouforum    , {course_modules} AS module , {groupings} AS grouping";
 			$query.= " WHERE  ouforum.id=instance AND module=111 AND module.course=ouforum.course  AND groupmembersonly=1 ";
 			$query.= " AND grouping.id=groupingid  and  grouping.name = :grouping  and " .$query_cond ;
 		}
@@ -158,10 +158,10 @@ if (!is_siteadmin()) {
 		}
 
 		$subscribe_str = array(
-				0 => 'OUILFORUM_CHOOSESUBSCRIBE',
-				1 => 'OUILFORUM_FORCESUBSCRIBE',
-				2 => 'OUILFORUM_INITIALSUBSCRIBE',
-				3 => 'OUILFORUM_DISALLOWSUBSCRIBE');
+				0 => 'forumx_CHOOSESUBSCRIBE',
+				1 => 'forumx_FORCESUBSCRIBE',
+				2 => 'forumx_INITIALSUBSCRIBE',
+				3 => 'forumx_DISALLOWSUBSCRIBE');
 
 		if ($rs = $DB->get_records_sql($query, $params)) {
 			foreach ($rs as $forum) {
@@ -171,11 +171,11 @@ if (!is_siteadmin()) {
 				echo "<br><hr><br><b> <span> course: ".$course_id."</span> <span>forum: ".$fourm_id.
 					"</span> - <span>".$forum->name."</span></b><br> forcesubscribe=".
 					$forum->forcesubscribe. "  ". $subscribe_str[$forum->forcesubscribe]. "<br>";
-				ouilforum_clear_subscribe($fourm_id, $course_id, $delete_permission,true);
+				forumx_clear_subscribe($fourm_id, $course_id, $delete_permission,true);
 				if ("yes" === $force_subscribe) {
-					if ($forum->forcesubscribe == OUILFORUM_INITIALSUBSCRIBE) {
+					if ($forum->forcesubscribe == forumx_INITIALSUBSCRIBE) {
 						echo "<br> add  subscribe";
-						ouilforum_forcesubscribe_users($fourm_id, $course_id, OUILFORUM_INITIALSUBSCRIBE);
+						forumx_forcesubscribe_users($fourm_id, $course_id, forumx_INITIALSUBSCRIBE);
 					}
 				}
 			}

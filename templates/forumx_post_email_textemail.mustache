@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_ouilforum/ouilforum_post_email_textemail
+    @template mod_forumx/forumx_post_email_textemail
 
     Template which defines a forum post for sending in a single-post text email.
 
@@ -42,10 +42,10 @@
     * unsubscribediscussionlink
     * forumindexlink
 }}
-{{{ coursename }}} -> {{# str }} forums, ouilforum {{/ str }} -> {{{ forumname }}}{{# showdiscussionname }} -> {{{ discussionname }}} {{/ showdiscussionname }}
+{{{ coursename }}} -> {{# str }} forums, forumx {{/ str }} -> {{{ forumname }}}{{# showdiscussionname }} -> {{{ discussionname }}} {{/ showdiscussionname }}
 {{ discussionlink }}
 {{{ subject }}}
-{{# str }} bynameondate, ouilforum, {
+{{# str }} bynameondate, forumx, {
         "name": {{# quote }}{{{ authorfullname }}}{{/ quote }},
         "date": {{# quote}}{{ postdate }}{{/ quote }}
     } {{/ str }}
@@ -55,14 +55,14 @@
 {{{ attachments }}}
 ---------------------------------------------------------------------
 {{# canreply }}
-{{# str }} postmailinfolink, ouilforum, {
+{{# str }} postmailinfolink, forumx, {
         "coursename": {{# quote }}{{{ coursename }}}{{/ quote }},
         "replylink": {{# quote }}{{ replylink }}{{/ quote }}
     } {{/ str }}
 {{/ canreply }}
 {{# unsubscribeforumlink }}
-{{# str }} unsubscribelink, ouilforum, {{{ unsubscribeforumlink }}} {{/ str }}
+{{# str }} unsubscribelink, forumx, {{{ unsubscribeforumlink }}} {{/ str }}
 {{/ unsubscribeforumlink }}
 {{# unsubscribediscussionlink }}
-{{# str }} unsubscribediscussionlink, ouilforum, {{{ unsubscribediscussionlink }}} {{/ str }}
+{{# str }} unsubscribediscussionlink, forumx, {{{ unsubscribediscussionlink }}} {{/ str }}
 {{/ unsubscribediscussionlink }}

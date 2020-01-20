@@ -19,9 +19,9 @@
  * Plugin capabilities.
  * Based on original code of mod_forum.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2006 Martin Dougiamas
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
 
-    'mod/ouilforum:addinstance' => array(
+    'mod/forumx:addinstance' => array(
         'riskbitmask' => RISK_XSS,
 
         'captype' => 'write',
@@ -41,7 +41,7 @@ $capabilities = array(
         'clonepermissionsfrom' => 'moodle/course:manageactivities'
     ),
 
-    'mod/ouilforum:viewdiscussion' => array(
+    'mod/forumx:viewdiscussion' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -55,7 +55,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/ouilforum:viewhiddentimedposts' => array(
+    'mod/forumx:viewhiddentimedposts' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -66,7 +66,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/ouilforum:startdiscussion' => array(
+    'mod/forumx:startdiscussion' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -80,7 +80,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/ouilforum:replypost' => array(
+    'mod/forumx:replypost' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -94,7 +94,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/ouilforum:addnews' => array(
+    'mod/forumx:addnews' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -107,7 +107,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/ouilforum:replynews' => array(
+    'mod/forumx:replynews' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -120,7 +120,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/ouilforum:viewrating' => array(
+    'mod/forumx:viewrating' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -132,7 +132,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/ouilforum:viewanyrating' => array(
+    'mod/forumx:viewanyrating' => array(
 
         'riskbitmask' => RISK_PERSONAL,
         'captype' => 'read',
@@ -144,7 +144,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/ouilforum:viewallratings' => array(
+    'mod/forumx:viewallratings' => array(
 
         'riskbitmask' => RISK_PERSONAL,
         'captype' => 'read',
@@ -154,10 +154,10 @@ $capabilities = array(
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
         ),
-        'clonepermissionsfrom' =>  'mod/ouilforum:viewanyrating'
+        'clonepermissionsfrom' =>  'mod/forumx:viewanyrating'
     ),
 
-    'mod/ouilforum:rate' => array(
+    'mod/forumx:rate' => array(
 
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
@@ -168,7 +168,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/ouilforum:createattachment' => array(
+    'mod/forumx:createattachment' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -182,7 +182,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/ouilforum:deleteownpost' => array(
+    'mod/forumx:deleteownpost' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -194,7 +194,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/ouilforum:deleteanypost' => array(
+    'mod/forumx:deleteanypost' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -205,7 +205,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/ouilforum:splitdiscussions' => array(
+    'mod/forumx:splitdiscussions' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -216,7 +216,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/ouilforum:movediscussions' => array(
+    'mod/forumx:movediscussions' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -227,7 +227,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/ouilforum:editanypost' => array(
+    'mod/forumx:editanypost' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -240,7 +240,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/ouilforum:viewqandawithoutposting' => array(
+    'mod/forumx:viewqandawithoutposting' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -251,7 +251,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/ouilforum:viewsubscribers' => array(
+    'mod/forumx:viewsubscribers' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -262,7 +262,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/ouilforum:managesubscriptions' => array(
+    'mod/forumx:managesubscriptions' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -275,7 +275,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/ouilforum:initialsubscriptions' => array(
+    'mod/forumx:initialsubscriptions' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -286,7 +286,7 @@ $capabilities = array(
         )
     ),
 		
-	'mod/ouilforum:postwithoutthrottling' => array(
+	'mod/forumx:postwithoutthrottling' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -299,7 +299,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/ouilforum:exportdiscussion' => array(
+    'mod/forumx:exportdiscussion' => array(
 
         'riskbitmask' => RISK_PERSONAL,
 
@@ -311,7 +311,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
-    'mod/ouilforum:exportpost' => array(
+    'mod/forumx:exportpost' => array(
 
         'riskbitmask' => RISK_PERSONAL,
 
@@ -323,7 +323,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
-    'mod/ouilforum:exportownpost' => array(
+    'mod/forumx:exportownpost' => array(
 
         'riskbitmask' => RISK_PERSONAL,
 
@@ -336,7 +336,7 @@ $capabilities = array(
             'student' => CAP_ALLOW,
         )
     ),
-    'mod/ouilforum:addquestion' => array(
+    'mod/forumx:addquestion' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -348,7 +348,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
-    'mod/ouilforum:allowforcesubscribe' => array(
+    'mod/forumx:allowforcesubscribe' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -359,7 +359,7 @@ $capabilities = array(
             'frontpage' => CAP_ALLOW
         )
     ),
-    'mod/ouilforum:canposttomygroups' => array(
+    'mod/forumx:canposttomygroups' => array(
 
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
@@ -369,7 +369,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
-	'mod/ouilforum:updateflag'  => array(
+	'mod/forumx:updateflag'  => array(
 		'captype' =>'write' ,
 		'contextlevel' => CONTEXT_MODULE,
 		'archetypes' => array(
@@ -380,7 +380,7 @@ $capabilities = array(
 			'manager' => CAP_ALLOW
 		)
 	),
-	'mod/ouilforum:lockmessage' =>array(
+	'mod/forumx:lockmessage' =>array(
 		'captype' =>'write' ,
 		'contextlevel' => CONTEXT_MODULE,
 		'archetypes' => array(
@@ -391,7 +391,7 @@ $capabilities = array(
 			'manager' => CAP_ALLOW
 		)
 	),
-	'mod/ouilforum:markmessage' => array(
+	'mod/forumx:markmessage' => array(
 		'captype' =>'write' ,
 		'contextlevel' => CONTEXT_MODULE,
 		'archetypes'  => array(
@@ -402,7 +402,7 @@ $capabilities = array(
 			'manager' => CAP_ALLOW
 		)
 	) ,
-	'mod/ouilforum:movemessage'=>array(
+	'mod/forumx:movemessage'=>array(
 		'captype' =>'write' ,
 		'contextlevel' => CONTEXT_MODULE,
 		'archetypes'  => array(

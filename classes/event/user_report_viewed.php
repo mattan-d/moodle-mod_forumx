@@ -15,20 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_ouilforum user report viewed event.
+ * The mod_forumx user report viewed event.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2014 Dan Poltawski <dan@moodle.com>
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_ouilforum\event;
+namespace mod_forumx\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_ouilforum user report viewed event class.
+ * The mod_forumx user report viewed event class.
  *
  * @property-read array $other {
  *      Extra information about the event.
@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
  *      - string reportmode: The mode the report has been viewed in (posts or discussions).
  * }
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @since      Moodle 2.7
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -69,7 +69,7 @@ class user_report_viewed extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventuserreportviewed', 'mod_ouilforum');
+        return get_string('eventuserreportviewed', 'mod_forumx');
     }
 
     /**
@@ -79,7 +79,7 @@ class user_report_viewed extends \core\event\base {
      */
     public function get_url() {
 
-        $url = new \moodle_url('/mod/ouilforum/user.php', array('id' => $this->relateduserid,
+        $url = new \moodle_url('/mod/forumx/user.php', array('id' => $this->relateduserid,
             'mode' => $this->other['reportmode']));
 
         if ($this->courseid != SITEID) {
@@ -95,10 +95,10 @@ class user_report_viewed extends \core\event\base {
      * @return array|null
      */
     protected function get_legacy_logdata() {
-        // The legacy log table expects a relative path to /mod/ouilforum/.
-        $logurl = substr($this->get_url()->out_as_local_url(), strlen('/mod/ouilforum/'));
+        // The legacy log table expects a relative path to /mod/forumx/.
+        $logurl = substr($this->get_url()->out_as_local_url(), strlen('/mod/forumx/'));
 
-        return array($this->courseid, 'ouilforum', 'user report', $logurl, $this->relateduserid);
+        return array($this->courseid, 'forumx', 'user report', $logurl, $this->relateduserid);
     }
 
     /**

@@ -17,7 +17,7 @@
 /**
  * A type of forum.
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @copyright  2014 Andrew Robert Nicols <andrew@nicols.co.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,11 +28,11 @@ require_once($CFG->dirroot.'/user/selector/lib.php');
 
 /**
  * User selector control for removing subscribed users
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2009 Sam Hemelryk
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_ouilforum_existing_subscriber_selector extends mod_ouilforum_subscriber_selector_base {
+class mod_forumx_existing_subscriber_selector extends mod_forumx_subscriber_selector_base {
 
     /**
      * Finds all subscribed users
@@ -54,16 +54,16 @@ class mod_ouilforum_existing_subscriber_selector extends mod_ouilforum_subscribe
         $subscribers = $DB->get_records_sql("SELECT $fields
                                                FROM {user} u
                                                JOIN ($esql) je ON je.id = u.id
-                                               JOIN {ouilforum_subscriptions} s ON s.userid = u.id
-                                              WHERE $wherecondition AND s.ouilforum = :forumid
+                                               JOIN {forumx_subscriptions} s ON s.userid = u.id
+                                              WHERE $wherecondition AND s.forumx = :forumid
                                            ORDER BY $sort", $params);
 
-        $cm = get_coursemodule_from_instance('ouilforum', $this->forumid);
+        $cm = get_coursemodule_from_instance('forumx', $this->forumid);
         $modinfo = get_fast_modinfo($cm->course);
         $info = new \core_availability\info_module($modinfo->get_cm($cm->id));
         $subscribers = $info->filter_user_list($subscribers);
 
-        return array(get_string('existingsubscribers', 'ouilforum') => $subscribers);
+        return array(get_string('existingsubscribers', 'forumx') => $subscribers);
     }
 
 }

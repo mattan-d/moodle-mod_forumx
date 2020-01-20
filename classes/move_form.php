@@ -18,7 +18,7 @@
 /**
  * File containing the form definition to move a post in the forum.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2015 onwards The Open University of Israel
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -30,7 +30,7 @@ if (!defined('MOODLE_INTERNAL')) {
 
 require_once($CFG->libdir.'/formslib.php');
 
-class mod_ouilforum_move_form extends moodleform {
+class mod_forumx_move_form extends moodleform {
 
 	function definition() {
 		global $CFG, $OUTPUT, $DB;
@@ -47,7 +47,7 @@ class mod_ouilforum_move_form extends moodleform {
 
         $modcontext = context_module::instance($cm->id);
 
-    	$alldiscussions = ouilforum_get_discussions_top($cm, $sourceforum->id);
+    	$alldiscussions = forumx_get_discussions_top($cm, $sourceforum->id);
 
     	$mform->addElement('hidden', 'f', $sourceforum->id);
     	$mform->setType('f', PARAM_INT);
@@ -56,21 +56,21 @@ class mod_ouilforum_move_form extends moodleform {
 
     	// Move discussion requires only a few elements
     	if ($parentpost == 0) {
-    		$movestr = get_string('movediscussion', 'ouilforum');
-    		$mform->addElement('selectgroups', 'targetforum', get_string('forumslist', 'ouilforum') , $available_forums, array('style' => 'max-width: 100%;'));
-    		$mform->addElement('text', 'newtitle', get_string('move:newtitle', 'ouilforum'));
+    		$movestr = get_string('movediscussion', 'forumx');
+    		$mform->addElement('selectgroups', 'targetforum', get_string('forumslist', 'forumx') , $available_forums, array('style' => 'max-width: 100%;'));
+    		$mform->addElement('text', 'newtitle', get_string('move:newtitle', 'forumx'));
     		$mform->addRule('newtitle', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-    		$mform->addHelpButton('newtitle', 'move:newtitle', 'ouilforum');
+    		$mform->addHelpButton('newtitle', 'move:newtitle', 'forumx');
     		$mform->setType('newtitle', PARAM_TEXT);
     		$mform->addElement('hidden', 'movetarget', 2);
     		$mform->setType('movetarget', PARAM_INT);
     	} else {
-    		$movestr = get_string('movepost', 'ouilforum');
+    		$movestr = get_string('movepost', 'forumx');
 	
-	        // If there is more then one discussion, choose between moving the message to a different ouilforum
-	        // or this ouilforum.
+	        // If there is more then one discussion, choose between moving the message to a different forumx
+	        // or this forumx.
 	        $radioarray = array();
-	        $discussionposts = ouilforum_count_discussion_posts($currentdiscussionid);
+	        $discussionposts = forumx_count_discussion_posts($currentdiscussionid);
 	        /*
 	         Move in same forum conditions:
 	         - If a parent post, and there's more than one discussion in the forum.
@@ -81,12 +81,12 @@ class mod_ouilforum_move_form extends moodleform {
 	        // Move to a new discussion in same forum conditions:
 	        // - If not a parent post.
 	        $move_sameforumnew = $parentpost > 0;
-	       	$mform->addElement('header', 'movemessageaction', get_string('move:action', 'ouilforum'));
-	       	$radioarray[] = &$mform->createElement('radio', 'movetarget', '', get_string('move:newouilforum',  'ouilforum'), 2);
+	       	$mform->addElement('header', 'movemessageaction', get_string('move:action', 'forumx'));
+	       	$radioarray[] = &$mform->createElement('radio', 'movetarget', '', get_string('move:newforumx',  'forumx'), 2);
 	       	if ($move_sameforum)
-	        	$radioarray[] = &$mform->createElement('radio', 'movetarget', '', get_string('move:thisouilforum', 'ouilforum'), 1);
+	        	$radioarray[] = &$mform->createElement('radio', 'movetarget', '', get_string('move:thisforumx', 'forumx'), 1);
 	       	if ($move_sameforumnew)
-	        	$radioarray[] = &$mform->createElement('radio', 'movetarget', '', get_string('move:thisouilforumnew', 'ouilforum'), 3);
+	        	$radioarray[] = &$mform->createElement('radio', 'movetarget', '', get_string('move:thisforumxnew', 'forumx'), 3);
 	
 	        $mform->addGroup($radioarray, 'radioar', '', array('<br/>'), false);
 	        $mform->addRule('radioar', null, 'required');
@@ -94,33 +94,33 @@ class mod_ouilforum_move_form extends moodleform {
 	
 	        $mform->addElement('html', '<div id="newtitle">');
 	        $mform->addElement('html', '<hr>');
-	        $mform->addElement('text', 'newtitle', get_string('move:newtitle', 'ouilforum'));
+	        $mform->addElement('text', 'newtitle', get_string('move:newtitle', 'forumx'));
 	        $mform->addRule('newtitle', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-	        $mform->addHelpButton('newtitle', 'move:newtitle', 'ouilforum');
+	        $mform->addHelpButton('newtitle', 'move:newtitle', 'forumx');
 	        $mform->setType('newtitle', PARAM_TEXT);
 	        $mform->addElement('html', '</div>');
 	
 	        if ($move_sameforum) {
 	        	$mform->addElement('html', '<div id="discussionslist">');
 	        	$mform->addElement('html', '<hr>');
-	        	$mform->addElement('html', '<h4>'.get_string('move:discussionslist', 'ouilforum').'</h4>');
+	        	$mform->addElement('html', '<h4>'.get_string('move:discussionslist', 'forumx').'</h4>');
 	        	
 	        	$mform->addElement('html', '<ul class="discussionslist">');
 	        	foreach ($alldiscussions as $discussion) {
 	        		if(($discussion->id == $currentdiscussionid) || ($parentpost == 0 && $postid == $discussion->firstpost)) {
 	        			continue;
 	        		}
-	        		$userObj = ouilforum_get_discussion_user_data($discussion, $sourceforum, $modcontext);
+	        		$userObj = forumx_get_discussion_user_data($discussion, $sourceforum, $modcontext);
 	        		if ($parentpost == $userObj->postid) {
 	        			continue;
 	        		}
         			// We need to get the posts first.
-        			$posts = ouilforum_get_all_discussion_posts($discussion->id, "p.created ASC", false, $sourceforum->hideauthor, true);
+        			$posts = forumx_get_all_discussion_posts($discussion->id, "p.created ASC", false, $sourceforum->hideauthor, true);
         			// Get a short preview of the post content.
-        			$attributes = array('class'=>'ouilforumpost post_body post_preview closed_post',
+        			$attributes = array('class'=>'forumxpost post_body post_preview closed_post',
         					'id'=> 'postmain'.$userObj->postid,
         					'aria-hidden'=>'true');
-        			$postcontent = ouilforum_display_post_content($posts[$userObj->postid], $course->id, $modcontext, $cm, $attributes, true);
+        			$postcontent = forumx_display_post_content($posts[$userObj->postid], $course->id, $modcontext, $cm, $attributes, true);
         			$attributes = null;
         			$label = '';
         			$mform->addElement('html', '<li class="discussionslist">');
@@ -134,7 +134,7 @@ class mod_ouilforum_move_form extends moodleform {
 	        	$mform->addElement('html', '</div>');
 	        }
 	        $mform->addElement('html', '<div id="forumslist">');
-			$mform->addElement('selectgroups', 'targetforum', get_string('forumslist', 'ouilforum') , $available_forums, array('style' => 'max-width: 100%;'));
+			$mform->addElement('selectgroups', 'targetforum', get_string('forumslist', 'forumx') , $available_forums, array('style' => 'max-width: 100%;'));
 			$mform->addElement('html', '</div>');
     	}
     	$buttonarray = array();

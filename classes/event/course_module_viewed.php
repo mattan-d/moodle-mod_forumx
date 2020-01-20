@@ -15,22 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_ouilforum course module viewed event.
+ * The mod_forumx course module viewed event.
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 2014 Dan Poltawski <dan@moodle.com>
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_ouilforum\event;
+namespace mod_forumx\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_ouilforum course module viewed event class.
+ * The mod_forumx course module viewed event class.
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @since      Moodle 2.7
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -45,7 +45,7 @@ class course_module_viewed extends \core\event\course_module_viewed {
     protected function init() {
         $this->data['crud'] = 'r';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
-        $this->data['objecttable'] = 'ouilforum';
+        $this->data['objecttable'] = 'forumx';
     }
 
     /**
@@ -54,7 +54,7 @@ class course_module_viewed extends \core\event\course_module_viewed {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/ouilforum/view.php', array('f' => $this->objectid));
+        return new \moodle_url('/mod/forumx/view.php', array('f' => $this->objectid));
     }
 
     /**
@@ -63,12 +63,12 @@ class course_module_viewed extends \core\event\course_module_viewed {
      * @return array|null
      */
     protected function get_legacy_logdata() {
-        return array($this->courseid, 'ouilforum', 'view forum', 'view.php?f=' . $this->objectid,
+        return array($this->courseid, 'forumx', 'view forum', 'view.php?f=' . $this->objectid,
             $this->objectid, $this->contextinstanceid);
     }
 
     public static function get_objectid_mapping() {
-        return array('db' => 'ouilforum', 'restore' => 'ouilforum');
+        return array('db' => 'forumx', 'restore' => 'forumx');
     }
 }
 

@@ -15,23 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * OUILForum activities search area
+ * forumx activities search area
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @copyright  2015 David Monllao {@link http://www.davidmonllao.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_ouilforum\search;
+namespace mod_forumx\search;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * OUILForum activities search area.
+ * forumx activities search area.
  *
- * @package    mod_ouilforum
+ * @package    mod_forumx
  * @copyright  2015 David Monllao {@link http://www.davidmonllao.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class activity extends \core_search\area\base_activity {
+class activity extends \core_search\base_activity {
 }

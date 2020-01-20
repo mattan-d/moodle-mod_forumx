@@ -18,9 +18,9 @@
 /**
  * Edit and save a new post to a discussion
  *
- * @package   mod_ouilforum
+ * @package   mod_forumx
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @copyright 2018 onwards The Open University of Israel
+ * @copyright 2020 onwards MOFET
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,7 +29,7 @@ require_once('lib.php');
 require_once($CFG->libdir.'/completionlib.php');
 
 $reply        = optional_param('reply', 0, PARAM_INT);
-$forumid      = optional_param('ouilforum', 0, PARAM_INT);
+$forumid      = optional_param('forumx', 0, PARAM_INT);
 $f            = optional_param('f', 0, PARAM_INT);
 $discussionid = optional_param('discussion', 0, PARAM_INT);
 $edit         = optional_param('edit', 0, PARAM_INT);
@@ -58,7 +58,7 @@ $url_params = array(
         );
 
 // These page_params will be passed as hidden variables later in the form.
-$page_params = array('reply'=>$reply, 'ouilforum'=>$forumid, 'edit'=>$edit, 'returnto'=>$returnto);
+$page_params = array('reply'=>$reply, 'forumx'=>$forumid, 'edit'=>$edit, 'returnto'=>$returnto);
 
 if ($reply > 0) {
 	if ($replyto > 0 && $replyto != $reply) {
@@ -68,7 +68,7 @@ if ($reply > 0) {
 		$replyto = $reply;
 	}
 }
-$PAGE->set_url('/mod/ouilforum/post.php', $url_params);
+$PAGE->set_url('/mod/forumx/post.php', $url_params);
 
 $sitecontext = context_system::instance();
 
@@ -80,17 +80,17 @@ if (!isloggedin() || isguestuser()) {
     }
 
     if (!empty($forumid)) { // User is starting a new discussion in a forum.
-        if (!$forum = $DB->get_record('ouilforum', array('id' => $forumid))) {
-            print_error('invalidforumid', 'ouilforum');
+        if (!$forum = $DB->get_record('forumx', array('id' => $forumid))) {
+            print_error('invalidforumid', 'forumx');
         }
     } else if (!empty($reply)) { // User is writing a new reply.
-        if (!$parent = ouilforum_get_post_full($reply)) {
-            print_error('invalidparentpostid', 'ouilforum');
+        if (!$parent = forumx_get_post_full($reply)) {
+            print_error('invalidparentpostid', 'forumx');
         }
-        if (!$discussion = $DB->get_record('ouilforum_discussions', array('id' => $parent->discussion))) {
-            print_error('notpartofdiscussion', 'ouilforum');
+        if (!$discussion = $DB->get_record('forumx_discussions', array('id' => $parent->discussion))) {
+            print_error('notpartofdiscussion', 'forumx');
         }
-        if (!$forum = $DB->get_record('ouilforum', array('id' => $discussion->ouilforum))) {
+        if (!$forum = $DB->get_record('forumx', array('id' => $discussion->forumx))) {
             print_error('invalidforumid');
         }
     }
@@ -98,7 +98,7 @@ if (!isloggedin() || isguestuser()) {
         print_error('invalidcourseid');
     }
 
-    if (!$cm = get_coursemodule_from_instance('ouilforum', $forum->id, $course->id)) { // For the logs.
+    if (!$cm = get_coursemodule_from_instance('forumx', $forum->id, $course->id)) { // For the logs.
         print_error('invalidcoursemodule');
     } else {
         $modcontext = context_module::instance($cm->id);
@@ -111,7 +111,7 @@ if (!isloggedin() || isguestuser()) {
     $referer = get_local_referer(false);
 
     echo $OUTPUT->header();
-    echo $OUTPUT->confirm(get_string('noguestpost', 'ouilforum').'<br><br>'.get_string('liketologin'), get_login_url(), $referer);
+    echo $OUTPUT->confirm(get_string('noguestpost', 'forumx').'<br><br>'.get_string('liketologin'), get_login_url(), $referer);
     echo $OUTPUT->footer();
     exit;
 }
@@ -119,13 +119,13 @@ if (!isloggedin() || isguestuser()) {
 require_login(0, false); // Script is useless unless they're logged in.
 $return_url = '';
 if (!empty($forumid)) { // User is starting a new discussion in a forum.
-    if (!$forum = $DB->get_record('ouilforum', array('id' => $forumid))) {
-        print_error('invalidforumid', 'ouilforum');
+    if (!$forum = $DB->get_record('forumx', array('id' => $forumid))) {
+        print_error('invalidforumid', 'forumx');
     }
     if (!$course = $DB->get_record('course', array('id' => $forum->course))) {
         print_error('invalidcourseid');
     }
-    if (!$cm = get_coursemodule_from_instance('ouilforum', $forum->id, $course->id)) {
+    if (!$cm = get_coursemodule_from_instance('forumx', $forum->id, $course->id)) {
         print_error('invalidcoursemodule');
     }
 
@@ -133,26 +133,26 @@ if (!empty($forumid)) { // User is starting a new discussion in a forum.
     $modcontext    = context_module::instance($cm->id);
     $coursecontext = context_course::instance($course->id);
 
-    if (!ouilforum_user_can_post_discussion($forum, $groupid, -1, $cm)) {
+    if (!forumx_user_can_post_discussion($forum, $groupid, -1, $cm)) {
         if (!isguestuser()) {
             if (!is_enrolled($coursecontext)) {
                 if (enrol_selfenrol_available($course->id)) {
                     $SESSION->wantsurl = qualified_me();
                     $SESSION->enrolcancel = get_local_referer(false);
                     redirect(new moodle_url('/enrol/index.php', array('id' => $course->id,
-                        'returnurl' => '/mod/ouilforum/view.php?f='.$forum->id)),
+                        'returnurl' => '/mod/forumx/view.php?f='.$forum->id)),
                         get_string('youneedtoenrol'));
                 }
             }
         }
-        print_error('nopostforum', 'ouilforum');
+        print_error('nopostforum', 'forumx');
     }
 
     if (!$cm->visible && !has_capability('moodle/course:viewhiddenactivities', $modcontext)) {
         print_error('activityiscurrentlyhidden');
     }
 
-    $SESSION->fromurl = $return_url = ouilforum_get_referer($returnto, $course->id, $forum->id);
+    $SESSION->fromurl = $return_url = forumx_get_referer($returnto, $course->id, $forum->id);
 
     // Load up the $post variable.
 
@@ -175,19 +175,19 @@ if (!empty($forumid)) { // User is starting a new discussion in a forum.
 
 } else if (!empty($reply)) { // User is writing a new reply.
 
-    if (!$parent = ouilforum_get_post_full($reply)) {
-        print_error('invalidparentpostid', 'ouilforum');
+    if (!$parent = forumx_get_post_full($reply)) {
+        print_error('invalidparentpostid', 'forumx');
     }
-    if (!$discussion = $DB->get_record('ouilforum_discussions', array('id' => $parent->discussion))) {
-        print_error('notpartofdiscussion', 'ouilforum');
+    if (!$discussion = $DB->get_record('forumx_discussions', array('id' => $parent->discussion))) {
+        print_error('notpartofdiscussion', 'forumx');
     }
-    if (!$forum = $DB->get_record('ouilforum', array('id' => $discussion->ouilforum))) {
-        print_error('invalidforumid', 'ouilforum');
+    if (!$forum = $DB->get_record('forumx', array('id' => $discussion->forumx))) {
+        print_error('invalidforumid', 'forumx');
     }
     if (!$course = $DB->get_record('course', array('id' => $discussion->course))) {
         print_error('invalidcourseid');
     }
-    if (!$cm = get_coursemodule_from_instance('ouilforum', $forum->id, $course->id)) {
+    if (!$cm = get_coursemodule_from_instance('forumx', $forum->id, $course->id)) {
         print_error('invalidcoursemodule');
     }
 
@@ -198,17 +198,17 @@ if (!empty($forumid)) { // User is starting a new discussion in a forum.
     $modcontext    = context_module::instance($cm->id);
     $coursecontext = context_course::instance($course->id);
 
-    if (!ouilforum_user_can_post($forum, $discussion, $USER, $cm, $course, $modcontext)) {
+    if (!forumx_user_can_post($forum, $discussion, $USER, $cm, $course, $modcontext)) {
         if (!isguestuser()) {
             if (!is_enrolled($coursecontext)) { // User is a guest here!
                 $SESSION->wantsurl = qualified_me();
                 $SESSION->enrolcancel = get_local_referer(false);
                 redirect(new moodle_url('/enrol/index.php', array('id' => $course->id,
-                    'returnurl' => '/mod/ouilforum/view.php?f='.$forum->id)),
+                    'returnurl' => '/mod/forumx/view.php?f='.$forum->id)),
                     get_string('youneedtoenrol'));
             }
         }
-        print_error('nopostforum', 'ouilforum');
+        print_error('nopostforum', 'forumx');
     }
 
     // Make sure user can post here.
@@ -219,10 +219,10 @@ if (!empty($forumid)) { // User is starting a new discussion in a forum.
     }
     if ($groupmode == SEPARATEGROUPS && !has_capability('moodle/site:accessallgroups', $modcontext)) {
         if ($discussion->groupid == -1) {
-            print_error('nopostforum', 'ouilforum');
+            print_error('nopostforum', 'forumx');
         } else {
             if (!groups_is_member($discussion->groupid)) {
-                print_error('nopostforum', 'ouilforum');
+                print_error('nopostforum', 'forumx');
             }
         }
     }
@@ -243,33 +243,33 @@ if (!empty($forumid)) { // User is starting a new discussion in a forum.
 
     $post->groupid = ($discussion->groupid == -1) ? 0 : $discussion->groupid;
 
-    $strre = get_string('re', 'ouilforum');
+    $strre = get_string('re', 'forumx');
     if (!(substr($post->subject, 0, strlen($strre)) == $strre)) {
         $post->subject = $strre.' '.$post->subject;
     }
-    $return_url = ouilforum_get_referer($returnto, $course->id, $forum->id, $discussion->id);
+    $return_url = forumx_get_referer($returnto, $course->id, $forum->id, $discussion->id);
 
 } else if (!empty($edit)) { // User is editing their own post.
 
-    if (!$post = ouilforum_get_post_full($edit)) {
-        print_error('invalidpostid', 'ouilforum');
+    if (!$post = forumx_get_post_full($edit)) {
+        print_error('invalidpostid', 'forumx');
     }
     if ($post->parent) {
-        if (!$parent = ouilforum_get_post_full($post->parent)) {
-            print_error('invalidparentpostid', 'ouilforum');
+        if (!$parent = forumx_get_post_full($post->parent)) {
+            print_error('invalidparentpostid', 'forumx');
         }
     }
 
-    if (!$discussion = $DB->get_record('ouilforum_discussions', array('id' => $post->discussion))) {
-        print_error('notpartofdiscussion', 'ouilforum');
+    if (!$discussion = $DB->get_record('forumx_discussions', array('id' => $post->discussion))) {
+        print_error('notpartofdiscussion', 'forumx');
     }
-    if (!$forum = $DB->get_record('ouilforum', array('id' => $discussion->ouilforum))) {
-        print_error('invalidforumid', 'ouilforum');
+    if (!$forum = $DB->get_record('forumx', array('id' => $discussion->forumx))) {
+        print_error('invalidforumid', 'forumx');
     }
     if (!$course = $DB->get_record('course', array('id' => $discussion->course))) {
         print_error('invalidcourseid');
     }
-    if (!$cm = get_coursemodule_from_instance('ouilforum', $forum->id, $course->id)) {
+    if (!$cm = get_coursemodule_from_instance('forumx', $forum->id, $course->id)) {
         print_error('invalidcoursemodule');
     } else {
         $modcontext = context_module::instance($cm->id);
@@ -279,13 +279,13 @@ if (!empty($forumid)) { // User is starting a new discussion in a forum.
 
     if (!($forum->type == 'news' && !$post->parent && $discussion->timestart > time())) {
         if (((time() - $post->created) > $CFG->maxeditingtime) and
-                    !has_capability('mod/ouilforum:editanypost', $modcontext)) {
-            print_error('maxtimehaspassed', 'ouilforum', '', format_time($CFG->maxeditingtime));
+                    !has_capability('mod/forumx:editanypost', $modcontext)) {
+            print_error('maxtimehaspassed', 'forumx', '', format_time($CFG->maxeditingtime));
         }
     }
     if (($post->userid <> $USER->id) and
-                !has_capability('mod/ouilforum:editanypost', $modcontext)) {
-        print_error('cannoteditposts', 'ouilforum');
+                !has_capability('mod/forumx:editanypost', $modcontext)) {
+        print_error('cannoteditposts', 'forumx');
     }
 
 
@@ -297,20 +297,20 @@ if (!empty($forumid)) { // User is starting a new discussion in a forum.
 
     $post = trusttext_pre_edit($post, 'message', $modcontext);
 
-    $return_url = ouilforum_get_referer($returnto, $course->id, $forum->id, $discussion->id);
+    $return_url = forumx_get_referer($returnto, $course->id, $forum->id, $discussion->id);
     
 } else if (!empty($delete)) { // User is deleting a post.
 
-    if (!$post = ouilforum_get_post_full($delete)) {
-        print_error('invalidpostid', 'ouilforum');
+    if (!$post = forumx_get_post_full($delete)) {
+        print_error('invalidpostid', 'forumx');
     }
-    if (!$discussion = $DB->get_record('ouilforum_discussions', array('id' => $post->discussion))) {
-        print_error('notpartofdiscussion', 'ouilforum');
+    if (!$discussion = $DB->get_record('forumx_discussions', array('id' => $post->discussion))) {
+        print_error('notpartofdiscussion', 'forumx');
     }
-    if (!$forum = $DB->get_record('ouilforum', array('id' => $discussion->ouilforum))) {
-        print_error('invalidforumid', 'ouilforum');
+    if (!$forum = $DB->get_record('forumx', array('id' => $discussion->forumx))) {
+        print_error('invalidforumid', 'forumx');
     }
-    if (!$cm = get_coursemodule_from_instance('ouilforum', $forum->id, $forum->course)) {
+    if (!$cm = get_coursemodule_from_instance('forumx', $forum->id, $forum->course)) {
         print_error('invalidcoursemodule');
     }
     if (!$course = $DB->get_record('course', array('id' => $forum->course))) {
@@ -320,34 +320,34 @@ if (!empty($forumid)) { // User is starting a new discussion in a forum.
     require_login($course, false, $cm);
     $modcontext = context_module::instance($cm->id);
 
-    if ( !(($post->userid == $USER->id && has_capability('mod/ouilforum:deleteownpost', $modcontext))
-                || has_capability('mod/ouilforum:deleteanypost', $modcontext)) ) {
-        print_error('cannotdeletepost', 'ouilforum');
+    if ( !(($post->userid == $USER->id && has_capability('mod/forumx:deleteownpost', $modcontext))
+                || has_capability('mod/forumx:deleteanypost', $modcontext)) ) {
+        print_error('cannotdeletepost', 'forumx');
     }
 
-    $return_url = ouilforum_get_referer($returnto, $course->id, $forum->id, $discussion->id);
+    $return_url = forumx_get_referer($returnto, $course->id, $forum->id, $discussion->id);
 
-    $replycount = ouilforum_count_replies($post);
+    $replycount = forumx_count_replies($post);
 
     if (!empty($confirm) && confirm_sesskey()) { // User has confirmed the delete.
         // Check user capability to delete post.
         $timepassed = time() - $post->created;
-        if (($timepassed > $CFG->maxeditingtime) && !has_capability('mod/ouilforum:deleteanypost', $modcontext)) {
-            print_error('cannotdeletepost', 'ouilforum', $return_url);
+        if (($timepassed > $CFG->maxeditingtime) && !has_capability('mod/forumx:deleteanypost', $modcontext)) {
+            print_error('cannotdeletepost', 'forumx', $return_url);
         }
 
         if ($post->totalscore) {
             notice(get_string('couldnotdeleteratings', 'rating'), $return_url);
 
-        } else if ($replycount && !has_capability('mod/ouilforum:deleteanypost', $modcontext)) {
-            print_error('couldnotdeletereplies', 'ouilforum', $return_url);
+        } else if ($replycount && !has_capability('mod/forumx:deleteanypost', $modcontext)) {
+            print_error('couldnotdeletereplies', 'forumx', $return_url);
 
         } else {
             if (!$post->parent) { // Post is a discussion topic as well, so delete discussion.
                 if ($forum->type == 'single') {
                     notice('Sorry, but you are not allowed to delete that discussion!', $return_url);
                 }
-                ouilforum_delete_discussion($discussion, false, $course, $cm, $forum);
+                forumx_delete_discussion($discussion, false, $course, $cm, $forum);
 
                 $params = array(
                     'objectid' => $discussion->id,
@@ -357,58 +357,58 @@ if (!empty($forumid)) { // User is starting a new discussion in a forum.
                     )
                 );
 
-                $event = \mod_ouilforum\event\discussion_deleted::create($params);
-                $event->add_record_snapshot('ouilforum_discussions', $discussion);
+                $event = \mod_forumx\event\discussion_deleted::create($params);
+                $event->add_record_snapshot('forumx_discussions', $discussion);
                 $event->trigger();
 
                 if ($returnto==""){
-                	redirect('view.php?f='.$discussion->ouilforum);
+                	redirect('view.php?f='.$discussion->forumx);
                 }else{
                 	redirect($return_url);
                 }
 
-            } else if (ouilforum_delete_post($post, has_capability('mod/ouilforum:deleteanypost', $modcontext),
+            } else if (forumx_delete_post($post, has_capability('mod/forumx:deleteanypost', $modcontext),
                 $course, $cm, $forum)) {
 
                 if ($forum->type == 'single' && $returnto == 'discussion') {
                     // Single discussion forums are an exception. 
                     // We show the forum itself since it only has one discussion thread.
                 	if ($returnto.len==0){
-                    	$return_url = new moodle_url('/mod/ouilforum/view.php', array('f' => $forum->id));
+                    	$return_url = new moodle_url('/mod/forumx/view.php', array('f' => $forum->id));
                 	}
                 }
                 redirect($return_url);
             } else {
-                print_error('errorwhiledelete', 'ouilforum');
+                print_error('errorwhiledelete', 'forumx');
             }
         }
 
     } else { // User just asked to delete something.
 
-        $PAGE->navbar->add(get_string('delete', 'ouilforum'));
+        $PAGE->navbar->add(get_string('delete', 'forumx'));
         $PAGE->set_title($course->shortname);
         $PAGE->set_heading($course->fullname);
         
-        if ($replycount && !has_capability('mod/ouilforum:deleteanypost', $modcontext)) {
-        		print_error('couldnotdeletereplies', 'ouilforum', $return_url);
+        if ($replycount && !has_capability('mod/forumx:deleteanypost', $modcontext)) {
+        		print_error('couldnotdeletereplies', 'forumx', $return_url);
         }
         echo $OUTPUT->header();
         echo $OUTPUT->heading(format_string($forum->name), 2);
-        $confirm_string = $replycount ? get_string('deletesureplural', 'ouilforum', $replycount+1) :
-        	get_string('deletesure', 'ouilforum');
+        $confirm_string = $replycount ? get_string('deletesureplural', 'forumx', $replycount+1) :
+        	get_string('deletesure', 'forumx');
         
         $return_url_delete="post.php?delete=$delete&confirm=$delete";
         if ($returnto=="") {
-        	$return_url_cancel = $CFG->wwwroot.'/mod/ouilforum/discuss.php?d='.$post->discussion.'#p'.$post->id;
+        	$return_url_cancel = $CFG->wwwroot.'/mod/forumx/discuss.php?d='.$post->discussion.'#p'.$post->id;
         } else {
         	$return_url_cancel= $returnto;
         	$return_url_delete.=".&returnto=".$returnto;
         }
 
         echo $OUTPUT->confirm($confirm_string, $return_url_delete , $return_url_cancel);
-        echo '<span class="for-sr">'.get_string('posttodelete', 'ouilforum').'</span>';
-        ouilforum_print_post($post, $discussion, $forum, $cm, $course, false, false, false,
-        		null, null, null, null, null, null, OUILFORUM_DISPLAY_OPEN_CLEAN);
+        echo '<span class="for-sr">'.get_string('posttodelete', 'forumx').'</span>';
+        forumx_print_post($post, $discussion, $forum, $cm, $course, false, false, false,
+        		null, null, null, null, null, null, forumx_DISPLAY_OPEN_CLEAN);
         
     }
     echo $OUTPUT->footer();
@@ -416,24 +416,24 @@ if (!empty($forumid)) { // User is starting a new discussion in a forum.
 
 } else if (!empty($on_top)) {
 
-    if (!$forum = $DB->get_record("ouilforum", array("id" => $forumid))) {
-        print_error('invalidforumid', 'ouilforum');
+    if (!$forum = $DB->get_record("forumx", array("id" => $forumid))) {
+        print_error('invalidforumid', 'forumx');
     }
     if (!$course = $DB->get_record("course", array("id" => $forum->course))) {
         print_error('invalidcourseid');
     }
-    if (!$cm = get_coursemodule_from_instance("ouilforum", $forum->id, $course->id)) {
+    if (!$cm = get_coursemodule_from_instance("forumx", $forum->id, $course->id)) {
         print_error("invalidcoursemodule");
     }
 	
     $forumurl = "view.php?id=$cm->id";
-	if (!$discussion = $DB->get_record('ouilforum_discussions', array('id'=>$discussion))) {
+	if (!$discussion = $DB->get_record('forumx_discussions', array('id'=>$discussion))) {
 		print_error('Discussion id is not correct!');
 	}
 
 	$discussion->on_top = $on_top == 1 ? 1 : 0;
-	if (!$DB->update_record("ouilforum_discussions", $discussion)) {
-		print_error("couldnotupdate", "ouilforum", $forumurl);
+	if (!$DB->update_record("forumx_discussions", $discussion)) {
+		print_error("couldnotupdate", "forumx", $forumurl);
 	}
 
 	$modcontext = context_module::instance($cm->id);
@@ -442,31 +442,31 @@ if (!empty($forumid)) { // User is starting a new discussion in a forum.
 			'objectid' => $discussion->id,
 	);
 	$event = $on_top == 1 ?
-				\mod_ouilforum\event\discussion_pinned::create($params) :
-				\mod_ouilforum\event\discussion_unpinned::create($params);
+				\mod_forumx\event\discussion_pinned::create($params) :
+				\mod_forumx\event\discussion_unpinned::create($params);
 	$event->trigger();
 	
 	redirect($forumurl);
 	die;
 } else if (!empty($pin)) {
 
-	if (!$discussion = $DB->get_record('ouilforum_discussions', array('id'=>$discussionid))) {
+	if (!$discussion = $DB->get_record('forumx_discussions', array('id'=>$discussionid))) {
 		print_error('Discussion id is not correct!');
 	}
-	if (!$forum = $DB->get_record('ouilforum', array('id' => $discussion->ouilforum))) {
-        print_error('invalidforumid', 'ouilforum');
+	if (!$forum = $DB->get_record('forumx', array('id' => $discussion->forumx))) {
+        print_error('invalidforumid', 'forumx');
     }
     if (!$course = $DB->get_record('course', array('id' => $forum->course))) {
         print_error('invalidcourseid');
     }
-    if (!$cm = get_coursemodule_from_instance('ouilforum', $forum->id, $course->id)) {
+    if (!$cm = get_coursemodule_from_instance('forumx', $forum->id, $course->id)) {
         print_error('invalidcoursemodule');
     }
 	
     $forumurl = 'view.php?id='.$cm->id;
 	$discussion->on_top = $pin == 1 ? 1 : 0;
-	if (!$DB->update_record('ouilforum_discussions', $discussion)) {
-		print_error('couldnotupdate', 'ouilforum', $forumurl);
+	if (!$DB->update_record('forumx_discussions', $discussion)) {
+		print_error('couldnotupdate', 'forumx', $forumurl);
 	}
 
 	$modcontext = context_module::instance($cm->id);
@@ -475,65 +475,65 @@ if (!empty($forumid)) { // User is starting a new discussion in a forum.
 			'objectid' => $discussion->id,
 	);
 	$event = $pin == 1 ?
-				\mod_ouilforum\event\discussion_pinned::create($params) :
-				\mod_ouilforum\event\discussion_unpinned::create($params);
+				\mod_forumx\event\discussion_pinned::create($params) :
+				\mod_forumx\event\discussion_unpinned::create($params);
 	$event->trigger();
 	
 	redirect($forumurl);
 	die;
 } else if (!empty($lock)) {
 
-    if (!$forum = $DB->get_record("ouilforum", array("id" => $f))) {
-        print_error('invalidforumid', 'ouilforum');
+    if (!$forum = $DB->get_record("forumx", array("id" => $f))) {
+        print_error('invalidforumid', 'forumx');
     }
     if (!$course = $DB->get_record("course", array("id" => $forum->course))) {
         print_error('invalidcourseid');
     }
-    if (!$cm = get_coursemodule_from_instance("ouilforum", $forum->id, $course->id)) {
+    if (!$cm = get_coursemodule_from_instance("forumx", $forum->id, $course->id)) {
         print_error("invalidcoursemodule");
     }
 	
     $forumurl = "view.php?id=$cm->id";
-	if (!$discussion = $DB->get_record('ouilforum_discussions', array('id'=>$discussionid))) {
+	if (!$discussion = $DB->get_record('forumx_discussions', array('id'=>$discussionid))) {
 		print_error('Discussion id is not correct!');
 	}
 
 	$discussion->locked = $lock == 1 ? 1 : 0;
-	if (!$DB->update_record("ouilforum_discussions", $discussion)) {
-		print_error("couldnotupdate", "ouilforum", $forumurl);
+	if (!$DB->update_record("forumx_discussions", $discussion)) {
+		print_error("couldnotupdate", "forumx", $forumurl);
 	}
 	redirect($forumurl);
 	die;
 } else if (!empty($prune)) { // Pruning.
 
-    if (!$post = ouilforum_get_post_full($prune)) {
-        print_error('invalidpostid', 'ouilforum');
+    if (!$post = forumx_get_post_full($prune)) {
+        print_error('invalidpostid', 'forumx');
     }
-    if (!$discussion = $DB->get_record('ouilforum_discussions', array('id' => $post->discussion))) {
-        print_error('notpartofdiscussion', 'ouilforum');
+    if (!$discussion = $DB->get_record('forumx_discussions', array('id' => $post->discussion))) {
+        print_error('notpartofdiscussion', 'forumx');
     }
-    if (!$forum = $DB->get_record('ouilforum', array('id' => $discussion->ouilforum))) {
-        print_error('invalidforumid', 'ouilforum');
+    if (!$forum = $DB->get_record('forumx', array('id' => $discussion->forumx))) {
+        print_error('invalidforumid', 'forumx');
     }
     if ($forum->type == 'single') {
-        print_error('cannotsplit', 'ouilforum');
+        print_error('cannotsplit', 'forumx');
     }
     if (!$post->parent) {
-        print_error('alreadyfirstpost', 'ouilforum');
+        print_error('alreadyfirstpost', 'forumx');
     }
-    if (!$cm = get_coursemodule_from_instance('ouilforum', $forum->id, $forum->course)) { // For the logs.
+    if (!$cm = get_coursemodule_from_instance('forumx', $forum->id, $forum->course)) { // For the logs.
         print_error('invalidcoursemodule');
     } else {
         $modcontext = context_module::instance($cm->id);
     }
-    if (!has_capability('mod/ouilforum:splitdiscussions', $modcontext)) {
-        print_error('cannotsplit', 'ouilforum');
+    if (!has_capability('mod/forumx:splitdiscussions', $modcontext)) {
+        print_error('cannotsplit', 'forumx');
     }
 
     $PAGE->set_cm($cm);
     $PAGE->set_context($modcontext);
 
-    $prunemform = new mod_ouilforum_prune_form(null, array('prune' => $prune, 'confirm' => $prune));
+    $prunemform = new mod_forumx_prune_form(null, array('prune' => $prune, 'confirm' => $prune));
 
 
     if ($prunemform->is_cancelled()) {
@@ -542,7 +542,7 @@ if (!empty($forumid)) { // User is starting a new discussion in a forum.
         // User submits the data.
         $newdiscussion = new stdClass();
         $newdiscussion->course       = $discussion->course;
-        $newdiscussion->ouilforum    = $discussion->ouilforum;
+        $newdiscussion->forumx    = $discussion->forumx;
         $newdiscussion->name         = $name;
         $newdiscussion->firstpost    = $post->id;
         $newdiscussion->userid       = $discussion->userid;
@@ -552,20 +552,20 @@ if (!empty($forumid)) { // User is starting a new discussion in a forum.
         $newdiscussion->timestart    = $discussion->timestart;
         $newdiscussion->timeend      = $discussion->timeend;
 
-        $newid = $DB->insert_record('ouilforum_discussions', $newdiscussion);
+        $newid = $DB->insert_record('forumx_discussions', $newdiscussion);
 
         $newpost = new stdClass();
         $newpost->id      = $post->id;
         $newpost->parent  = 0;
         $newpost->subject = $name;
 
-        $DB->update_record('ouilforum_posts', $newpost);
+        $DB->update_record('forumx_posts', $newpost);
 
-        ouilforum_change_discussionid($post->id, $newid);
+        forumx_change_discussionid($post->id, $newid);
 
         // Update last post in each discussion.
-        ouilforum_discussion_update_last_post($discussion->id);
-        ouilforum_discussion_update_last_post($newid);
+        forumx_discussion_update_last_post($discussion->id);
+        forumx_discussion_update_last_post($newid);
 
         // Fire events to reflect the split..
         $params = array(
@@ -575,7 +575,7 @@ if (!empty($forumid)) { // User is starting a new discussion in a forum.
                 'forumid' => $forum->id,
             )
         );
-        $event = \mod_ouilforum\event\discussion_updated::create($params);
+        $event = \mod_forumx\event\discussion_updated::create($params);
         $event->trigger();
 
         $params = array(
@@ -585,7 +585,7 @@ if (!empty($forumid)) { // User is starting a new discussion in a forum.
                 'forumid' => $forum->id,
             )
         );
-        $event = \mod_ouilforum\event\discussion_created::create($params);
+        $event = \mod_forumx\event\discussion_created::create($params);
         $event->trigger();
 
         $params = array(
@@ -597,8 +597,8 @@ if (!empty($forumid)) { // User is starting a new discussion in a forum.
                 'forumtype' => $forum->type,
             )
         );
-        $event = \mod_ouilforum\event\post_updated::create($params);
-        $event->add_record_snapshot('ouilforum_discussions', $discussion);
+        $event = \mod_forumx\event\post_updated::create($params);
+        $event->add_record_snapshot('forumx_discussions', $discussion);
         $event->trigger();
 
         redirect($return_url);
@@ -606,17 +606,17 @@ if (!empty($forumid)) { // User is starting a new discussion in a forum.
     } else {
         // Display the prune form.
         $course = $DB->get_record('course', array('id' => $forum->course));
-        $PAGE->navbar->add(format_string($post->subject, true), new moodle_url('/mod/ouilforum/discuss.php', array('d'=>$discussion->id)));
-        $PAGE->navbar->add(get_string('prune', 'ouilforum'));
+        $PAGE->navbar->add(format_string($post->subject, true), new moodle_url('/mod/forumx/discuss.php', array('d'=>$discussion->id)));
+        $PAGE->navbar->add(get_string('prune', 'forumx'));
         $PAGE->set_title(format_string($discussion->name).": ".format_string($post->subject));
         $PAGE->set_heading($course->fullname);
         echo $OUTPUT->header();
         echo $OUTPUT->heading(format_string($forum->name), 2);
-        echo $OUTPUT->heading(get_string('pruneheading', 'ouilforum'), 3);
+        echo $OUTPUT->heading(get_string('pruneheading', 'forumx'), 3);
 
         $prunemform->display();
 
-        ouilforum_print_post($post, $discussion, $forum, $cm, $course, false, false, false);
+        forumx_print_post($post, $discussion, $forum, $cm, $course, false, false, false);
     }
 
     echo $OUTPUT->footer();
@@ -633,7 +633,7 @@ if (!isset($coursecontext)) {
 
 
 // From now on user must be logged on properly.
-if (!$cm = get_coursemodule_from_instance('ouilforum', $forum->id, $course->id)) { // For the logs.
+if (!$cm = get_coursemodule_from_instance('forumx', $forum->id, $course->id)) { // For the logs.
     print_error('invalidcoursemodule');
 }
 $modcontext = context_module::instance($cm->id);
@@ -648,21 +648,21 @@ if (!isset($forum->maxattachments)) {  // TODO - delete this once we add a field
     $forum->maxattachments = 3;
 }
 
-$thresholdwarning = ouilforum_check_throttling($forum, $cm);
-$mform_post = new mod_ouilforum_post_form('post.php', array('course' => $course,
+$thresholdwarning = forumx_check_throttling($forum, $cm);
+$mform_post = new mod_forumx_post_form('post.php', array('course' => $course,
 		'cm' => $cm,
         'coursecontext' => $coursecontext,
         'modcontext' => $modcontext,
-        'ouilforum' => $forum,
+        'forumx' => $forum,
         'post' => $post,
-        'subscribe' => \mod_ouilforum\subscriptions::is_subscribed($USER->id, $forum,
+        'subscribe' => \mod_forumx\subscriptions::is_subscribed($USER->id, $forum,
         null, $cm),
         'thresholdwarning' => $thresholdwarning,
         'edit' => $edit), 'post', '', array('id' => 'mformforum'));
 
 $draftitemid = file_get_submitted_draft_itemid('attachments');
-file_prepare_draft_area($draftitemid, $modcontext->id, 'mod_ouilforum', 'attachment', empty($post->id)?null:$post->id, 
-		mod_ouilforum_post_form::attachment_options($forum));
+file_prepare_draft_area($draftitemid, $modcontext->id, 'mod_forumx', 'attachment', empty($post->id)?null:$post->id, 
+		mod_forumx_post_form::attachment_options($forum));
 
 // Load data into form NOW!
 
@@ -672,23 +672,23 @@ if ($USER->id != $post->userid) { // Not the original author, so add a message t
     if ($post->messageformat == FORMAT_HTML) {
         $data->name = '<a href="'.$CFG->wwwroot.'/user/view.php?id='.$USER->id.'&course='.$post->course.'">'.
                        fullname($USER).'</a>';
-        $post->message .= '<p><span class="edited">('.get_string('editedby', 'ouilforum', $data).')</span></p>';
+        $post->message .= '<p><span class="edited">('.get_string('editedby', 'forumx', $data).')</span></p>';
     } else {
         $data->name = fullname($USER);
-        $post->message .= "\n\n(".get_string('editedby', 'ouilforum', $data).')';
+        $post->message .= "\n\n(".get_string('editedby', 'forumx', $data).')';
     }
     unset($data);
 }
 
 $formheading = '';
 if (!empty($parent)) {
-    $heading = get_string('yourreply', 'ouilforum');
-    $formheading = get_string('reply', 'ouilforum');
+    $heading = get_string('yourreply', 'forumx');
+    $formheading = get_string('reply', 'forumx');
 } else {
     if ($forum->type == 'qanda') {
-        $heading = get_string('yournewquestion', 'ouilforum');
+        $heading = get_string('yournewquestion', 'forumx');
     } else {
-        $heading = get_string('yournewtopic', 'ouilforum');
+        $heading = get_string('yournewtopic', 'forumx');
     }
 }
 
@@ -701,24 +701,24 @@ if (!empty($quick_subject)) {
 	$postsubject = htmlspecialchars($quick_subject);
 }
 if (!empty($quick_message)) {
-	$currenttext = ouilforum_format_quick_message($quick_message);
+	$currenttext = forumx_format_quick_message($quick_message);
 } else {
-	$currenttext = file_prepare_draft_area($draftid_editor, $modcontext->id, 'mod_ouilforum', 'post', $postid, 
-			mod_ouilforum_post_form::editor_options($modcontext, $postid), $post->message);
+	$currenttext = file_prepare_draft_area($draftid_editor, $modcontext->id, 'mod_forumx', 'post', $postid, 
+			mod_forumx_post_form::editor_options($modcontext, $postid), $post->message);
 }
 
 $manageactivities = has_capability('moodle/course:manageactivities', $coursecontext);
-if (\mod_ouilforum\subscriptions::subscription_disabled($forum) && !$manageactivities) {
+if (\mod_forumx\subscriptions::subscription_disabled($forum) && !$manageactivities) {
     // User does not have permission to subscribe to this discussion at all.
     $discussionsubscribe = false;
-} else if (\mod_ouilforum\subscriptions::is_forcesubscribed($forum)) {
+} else if (\mod_forumx\subscriptions::is_forcesubscribed($forum)) {
     // User does not have permission to unsubscribe from this discussion at all.
     $discussionsubscribe = true;
 } else {
-    if (isset($discussion) && \mod_ouilforum\subscriptions::is_subscribed($USER->id, $forum, $discussion->id, $cm)) {
+    if (isset($discussion) && \mod_forumx\subscriptions::is_subscribed($USER->id, $forum, $discussion->id, $cm)) {
         // User is subscribed to the discussion - continue the subscription.
         $discussionsubscribe = true;
-    } else if (!isset($discussion) && \mod_ouilforum\subscriptions::is_subscribed($USER->id, $forum, null, $cm)) {
+    } else if (!isset($discussion) && \mod_forumx\subscriptions::is_subscribed($USER->id, $forum, null, $cm)) {
         // Starting a new discussion, and the user is subscribed to the forum - subscribe to the discussion.
         $discussionsubscribe = true;
     } else {
@@ -767,14 +767,14 @@ $mform_post->set_data(array(
 if ($mform_post->is_cancelled()) {
     if (!isset($discussion->id) || $forum->type === 'qanda') {
         // Q and A forums don't have a discussion page, so treat them like a new thread..
-        redirect(new moodle_url('/mod/ouilforum/view.php', array('f' => $forum->id)));
+        redirect(new moodle_url('/mod/forumx/view.php', array('f' => $forum->id)));
     } else {
-        redirect(new moodle_url('/mod/ouilforum/discuss.php', array('d' => $discussion->id)));
+        redirect(new moodle_url('/mod/forumx/discuss.php', array('d' => $discussion->id)));
     }
 } else if ($fromform = $mform_post->get_data()) {
 
     if (empty($SESSION->fromurl)) {
-        $errordestination = "$CFG->wwwroot/mod/ouilforum/view.php?f=$forum->id";
+        $errordestination = "$CFG->wwwroot/mod/forumx/view.php?f=$forum->id";
     } else {
         $errordestination = $SESSION->fromurl;
     }
@@ -790,27 +790,27 @@ if ($mform_post->is_cancelled()) {
         $fromform->id = $fromform->edit;
         $message = '';
 
-        if (!$realpost = $DB->get_record('ouilforum_posts', array('id' => $fromform->id))) {
+        if (!$realpost = $DB->get_record('forumx_posts', array('id' => $fromform->id))) {
             $realpost = new stdClass();
             $realpost->userid = -1;
         }
 
         // If user has edit any post capability or has either startnewdiscussion or reply capability and is editting own post,
         // then he can proceed. MDL-7066
-        if (!(($realpost->userid == $USER->id && (has_capability('mod/ouilforum:replypost', $modcontext)
-                            || has_capability('mod/ouilforum:startdiscussion', $modcontext))) ||
-                            has_capability('mod/ouilforum:editanypost', $modcontext)) ) {
-            print_error('cannotupdatepost', 'ouilforum');
+        if (!(($realpost->userid == $USER->id && (has_capability('mod/forumx:replypost', $modcontext)
+                            || has_capability('mod/forumx:startdiscussion', $modcontext))) ||
+                            has_capability('mod/forumx:editanypost', $modcontext)) ) {
+            print_error('cannotupdatepost', 'forumx');
         }
 
         // If the user has access to all groups and they are changing the group, then update the post.
-        if (isset($fromform->groupinfo) && has_capability('mod/ouilforum:movediscussions', $modcontext)) {
+        if (isset($fromform->groupinfo) && has_capability('mod/forumx:movediscussions', $modcontext)) {
             if (empty($fromform->groupinfo)) {
                 $fromform->groupinfo = -1;
             }
 
-            if (!ouilforum_user_can_post_discussion($forum, $fromform->groupinfo, null, $cm, $modcontext)) {
-                print_error('cannotupdatepost', 'ouilforum');
+            if (!forumx_user_can_post_discussion($forum, $fromform->groupinfo, null, $cm, $modcontext)) {
+                print_error('cannotupdatepost', 'forumx');
             }
 
             $DB->set_field('forum_discussions' ,'groupid' , $fromform->groupinfo, array('firstpost' => $fromform->id));
@@ -818,15 +818,15 @@ if ($mform_post->is_cancelled()) {
 
         $updatepost = $fromform; // Realpost.
         $updatepost->forum = $forum->id;
-        if (!ouilforum_update_post($updatepost, $mform_post, $message)) {
-            print_error('couldnotupdate', 'ouilforum', $errordestination);
+        if (!forumx_update_post($updatepost, $mform_post, $message)) {
+            print_error('couldnotupdate', 'forumx', $errordestination);
         }
 
         // MDL-11818
         if (($forum->type == 'single') && ($updatepost->parent == '0')) { // Updating first post of single discussion type -> updating forum intro.
             $forum->intro = $updatepost->message;
             $forum->timemodified = time();
-            $DB->update_record("ouilforum", $forum);
+            $DB->update_record("forumx", $forum);
         }
 
         $timemessage = 2;
@@ -835,21 +835,21 @@ if ($mform_post->is_cancelled()) {
         }
 
         if ($realpost->userid == $USER->id) {
-            $message.= '<br>'.get_string('postupdated', 'ouilforum');
+            $message.= '<br>'.get_string('postupdated', 'forumx');
         } else {
             $realuser = $DB->get_record('user', array('id' => $realpost->userid));
-            $message.= '<br>'.get_string('editedpostupdated', 'ouilforum', fullname($realuser));
+            $message.= '<br>'.get_string('editedpostupdated', 'forumx', fullname($realuser));
         }
 
-        if ($subscribemessage = ouilforum_post_subscription($fromform, $forum, $discussion)) {
+        if ($subscribemessage = forumx_post_subscription($fromform, $forum, $discussion)) {
             $timemessage = 4;
         }
         if ($forum->type == 'single' && $returnto == 'discussion') {
             // Single discussion forums are an exception.
             // We show the forum itself since it only has one discussion thread.
-            $return_url = new moodle_url('/mod/ouilforum/view.php', array('f' => $forum->id));
+            $return_url = new moodle_url('/mod/forumx/view.php', array('f' => $forum->id));
         } else {
-        	$return_url = ouilforum_get_referer($returnto, $course->id, $forum->id, $discussion->id);
+        	$return_url = forumx_get_referer($returnto, $course->id, $forum->id, $discussion->id);
         }
 
         $params = array(
@@ -866,47 +866,47 @@ if ($mform_post->is_cancelled()) {
             $params['relateduserid'] = $realpost->userid;
         }
 
-        $event = \mod_ouilforum\event\post_updated::create($params);
-        $event->add_record_snapshot('ouilforum_discussions', $discussion);
+        $event = \mod_forumx\event\post_updated::create($params);
+        $event->add_record_snapshot('forumx_discussions', $discussion);
         $event->trigger();
 
-        ouilforum_redirect($return_url, $message.$subscribemessage, $timemessage);
+        forumx_redirect($return_url, $message.$subscribemessage, $timemessage);
 
         exit;
 
 
     } else if ($fromform->discussion) { // Adding a new post to an existing discussion
         // Before we add this we must check that the user will not exceed the blocking threshold.
-        ouilforum_check_blocking_threshold($thresholdwarning);
+        forumx_check_blocking_threshold($thresholdwarning);
 
         unset($fromform->groupid);
         $message = '';
         $addpost = $fromform;
         $addpost->forum=$forum->id;
-        if ($fromform->id = ouilforum_add_new_post($addpost, $mform_post, $message)) {
+        if ($fromform->id = forumx_add_new_post($addpost, $mform_post, $message)) {
             $timemessage = 2;
             if (!empty($message)) { // If we're printing stuff about the file upload.
                 $timemessage = 4;
             }
 
-            if ($subscribemessage = ouilforum_post_subscription($fromform, $forum, $discussion)) {
+            if ($subscribemessage = forumx_post_subscription($fromform, $forum, $discussion)) {
                 $timemessage = 4;
             }
 
             if (!empty($fromform->mailnow) && $course->visible) {
-                $message.= get_string('postmailnow', 'ouilforum');
+                $message.= get_string('postmailnow', 'forumx');
                 $timemessage = 4;
             } else {
-                $message.= '<p>'.get_string('postaddedsuccess', 'ouilforum').'</p>';
-                $message.= '<p>'.get_string('postaddedtimeleft', 'ouilforum', format_time($CFG->maxeditingtime)).'</p>';
+                $message.= '<p>'.get_string('postaddedsuccess', 'forumx').'</p>';
+                $message.= '<p>'.get_string('postaddedtimeleft', 'forumx', format_time($CFG->maxeditingtime)).'</p>';
             }
 
             if ($forum->type == 'single') {
                 // Single discussion forums are an exception.
                 // We show the forum itself since it only has one discussion thread.
-                $discussionurl = new moodle_url('/mod/ouilforum/view.php', array('f' => $forum->id), 'p'.$fromform->id);
+                $discussionurl = new moodle_url('/mod/forumx/view.php', array('f' => $forum->id), 'p'.$fromform->id);
             } else {
-                $discussionurl = new moodle_url('/mod/ouilforum/discuss.php', array('d' => $discussion->id), 'p'.$fromform->id);
+                $discussionurl = new moodle_url('/mod/forumx/discuss.php', array('d' => $discussion->id), 'p'.$fromform->id);
             }
 
             $params = array(
@@ -918,10 +918,10 @@ if ($mform_post->is_cancelled()) {
                     'forumtype' => $forum->type,
                 )
             );
-            $event = \mod_ouilforum\event\post_created::create($params);
+            $event = \mod_forumx\event\post_created::create($params);
             $fromform->mark = null; // Avoid debug notice about missing fields @todo: fix in future
-            $event->add_record_snapshot('ouilforum_posts', $fromform);
-            $event->add_record_snapshot('ouilforum_discussions', $discussion);
+            $event->add_record_snapshot('forumx_posts', $fromform);
+            $event->add_record_snapshot('forumx_discussions', $discussion);
             $event->trigger();
 
             // Update completion state.
@@ -931,16 +931,16 @@ if ($mform_post->is_cancelled()) {
                 $completion->update_state($cm,COMPLETION_COMPLETE);
             }
 
-            ouilforum_redirect($return_url, $message.$subscribemessage, $timemessage);
+            forumx_redirect($return_url, $message.$subscribemessage, $timemessage);
 
         } else {
-            print_error('couldnotadd', 'ouilforum', $errordestination);
+            print_error('couldnotadd', 'forumx', $errordestination);
         }
         exit;
 
     } else { // Adding a new discussion.
         // The location to redirect to after successfully posting.
-        $redirectto = new moodle_url('view.php', array('f' => $fromform->ouilforum));
+        $redirectto = new moodle_url('view.php', array('f' => $fromform->forumx));
 
         $fromform->mailnow = empty($fromform->mailnow) ? 0 : 1;
 
@@ -962,13 +962,13 @@ if ($mform_post->is_cancelled()) {
         // If we are posting a copy to all groups the user has access to.
         if (isset($fromform->posttomygroups)) {
             // Post to each of my groups.
-            require_capability('mod/ouilforum:canposttomygroups', $modcontext);
+            require_capability('mod/forumx:canposttomygroups', $modcontext);
 
             // Fetch all of this user's groups.
             // Note: all groups are returned when in visible groups mode so we must manually filter.
             $allowedgroups = groups_get_activity_allowed_groups($cm);
             foreach ($allowedgroups as $groupid => $group) {
-                if (ouilforum_user_can_post_discussion($forum, $groupid, -1, $cm, $modcontext)) {
+                if (forumx_user_can_post_discussion($forum, $groupid, -1, $cm, $modcontext)) {
                     $groupstopostto[] = $groupid;
                 }
             }
@@ -986,16 +986,16 @@ if ($mform_post->is_cancelled()) {
         }
 
         // Before we post this we must check that the user will not exceed the blocking threshold.
-        ouilforum_check_blocking_threshold($thresholdwarning);
+        forumx_check_blocking_threshold($thresholdwarning);
 
         foreach ($groupstopostto as $group) {
-            if (!ouilforum_user_can_post_discussion($forum, $group, -1, $cm, $modcontext)) {
-                print_error('cannotcreatediscussion', 'ouilforum');
+            if (!forumx_user_can_post_discussion($forum, $group, -1, $cm, $modcontext)) {
+                print_error('cannotcreatediscussion', 'forumx');
             }
 
             $discussion->groupid = $group;
             $message = '';
-            if ($discussion->id = ouilforum_add_discussion($discussion, $mform_post, $message)) {
+            if ($discussion->id = forumx_add_discussion($discussion, $mform_post, $message)) {
 
                 $params = array(
                     'context' => $modcontext,
@@ -1004,8 +1004,8 @@ if ($mform_post->is_cancelled()) {
                         'forumid' => $forum->id,
                     )
                 );
-                $event = \mod_ouilforum\event\discussion_created::create($params);
-                $event->add_record_snapshot('ouilforum_discussions', $discussion);
+                $event = \mod_forumx\event\discussion_created::create($params);
+                $event->add_record_snapshot('forumx_discussions', $discussion);
                 $event->trigger();
 
                 $timemessage = 2;
@@ -1014,18 +1014,18 @@ if ($mform_post->is_cancelled()) {
                 }
 
                 if ($fromform->mailnow && $course->visible) {
-                    $message.= get_string('postmailnow', 'ouilforum');
+                    $message.= get_string('postmailnow', 'forumx');
                     $timemessage = 4;
                 } else {
-                    $message.= '<p>'.get_string('postaddedsuccess', 'ouilforum').'</p>';
-                    $message.= '<p>'.get_string('postaddedtimeleft', 'ouilforum', format_time($CFG->maxeditingtime)).'</p>';
+                    $message.= '<p>'.get_string('postaddedsuccess', 'forumx').'</p>';
+                    $message.= '<p>'.get_string('postaddedtimeleft', 'forumx', format_time($CFG->maxeditingtime)).'</p>';
                 }
 
-                if ($subscribemessage = ouilforum_post_subscription($fromform, $forum, $discussion)) {
+                if ($subscribemessage = forumx_post_subscription($fromform, $forum, $discussion)) {
                     $timemessage = 6;
                 }
             } else {
-                print_error('couldnotadd', 'ouilforum', $errordestination);
+                print_error('couldnotadd', 'forumx', $errordestination);
             }
         }
 
@@ -1037,7 +1037,7 @@ if ($mform_post->is_cancelled()) {
         }
 
         // Redirect back to the discussion.
-        ouilforum_redirect($return_url, $message.$subscribemessage, $timemessage);
+        forumx_redirect($return_url, $message.$subscribemessage, $timemessage);
     }
 }
 
@@ -1047,13 +1047,13 @@ if ($mform_post->is_cancelled()) {
 // $course, $forum are defined. $discussion is for edit and reply only.
 
 if ($post->discussion) {
-    if (! $toppost = $DB->get_record('ouilforum_posts', array('discussion' => $post->discussion, 'parent' => 0))) {
-        print_error('cannotfindparentpost', 'ouilforum', '', $post->id);
+    if (! $toppost = $DB->get_record('forumx_posts', array('discussion' => $post->discussion, 'parent' => 0))) {
+        print_error('cannotfindparentpost', 'forumx', '', $post->id);
     }
 } else {
     $toppost = new stdClass();
-    $toppost->subject = ($forum->type == 'news') ? get_string('addanewtopic', 'ouilforum') :
-                                                   get_string('addanewdiscussion', 'ouilforum');
+    $toppost->subject = ($forum->type == 'news') ? get_string('addanewtopic', 'forumx') :
+                                                   get_string('addanewdiscussion', 'forumx');
 }
 
 if (empty($post->edit)) {
@@ -1082,11 +1082,11 @@ if (!empty($discussion->id)) {
 }
 
 if ($post->parent) {
-    $PAGE->navbar->add(get_string('reply', 'ouilforum'));
+    $PAGE->navbar->add(get_string('reply', 'forumx'));
 }
 
 if ($edit) {
-    $PAGE->navbar->add(get_string('editpost', 'ouilforum'));
+    $PAGE->navbar->add(get_string('editpost', 'forumx'));
 }
 
 $PAGE->set_title("$course->shortname: $strdiscussionname ".format_string($toppost->subject));
@@ -1096,46 +1096,46 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($forum->name), 2);
 
 // checkup
-if (!empty($parent) && !ouilforum_user_can_see_post($forum, $discussion, $post, null, $cm)) {
-    print_error('cannotreply', 'ouilforum');
+if (!empty($parent) && !forumx_user_can_see_post($forum, $discussion, $post, null, $cm)) {
+    print_error('cannotreply', 'forumx');
 }
-if (empty($parent) && empty($edit) && !ouilforum_user_can_post_discussion($forum, $groupid, -1, $cm, $modcontext)) {
-    print_error('cannotcreatediscussion', 'ouilforum');
+if (empty($parent) && empty($edit) && !forumx_user_can_post_discussion($forum, $groupid, -1, $cm, $modcontext)) {
+    print_error('cannotcreatediscussion', 'forumx');
 }
 
 if ($forum->type == 'qanda'
-            && !has_capability('mod/ouilforum:viewqandawithoutposting', $modcontext)
+            && !has_capability('mod/forumx:viewqandawithoutposting', $modcontext)
             && !empty($discussion->id)
-            && !ouilforum_user_has_posted($forum->id, $discussion->id, $USER->id)) {
-    echo $OUTPUT->notification(get_string('qandanotify','ouilforum'));
+            && !forumx_user_has_posted($forum->id, $discussion->id, $USER->id)) {
+    echo $OUTPUT->notification(get_string('qandanotify','forumx'));
 }
 
 // If there is a warning message and we are not editing a post we need to handle the warning.
 if (!empty($thresholdwarning) && !$edit) {
     // Here we want to throw an exception if they are no longer allowed to post.
-    ouilforum_check_blocking_threshold($thresholdwarning);
+    forumx_check_blocking_threshold($thresholdwarning);
 }
 
 if (!empty($parent)) {
-    if (!$discussion = $DB->get_record('ouilforum_discussions', array('id' => $parent->discussion))) {
-        print_error('notpartofdiscussion', 'ouilforum');
+    if (!$discussion = $DB->get_record('forumx_discussions', array('id' => $parent->discussion))) {
+        print_error('notpartofdiscussion', 'forumx');
     }
 
     if ($reply) {
-    	$parent = ouilforum_get_post_full($replyto);
+    	$parent = forumx_get_post_full($replyto);
     }
-    ouilforum_print_post($parent, $discussion, $forum, $cm, $course, false, false, false,
-    		null, null, null, null, null, null, OUILFORUM_DISPLAY_OPEN_CLEAN);
+    forumx_print_post($parent, $discussion, $forum, $cm, $course, false, false, false,
+    		null, null, null, null, null, null, forumx_DISPLAY_OPEN_CLEAN);
     if (empty($post->edit) && empty($reply)) {
-        if ($forum->type != 'qanda' || ouilforum_user_can_see_discussion($forum, $discussion, $modcontext)) {
-            $forumtracked = ouilforum_tp_is_tracked($forum);
-            $posts = ouilforum_get_all_discussion_posts($discussion->id, "created ASC", $forumtracked);
-            ouilforum_print_posts_threaded($course, $cm, $forum, $discussion, $parent, 0, false, $forumtracked, $posts);
+        if ($forum->type != 'qanda' || forumx_user_can_see_discussion($forum, $discussion, $modcontext)) {
+            $forumtracked = forumx_tp_is_tracked($forum);
+            $posts = forumx_get_all_discussion_posts($discussion->id, "created ASC", $forumtracked);
+            forumx_print_posts_threaded($course, $cm, $forum, $discussion, $parent, 0, false, $forumtracked, $posts);
         }
     }
 } else {
     if (!empty($forum->intro)) {
-        echo $OUTPUT->box(format_module_intro('ouilforum', $forum, $cm->id), 'generalbox', 'intro');
+        echo $OUTPUT->box(format_module_intro('forumx', $forum, $cm->id), 'generalbox', 'intro');
 
         if (!empty($CFG->enableplagiarism)) {
             require_once($CFG->libdir.'/plagiarismlib.php');
