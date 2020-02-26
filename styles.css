@@ -1490,6 +1490,8 @@
   width: 35px;
   height: 35px;
   vertical-align: middle;
+  background-size: contain;
+  cursor: pointer;
 }
 .path-mod-forumx .of_post_icons button:hover .users {
   display: flex;
@@ -1538,22 +1540,17 @@
 .path-mod-forumx .of_post_icons button.forumx_unlock {
   background: url([[pix:mod_forumx|i/lock]]) no-repeat 0 0;
 }
-.path-mod-forumx .of_post_icons button.liked {
-  background: url([[pix:mod_forumx|i/like]]) no-repeat 0 0 !important;
-  background-size: contain !important;
-}
-.path-mod-forumx .of_post_icons button[data-action=likepost] {
+.path-mod-forumx .of_post_icons button.forumx_like {
   background: url([[pix:mod_forumx|i/unlike]]) no-repeat 0 0;
-  background-size: contain;
-  position: relative;
-  cursor: pointer;
+}
+.path-mod-forumx .of_post_icons button.forumx_like.liked {
+  background: url([[pix:mod_forumx|i/like]]) no-repeat 0 0;
 }
 .path-mod-forumx .of_post_icons button[data-action=commentscount] {
   background: url([[pix:mod_forumx|i/bulboff]]) no-repeat 0 0;
 }
 .path-mod-forumx .of_post_icons button.forumx_comments {
   background: url([[pix:mod_forumx|i/comments]]) no-repeat 0 0;
-  background-size: contain;
 }
 .path-mod-forumx .of_post_icons button[data-action=recommendpost] {
   background: url([[pix:mod_forumx|i/bulboff]]) no-repeat 0 0;
@@ -1944,7 +1941,6 @@
 }
 .path-mod-forumx .stage_button_options button {
   outline: none;
-  -webkit-transition: box-shadow 0.4s ease, -webkit-box-shadow 0.4s ease;
   transition: box-shadow 0.4s ease, -webkit-box-shadow 0.4s ease;
   border-radius: 15px;
   border: 1px solid #ccc;

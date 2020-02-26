@@ -1826,6 +1826,7 @@ $secondary-color: #4b9ea0;
     background: url([[pix:mod_forumx|i/lock]]) no-repeat 0 0;
   }
 
+
   .of_post_icons {
     button {
       position: relative;
@@ -1833,6 +1834,8 @@ $secondary-color: #4b9ea0;
       width: 35px;
       height: 35px;
       vertical-align: middle;
+      background-size: contain;
+      cursor: pointer;
 
       &:hover {
         .users {
@@ -1890,16 +1893,12 @@ $secondary-color: #4b9ea0;
         background: url([[pix:mod_forumx|i/lock]]) no-repeat 0 0;
       }
 
-      &.liked {
-        background: url([[pix:mod_forumx|i/like]]) no-repeat 0 0 !important;
-        background-size: contain !important;
-      }
-
-      &[data-action="likepost"] {
+      &.forumx_like {
         background: url([[pix:mod_forumx|i/unlike]]) no-repeat 0 0;
-        background-size: contain;
-        position: relative;
-        cursor: pointer;
+
+        &.liked {
+          background: url([[pix:mod_forumx|i/like]]) no-repeat 0 0;
+        }
       }
 
       &[data-action="commentscount"] {
@@ -1908,7 +1907,6 @@ $secondary-color: #4b9ea0;
 
       &.forumx_comments {
         background: url([[pix:mod_forumx|i/comments]]) no-repeat 0 0;
-        background-size: contain;
       }
 
       &[data-action="recommendpost"] {
@@ -2418,7 +2416,6 @@ $secondary-color: #4b9ea0;
 
     button {
       outline: none;
-      -webkit-transition: box-shadow .4s ease, -webkit-box-shadow .4s ease;
       transition: box-shadow .4s ease, -webkit-box-shadow .4s ease;
       border-radius: 15px;
       border: 1px solid #ccc;
