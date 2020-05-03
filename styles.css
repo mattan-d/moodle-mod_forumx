@@ -1541,6 +1541,7 @@
   background: url([[pix:mod_forumx|i/lock]]) no-repeat 0 0;
 }
 .path-mod-forumx .of_post_icons button.forumx_like {
+  background-size: contain;
   background: url([[pix:mod_forumx|i/unlike]]) no-repeat 0 0;
 }
 .path-mod-forumx .of_post_icons button.forumx_like.liked {
@@ -1550,6 +1551,7 @@
   background: url([[pix:mod_forumx|i/bulboff]]) no-repeat 0 0;
 }
 .path-mod-forumx .of_post_icons button.forumx_comments {
+  background-size: contain;
   background: url([[pix:mod_forumx|i/comments]]) no-repeat 0 0;
 }
 .path-mod-forumx .of_post_icons button[data-action=recommendpost] {

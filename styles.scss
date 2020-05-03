@@ -1894,6 +1894,8 @@ $secondary-color: #4b9ea0;
       }
 
       &.forumx_like {
+        background-size: contain;
+
         background: url([[pix:mod_forumx|i/unlike]]) no-repeat 0 0;
 
         &.liked {
@@ -1906,6 +1908,7 @@ $secondary-color: #4b9ea0;
       }
 
       &.forumx_comments {
+        background-size: contain;
         background: url([[pix:mod_forumx|i/comments]]) no-repeat 0 0;
       }
 
