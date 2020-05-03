@@ -1894,11 +1894,10 @@ $secondary-color: #4b9ea0;
       }
 
       &.forumx_like {
-        background-size: contain;
         background-image: url([[pix:mod_forumx|i/unlike]]);
 
         &.liked {
-          background: url([[pix:mod_forumx|i/like]]) no-repeat 0 0;
+          background-image: url([[pix:mod_forumx|i/like]]);
         }
       }
 
