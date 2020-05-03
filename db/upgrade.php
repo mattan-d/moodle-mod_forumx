@@ -45,7 +45,7 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_forumx_upgrade($oldversion) {
     global $CFG, $DB, $OUTPUT;
 
-    $dbman = $DB->get_manager(); // Loads ddl manager and xmldb classes.
+/*    $dbman = $DB->get_manager(); // Loads ddl manager and xmldb classes.
 
     $table = new xmldb_table('forumx_posts_likes');
 
@@ -60,5 +60,5 @@ function xmldb_forumx_upgrade($oldversion) {
         $dbman->create_table($table);
     }
 
-    return true;
+    return true;*/
 }
