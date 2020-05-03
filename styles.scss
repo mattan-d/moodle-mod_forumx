@@ -1895,8 +1895,7 @@ $secondary-color: #4b9ea0;
 
       &.forumx_like {
         background-size: contain;
-
-        background: url([[pix:mod_forumx|i/unlike]]) no-repeat 0 0;
+        background-image: url([[pix:mod_forumx|i/unlike]]);
 
         &.liked {
           background: url([[pix:mod_forumx|i/like]]) no-repeat 0 0;
@@ -1909,7 +1908,7 @@ $secondary-color: #4b9ea0;
 
       &.forumx_comments {
         background-size: contain;
-        background: url([[pix:mod_forumx|i/comments]]) no-repeat 0 0;
+        background-image: url([[pix:mod_forumx|i/comments]]);
       }
 
       &[data-action="recommendpost"] {
